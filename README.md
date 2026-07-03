@@ -1,4 +1,4 @@
-# mirumobileapp
+# Miru-G | Aplikasi pengelolaan bank sampah 
 
 A new Flutter project.
 
