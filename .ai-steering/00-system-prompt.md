@@ -92,3 +92,11 @@ class Nasabah {
 - Gunakan `ListView.builder` untuk list panjang.
 - Hindari rebuild widgets yang tidak perlu (gunakan `const`).
 - Cache image lokal jika memungkinkan.
+
+## Referensi Standarisasi
+
+| Dokumen | Isi |
+|---------|-----|
+| `04-api-integration.md` | Dio client, envelope, endpoints |
+| `10-integration-and-roles.md` | Alur nasabah, batasan role |
+| **miru-backend-api** — `.ai-steering/04-api-contracts-and-standards.md` | Sumber kebenaran kontrak API |

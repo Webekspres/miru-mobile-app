@@ -1,42 +1,93 @@
 # 01 — Project Overview (Mobile App)
 
-## Tentang Aplikasi
+## Latar Belakang
 
-Aplikasi mobile **MIRU Bank Sampah** adalah aplikasi untuk **nasabah/masyarakat** Distrik Mimika Baru yang ingin berpartisipasi dalam program bank sampah digital.
+Aplikasi mobile **MIRU Bank Sampah (Miru-G)** memungkinkan masyarakat Distrik Mimika Baru berpartisipasi dalam program bank sampah digital: daftar, cek saldo, ajukan penjemputan, tarik saldo, tukar poin, dan ajukan pengaduan.
+
+> **"Sampah Bernilai, Lingkungan Bersih, Warga Sejahtera"**
+
+Mobile app adalah **prioritas ketiga** setelah backend API dan web admin.
+
+## Posisi dalam Ekosistem
+
+Ketiga proyek MIRU adalah **repositori GitHub terpisah**, terintegrasi via REST API:
+
+```
+mirumobileapp (Nasabah) ← repo ini    miru-web-admin (Staff)
+        │                                  │
+        └──────── JWT + JSON Envelope ─────┘
+                         │
+              miru-backend-api (Django REST API)
+```
 
 ## Target Pengguna
 
-- **Nasabah/Masyarakat** — pengguna utama aplikasi mobile.
-- Bukan untuk petugas, admin, atau koordinator — mereka menggunakan Web Admin.
+| Role | Akses Mobile | Keterangan |
+|------|--------------|------------|
+| **Nasabah/Masyarakat** | ✅ Pengguna utama | Registrasi, dashboard, penjemputan, saldo, reward, pengaduan |
+| Petugas | ❌ | Gunakan repositori **miru-web-admin** |
+| Admin | ❌ | Gunakan **miru-web-admin** |
+| Koordinator | ❌ | Gunakan **miru-web-admin** |
+| Pemerintah Distrik | ❌ | Gunakan **miru-web-admin** |
+| Mitra/Pengepul | ❌ | Tidak punya login |
 
-## Fitur Utama (Mobile)
+Detail alur nasabah: **`10-integration-and-roles.md`**
+
+## Fitur Utama (Mobile — Nasabah)
 
 | Fitur | Deskripsi |
 |-------|-----------|
-| **Registrasi & Login** | Daftar akun baru, login/logout, lupa password |
+| **Registrasi & Login** | Daftar akun baru, login/logout, JWT persistence |
 | **Dashboard** | Saldo, poin, aktivitas terbaru, info harga sampah |
 | **Kartu Digital** | QR Code ID nasabah untuk scan petugas |
 | **Info Sampah** | Jenis sampah, harga per kg, panduan pemilahan |
 | **Ajukan Penjemputan** | Pilih jenis, estimasi berat, alamat, jadwal |
 | **Cek Status Jemput** | Lihat status penjemputan aktif |
 | **Riwayat Transaksi** | Setoran, penarikan, penukaran poin |
-| **Tarik Saldo** | Ajukan pencairan saldo |
+| **Tarik Saldo** | Ajukan pencairan saldo (min Rp50.000) |
 | **Tukar Poin** | Lihat reward, tukar poin |
 | **Pengaduan** | Ajukan keluhan, cek status |
-| **Pengumuman** | Info dan edukasi dari pengelola |
-
-## Informasi Branding
-- Nama Aplikasi: **MIRU Bank Sampah** (Miru-G)
-- Slogan: "Sampah Bernilai, Lingkungan Bersih, Warga Sejahtera"
-- Tema Warna: Hijau (#16a34a) — lingkungan bersih
 
 ## Platform
+
 | Platform | Status | Prioritas |
 |----------|--------|-----------|
 | Android | 🎯 Target utama | 1 |
 | iOS | Menyusul | 2 (post-MVP) |
 
-## Referensi ke Backend
-Untuk detail bisnis rules, system constraints, dan data flow, lihat file yang sama di `miru-backend-api/.ai-steering/`:
-- `05-business-rules-sops.md` — Logika bisnis
-- `06-system-constraints.md` — Batasan sistem
+## Informasi Branding
+
+| Item | Detail |
+|------|--------|
+| Nama Aplikasi | **MIRU Bank Sampah** (Miru-G) |
+| Slogan | "Sampah Bernilai, Lingkungan Bersih, Warga Sejahtera" |
+| Tema Warna | Hijau `#16a34a` |
+| Bahasa UI | Bahasa Indonesia |
+| Format angka | Rp125.000,00 |
+| Format tanggal | 3 Juli 2026 |
+
+## Jam Layanan
+
+Senin–Sabtu, 08.00–17.00 WIT. Informasikan di home screen jika di luar jam layanan.
+
+## Standar Integrasi dengan Backend
+
+| Aspek | Standar | Referensi |
+|-------|---------|-----------|
+| Auth | `/api/auth/login/`, `/api/auth/refresh/`, `/api/auth/me/` | **miru-backend-api** — `.ai-steering/04-api-contracts-and-standards.md` |
+| Registrasi | `POST /api/users/` (public, role default `nasabah`) | §6.2 dokumen di atas |
+| Response | JSON Envelope — baca dari field `data` | §3 dokumen di atas |
+| Emulator Android | `http://10.0.2.2:8000` | Mapping localhost host |
+
+## Referensi Dokumen Terkait
+
+| Topik | File |
+|-------|------|
+| Kontrak API lengkap | **miru-backend-api** — `.ai-steering/04-api-contracts-and-standards.md` |
+| Integrasi Dio & envelope | `04-api-integration.md` |
+| Alur nasabah & batasan | `10-integration-and-roles.md` |
+| Business rules (UI) | `05-business-rules-sops.md` |
+| System constraints | `06-system-constraints.md` |
+| Wireframe & modul | `07-modules-and-features.md` |
+| Roadmap | `08-task-list.md` |
+| Data dictionary | `09-data-dictionary.md` |

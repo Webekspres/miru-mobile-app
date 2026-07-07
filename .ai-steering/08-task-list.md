@@ -1,107 +1,135 @@
 # 08 — Task List: Mobile App Development Roadmap
 
+> **Roadmap backend (dependensi):** repositori **miru-backend-api** — `.ai-steering/08-task-list.md`
+>
+> Mobile app adalah **prioritas ketiga**. Mulai setelah web admin MVP operasional (atau parallel setelah backend Fase 2–3 stabil).
+
+---
+
+## Ringkasan Fase
+
+| Fase | Nama | Tujuan | Status |
+|------|------|--------|--------|
+| 0 | Scaffold | Flutter project default | ✅ Selesai |
+| 1 | Foundation | Dependencies, folder structure, API client | 🔲 Berikutnya |
+| 2 | Auth Flow | Login, register, JWT persistence | 🔲 |
+| 3 | MVP Screens | Home, profil, penjemputan, saldo, reward, pengaduan | 🔲 |
+| 4 | Navigation & UX | Bottom nav, polish, error states | 🔲 |
+| 5 | Post-MVP | Push notif, iOS, offline cache | 🔲 |
+
+---
+
+## Dependensi Backend per Fase Mobile
+
+| Fase Mobile | Backend Minimum |
+|-------------|-----------------|
+| Fase 1–2 | Fase 1 ✅ (auth, register, `/api/auth/me/`) |
+| Fase 3 | Fase 2–3 (pickups workflow, withdrawals validation, complaints) |
+| Push notifications | Post-MVP backend + FCM setup |
+| Pengumuman in-app | Backend Fase 5 (`/api/settings/`) |
+
+---
+
+## Fase 0: Scaffold ✅ Selesai
+
+- [x] Create Flutter project (Dart ^3.12.2)
+- [x] Android/iOS folder structure
+- [x] Dokumentasi `.ai-steering/` selaras backend
+
 ## Fase 1: Project Setup
 
-### 1.1 Foundation
-- [ ] Install dependencies: `provider`, `dio`, `go_router`, `flutter_secure_storage`, `qr_flutter`, `cached_network_image`
-- [ ] Create folder structure (`screens/`, `models/`, `providers/`, `services/`, `widgets/`)
-- [ ] Create `app.dart` — MaterialApp with theme and router
-- [ ] Create `config/theme.dart` — MIRU theme (green, clean design)
-- [ ] Create `config/constants.dart` — API URL, app name
-- [ ] Create `config/routes.dart` — go_router configuration with auth redirect
-- [ ] Create `services/api_client.dart` — Dio client with interceptors
-- [ ] Create `services/auth_service.dart` — Token storage and management
+### 1.1 Dependencies
+- [ ] Add to `pubspec.yaml`: `provider`, `dio`, `go_router`, `flutter_secure_storage`, `qr_flutter`, `intl`
+- [ ] Create folder structure (`config/`, `models/`, `providers/`, `services/`, `screens/`, `widgets/`)
 
-### 1.2 Core Models
-- [ ] Create `User` model (fromJson/toJson)
-- [ ] Create `KategoriSampah` model
-- [ ] Create `Transaksi` model
-- [ ] Create `Penjemputan` model
-- [ ] Create `PenarikanSaldo` model
-- [ ] Create `Reward` model
-- [ ] Create `PenukaranPoin` model
-- [ ] Create `Pengaduan` model
+### 1.2 Core Infrastructure
+- [ ] `config/constants.dart` — API URL (`10.0.2.2:8000` emulator)
+- [ ] `config/theme.dart` — MIRU green theme `#16a34a`
+- [ ] `config/routes.dart` — go_router + auth redirect
+- [ ] `services/api_client.dart` — Dio + Envelope + Auth interceptors (`04-api-integration.md`)
+- [ ] `services/auth_service.dart` — token storage, login, register, me
 
-## Fase 2: Auth Flow (MVP)
+### 1.3 Models
+- [ ] `User`, `WasteCategory`, `Deposit`, `Pickup`, `Withdrawal`, `Reward`, `RewardRedemption`, `Complaint`
+- [ ] fromJson/toJson dengan `snake_case` mapping
 
-- [ ] Create `AuthProvider` (login, register, logout, checkAuthStatus)
-- [ ] Create `SplashScreen` — auto-check login status → redirect
-- [ ] Create `LoginScreen` — username + password form
-- [ ] Create `RegisterScreen` — registration form
-- [ ] Implement token persistence (flutter_secure_storage)
-- [ ] Implement auto-login on app start
-- [ ] Implement logout with confirmation
+## Fase 2: Auth Flow
+
+- [ ] `AuthProvider` — login guard role `nasabah` only
+- [ ] `SplashScreen` — auto-check token → `/home` or `/login`
+- [ ] `LoginScreen` — `POST /api/auth/login/`
+- [ ] `RegisterScreen` — `POST /api/users/` + auto login
+- [ ] Token persistence (`flutter_secure_storage`)
+- [ ] Auto refresh token on 401
+- [ ] Logout with confirmation
 
 ## Fase 3: Main Screens (MVP)
 
 ### 3.1 Home/Dashboard
-- [ ] Create `HomeProvider` (fetch saldo, poin, info harga, aktivitas)
-- [ ] Create `HomeScreen` with:
-  - [ ] Saldo card (prominent)
-  - [ ] Poin display
-  - [ ] Quick action buttons (Jemput, Tarik, Tukar, Info)
-  - [ ] Info harga sampah (3-4 kategori)
-  - [ ] Aktivitas terbaru list
-  - [ ] Pull to refresh
+- [ ] `HomeProvider` — `GET /api/auth/me/`, `GET /api/waste-categories/`
+- [ ] Saldo card, poin, quick actions, info harga, aktivitas terbaru
+- [ ] Pull to refresh
 
-### 3.2 Profil & Kartu Digital
-- [ ] Create `ProfileScreen` — lihat/edit data diri
-- [ ] Create `QRCodeScreen` — QR code ID nasabah
-- [ ] Create edit profil form
+### 3.2 Profil & QR
+- [ ] `ProfileScreen` — view/edit `PATCH /api/users/{id}/`
+- [ ] `QRCodeScreen` — encode `{id, nama_lengkap, no_hp}`
 
 ### 3.3 Info Sampah
-- [ ] Create `InfoSampahScreen` — list kategori dengan harga
-- [ ] Create detail per kategori (contoh, panduan pemilahan)
+- [ ] `InfoSampahScreen` — list kategori public endpoint
 
 ### 3.4 Penjemputan
-- [ ] Create `PenjemputanProvider`
-- [ ] Create `PenjemputanScreen` — list penjemputan (tab: Aktif/Riwayat)
-- [ ] Create `AjukanPenjemputanScreen` — multi-step form:
-  - [ ] Pilih jenis sampah (checkboxes)
-  - [ ] Input estimasi berat per jenis (min 5 kg total)
-  - [ ] Pilih alamat (manual atau dari profil)
-  - [ ] Pilih jadwal (date picker, min H+1)
-  - [ ] Konfirmasi & submit
+- [ ] `PenjemputanScreen` — list + tabs
+- [ ] `AjukanPenjemputanScreen` — form (min 5 kg, H+1 jadwal)
+- [ ] `POST /api/pickups/`
 
-### 3.5 Riwayat Transaksi
-- [ ] Create `SaldoProvider` (load saldo, riwayat)
-- [ ] Create `RiwayatScreen` — tab: Semua, Setoran, Penarikan, Tukar Poin
-- [ ] Create transaction detail view
+### 3.5 Riwayat & Tarik Saldo
+- [ ] `RiwayatScreen` — deposits, withdrawals, redemptions
+- [ ] `TarikSaldoScreen` — min Rp50.000, `POST /api/withdrawals/`
 
-### 3.6 Tarik Saldo
-- [ ] Create `TarikSaldoScreen` — input nominal, validasi min 50rb, submit
-- [ ] Show confirmation dialog
+### 3.6 Reward
+- [ ] `RewardScreen` — `GET /api/rewards/`
+- [ ] Tukar poin — `POST /api/reward-redemptions/`
 
-### 3.7 Reward & Tukar Poin
-- [ ] Create `RewardProvider`
-- [ ] Create `RewardScreen` — list reward dengan poin & stok
-- [ ] Create `TukarPoinScreen` — konfirmasi penukaran
-
-### 3.8 Pengaduan
-- [ ] Create `PengaduanProvider`
-- [ ] Create `PengaduanScreen` — list pengaduan (tab: Terbuka/Ditutup)
-- [ ] Create `PengaduanFormScreen` — input keluhan, submit
+### 3.7 Pengaduan
+- [ ] `PengaduanScreen` + form — `POST/GET /api/complaints/`
 
 ## Fase 4: Navigation & UX Polish
 
-- [ ] Create bottom navigation bar (Home, Riwayat, Profil)
-- [ ] Create bottom sheet for quick actions
-- [ ] Loading indicators for all screens
-- [ ] Error handling (SnackBar untuk error messages)
-- [ ] Empty state illustrations ("Belum ada transaksi")
-- [ ] Pull to refresh on all list screens
-- [ ] Confirmation dialogs for destructive actions
+- [ ] Bottom navigation (Home, Riwayat, Profil)
+- [ ] Loading, error, empty states semua screen
+- [ ] SnackBar error Bahasa Indonesia
+- [ ] Confirmation dialogs
+- [ ] Network error handling (offline message)
 
 ## Fase 5: Post-MVP
 
-- [ ] Push notifications (Firebase Cloud Messaging)
-- [ ] In-app announcements section
-- [ ] Dark mode support
-- [ ] Biometric authentication (fingerprint/face unlock)
-- [ ] Share QR code (screenshot/share intent)
-- [ ] Receive notifications for:
-  - [ ] Penjemputan status changes
-  - [ ] Penarikan approval
-  - [ ] New announcements
-- [ ] Offline mode: cache last-load data (future)
-- [ ] iOS adaptation (separate task when iOS is prioritized)
+- [ ] Firebase Cloud Messaging
+- [ ] In-app announcements
+- [ ] Biometric unlock (optional)
+- [ ] iOS build & adaptation
+- [ ] Offline cache (future)
+
+---
+
+## Referensi Dokumentasi
+
+| Dokumen | Kegunaan |
+|---------|----------|
+| `04-api-integration.md` | Dio client & endpoints |
+| `10-integration-and-roles.md` | Alur nasabah & integrasi web admin |
+| `07-modules-and-features.md` | Wireframe halaman |
+| `05-business-rules-sops.md` | Validasi form |
+| `06-system-constraints.md` | Batasan (no GPS, no payment) |
+
+Repositori terkait: **miru-backend-api**, **miru-web-admin** (GitHub terpisah).
+
+---
+
+## Testing Checklist
+
+- [ ] Backend running: `python manage.py runserver 0.0.0.0:8000`
+- [ ] Seed: `python manage.py seed_data --flush`
+- [ ] Login: `nasabah001` / `nasabah123`
+- [ ] Test di Android Emulator (`10.0.2.2`)
+- [ ] Test registrasi akun baru
+- [ ] Verify envelope parsing (saldo, poin update setelah setoran petugas)

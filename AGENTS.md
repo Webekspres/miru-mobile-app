@@ -22,5 +22,8 @@ Only use Read/Grep/Glob directly when graphify has oriented you or `graphify-out
 ## Stack
 
 - Flutter (Dart SDK ^3.12.2) — Android prioritas
-- State: Provider/Riverpod · HTTP: Dio · Router: go_router
+- State: Provider · HTTP: Dio · Router: go_router
+- Backend API: repositori GitHub **miru-backend-api** — JWT + JSON Envelope
 - Steering docs: `.ai-steering/` (on-demand only)
+- Integrasi & role: `.ai-steering/10-integration-and-roles.md`
+- Kontrak API: **miru-backend-api** — `.ai-steering/04-api-contracts-and-standards.md`

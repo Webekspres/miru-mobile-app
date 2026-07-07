@@ -38,3 +38,12 @@
 - Semua teks UI dalam Bahasa Indonesia.
 - Format angka: Rp1.000,00 (Indonesia format).
 - Format tanggal: 3 Juli 2026.
+
+---
+
+## Referensi
+
+| Dokumen | Isi |
+|---------|-----|
+| `10-integration-and-roles.md` | Role mobile & alur integrasi |
+| **miru-backend-api** — `.ai-steering/06-system-constraints.md` | Batasan sistem lengkap |
