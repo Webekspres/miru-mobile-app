@@ -1,0 +1,291 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "label": "main.dart",
+      "file_type": "code",
+      "source_file": "lib/main.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_main",
+      "community": 0,
+      "norm_label": "main.dart"
+    },
+    {
+      "label": "MyApp",
+      "file_type": "code",
+      "source_file": "lib/main.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_main_myapp",
+      "community": 2,
+      "norm_label": "myapp"
+    },
+    {
+      "label": "StatelessWidget",
+      "file_type": "code",
+      "source_file": null,
+      "source_location": null,
+      "_origin": "ast",
+      "id": "statelesswidget",
+      "community": 2,
+      "norm_label": "statelesswidget"
+    },
+    {
+      "label": "MyHomePage",
+      "file_type": "code",
+      "source_file": "lib/main.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_main_myhomepage",
+      "community": 1,
+      "norm_label": "myhomepage"
+    },
+    {
+      "label": "StatefulWidget",
+      "file_type": "code",
+      "source_file": null,
+      "source_location": null,
+      "_origin": "ast",
+      "id": "statefulwidget",
+      "community": 1,
+      "norm_label": "statefulwidget"
+    },
+    {
+      "label": "_MyHomePageState",
+      "file_type": "code",
+      "source_file": "lib/main.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_main_myhomepagestate",
+      "community": 1,
+      "norm_label": "_myhomepagestate"
+    },
+    {
+      "label": "State",
+      "file_type": "code",
+      "source_file": null,
+      "source_location": null,
+      "_origin": "ast",
+      "id": "state",
+      "community": 1,
+      "norm_label": "state"
+    },
+    {
+      "label": "title",
+      "file_type": "code",
+      "source_file": "lib/main.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_main_title",
+      "community": 0,
+      "norm_label": "title"
+    },
+    {
+      "label": "_counter",
+      "file_type": "code",
+      "source_file": "lib/main.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_main_counter",
+      "community": 0,
+      "norm_label": "_counter"
+    },
+    {
+      "label": "main",
+      "file_type": "code",
+      "source_file": "lib/main.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_main_main",
+      "community": 0,
+      "norm_label": "main"
+    },
+    {
+      "label": "build",
+      "file_type": "code",
+      "source_file": "lib/main.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_main_build",
+      "community": 0,
+      "norm_label": "build"
+    },
+    {
+      "label": "createState",
+      "file_type": "code",
+      "source_file": "lib/main.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_main_createstate",
+      "community": 0,
+      "norm_label": "createstate"
+    },
+    {
+      "label": "_incrementCounter",
+      "file_type": "code",
+      "source_file": "lib/main.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_main_incrementcounter",
+      "community": 0,
+      "norm_label": "_incrementcounter"
+    },
+    {
+      "label": "package:flutter/material.dart",
+      "file_type": "code",
+      "source_file": null,
+      "source_location": null,
+      "_origin": "ast",
+      "id": "package_flutter_material_dart",
+      "community": 0,
+      "norm_label": "package:flutter/material.dart"
+    }
+  ],
+  "links": [
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/main.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_main",
+      "target": "lib_main_build"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/main.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_main",
+      "target": "lib_main_counter"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/main.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_main",
+      "target": "lib_main_createstate"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/main.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_main",
+      "target": "lib_main_incrementcounter"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/main.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_main",
+      "target": "lib_main_main"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/main.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_main",
+      "target": "lib_main_myapp"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/main.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_main",
+      "target": "lib_main_myhomepage"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/main.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_main",
+      "target": "lib_main_myhomepagestate"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/main.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_main",
+      "target": "lib_main_title"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/main.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_main",
+      "target": "package_flutter_material_dart"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/main.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_main_myapp",
+      "target": "statelesswidget"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/main.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_main_myhomepage",
+      "target": "statefulwidget"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/main.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_main_myhomepagestate",
+      "target": "lib_main_myhomepage"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/main.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_main_myhomepagestate",
+      "target": "state"
+    }
+  ],
+  "hyperedges": [],
+  "built_at_commit": "d07dc3df2fbe46ea6e006dfdbbc99c402c70ba4b"
+}

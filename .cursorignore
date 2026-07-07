@@ -1,0 +1,10 @@
+﻿# Token saver — exclude from AI context indexing
+graphify-out/cache/
+graphify-out/*.html
+.dart_tool/
+build/
+ios/Pods/
+android/.gradle/
+android/app/build/
+*.g.dart
+*.freezed.dart
