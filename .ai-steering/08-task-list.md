@@ -87,57 +87,57 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 > **Tujuan:** Arsitektur Provider + Dio + go_router siap.
 
 ### 1.1 Dependencies (`pubspec.yaml`)
-- [ ] `provider` — state management
-- [ ] `dio` — HTTP client
-- [ ] `go_router` — declarative routing
-- [ ] `flutter_secure_storage` — token storage
-- [ ] `qr_flutter` — QR code kartu digital
-- [ ] `intl` — format Rupiah & tanggal Indonesia
-- [ ] `cached_network_image` (opsional) — logo/avatar
-- [ ] Run `flutter pub get`
+- [x] `provider` — state management
+- [x] `dio` — HTTP client
+- [x] `go_router` — declarative routing
+- [x] `flutter_secure_storage` — token storage
+- [x] `qr_flutter` — QR code kartu digital
+- [x] `intl` — format Rupiah & tanggal Indonesia
+- [x] `cached_network_image` (opsional) — logo/avatar
+- [x] Run `flutter pub get`
 
 ### 1.2 Folder Structure
-- [ ] `lib/config/` — constants, theme, routes
-- [ ] `lib/models/` — data classes
-- [ ] `lib/services/` — api_client, auth_service, storage_service
-- [ ] `lib/providers/` — ChangeNotifier per domain
-- [ ] `lib/screens/` — UI per fitur
-- [ ] `lib/widgets/` — reusable widgets
-- [ ] `lib/app.dart` — MaterialApp + MultiProvider
-- [ ] Refactor `main.dart` → entry point minimal
+- [x] `lib/config/` — constants, theme, routes
+- [x] `lib/models/` — data classes
+- [x] `lib/services/` — api_client, auth_service, storage_service
+- [x] `lib/providers/` — ChangeNotifier per domain
+- [x] `lib/screens/` — UI per fitur
+- [x] `lib/widgets/` — reusable widgets
+- [x] `lib/app.dart` — MaterialApp + MultiProvider
+- [x] Refactor `main.dart` → entry point minimal
 
 ### 1.3 Config & Theme
-- [ ] `config/constants.dart` — `apiBaseUrl` (10.0.2.2 emulator, LAN IP device)
-- [ ] `config/theme.dart` — Material 3, primary `#16a34a`, typography
-- [ ] `config/routes.dart` — go_router routes + auth redirect
-- [ ] Environment notes di README (emulator vs device fisik)
+- [x] `config/constants.dart` — `apiBaseUrl` (10.0.2.2 emulator, LAN IP device)
+- [x] `config/theme.dart` — Material 3, primary `#16a34a`, typography
+- [x] `config/routes.dart` — go_router routes + auth redirect
+- [x] Environment notes di README (emulator vs device fisik)
 
 ### 1.4 API Client (Modul 2 — infrastruktur)
-- [ ] `services/api_client.dart` — Dio instance, timeouts
-- [ ] `EnvelopeInterceptor` — unwrap `data`, throw on `success: false`
-- [ ] `AuthInterceptor` — attach Bearer token
-- [ ] Refresh token on 401 → retry request
-- [ ] `services/auth_service.dart` — login, register, logout, getMe, token R/W
-- [ ] `services/storage_service.dart` — wrapper secure storage
-- [ ] `models/api_envelope.dart` — parse envelope (fallback jika no interceptor)
+- [x] `services/api_client.dart` — Dio instance, timeouts
+- [x] `EnvelopeInterceptor` — unwrap `data`, throw on `success: false`
+- [x] `AuthInterceptor` — attach Bearer token
+- [x] Refresh token on 401 → retry request
+- [x] `services/auth_service.dart` — login, register, logout, getMe, token R/W
+- [x] `services/storage_service.dart` — wrapper secure storage
+- [x] `models/api_envelope.dart` — parse envelope (fallback jika no interceptor)
 
 ### 1.5 Core Models
-- [ ] `models/user.dart` — fromJson, saldo as String → double helper
-- [ ] `models/waste_category.dart`
-- [ ] `models/deposit.dart` + `deposit_detail.dart`
-- [ ] `models/pickup.dart` — status enum + badge color
-- [ ] `models/withdrawal.dart`
-- [ ] `models/reward.dart`, `models/reward_redemption.dart`
-- [ ] `models/complaint.dart`
-- [ ] `models/activity_item.dart` — untuk riwayat gabungan *(backend Fase 3.5)*
+- [x] `models/user.dart` — fromJson, saldo as String → double helper
+- [x] `models/waste_category.dart`
+- [x] `models/deposit.dart` + `deposit_detail.dart`
+- [x] `models/pickup.dart` — status enum + badge color
+- [x] `models/withdrawal.dart`
+- [x] `models/reward.dart`, `models/reward_redemption.dart`
+- [x] `models/complaint.dart`
+- [x] `models/activity_item.dart` — untuk riwayat gabungan *(backend Fase 3.5)*
 
 ### 1.6 Shared Widgets
-- [ ] `widgets/loading_indicator.dart`
-- [ ] `widgets/error_view.dart` — message + retry
-- [ ] `widgets/empty_state.dart`
-- [ ] `widgets/saldo_card.dart` — prominent saldo display
-- [ ] `widgets/status_badge.dart` — penjemputan/pengaduan status
-- [ ] `widgets/app_scaffold.dart` — AppBar konsisten MIRU
+- [x] `widgets/loading_indicator.dart`
+- [x] `widgets/error_view.dart` — message + retry
+- [x] `widgets/empty_state.dart`
+- [x] `widgets/saldo_card.dart` — prominent saldo display
+- [x] `widgets/status_badge.dart` — penjemputan/pengaduan status
+- [x] `widgets/app_scaffold.dart` — AppBar konsisten MIRU
 
 ---
 

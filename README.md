@@ -38,16 +38,24 @@ flutter pub get
 
 ### 2. Konfigurasi API URL
 
-Edit `lib/config/constants.dart` (akan dibuat saat implementasi):
+`lib/config/constants.dart` mendefinisikan `apiBaseUrl` (termasuk prefix `/api`).
 
-| Environment | Base URL |
-|-------------|----------|
-| Android Emulator | `http://10.0.2.2:8000` |
-| iOS Simulator | `http://localhost:8000` |
-| Device fisik (LAN) | `http://<IP-komputer>:8000` |
-| Production | `https://api.mirubanksampah.id` (usulan) |
+| Environment | Base URL | Cara set |
+|-------------|----------|----------|
+| Android Emulator (default) | `http://10.0.2.2:8000/api` | Tidak perlu konfigurasi tambahan |
+| iOS Simulator | `http://localhost:8000/api` | `--dart-define=API_BASE_URL=http://localhost:8000/api` |
+| Device fisik (LAN) | `http://<IP-komputer>:8000/api` | `--dart-define=API_BASE_URL=http://192.168.x.x:8000/api` |
+| Production | `https://api.mirubanksampah.id/api` (usulan) | `--dart-define` saat build release |
 
-> Gunakan IP LAN jika mengetes di HP fisik. Pastikan backend `ALLOWED_HOSTS` dan CORS mengizinkan origin tersebut.
+**Emulator Android** — `10.0.2.2` adalah alias ke localhost mesin host. Jalankan backend dengan `runserver 0.0.0.0:8000`.
+
+**Device fisik** — HP dan komputer harus satu jaringan Wi-Fi/LAN. Cari IP komputer (`ipconfig` di Windows, `ip a` di Linux). Contoh run:
+
+```bash
+flutter run --dart-define=API_BASE_URL=http://192.168.1.100:8000/api
+```
+
+Pastikan backend `ALLOWED_HOSTS` dan CORS mengizinkan origin tersebut.
 
 ### 3. Jalankan Backend & Seed Data
 
