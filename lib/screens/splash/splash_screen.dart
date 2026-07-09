@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../../config/constants.dart';
 import '../../config/theme.dart';
-import '../../providers/auth_provider.dart';
+import '../../services/storage_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -20,12 +21,14 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _checkAuth() async {
-    final auth = context.read<AuthProvider>();
-    final isLoggedIn = await auth.checkAuthStatus();
+    // Cek token lokal dulu — tanpa API call, langsung navigasi
+    final storage = context.read<StorageService>();
+    final token = await storage.read(AppConstants.accessTokenKey);
 
     if (!mounted) return;
 
-    if (isLoggedIn) {
+    if (token != null && token.isNotEmpty) {
+      // Token exists locally — go straight to home, let HomeScreen fetch data
       context.go('/home');
     } else {
       context.go('/login');

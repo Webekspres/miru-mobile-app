@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -27,6 +28,71 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadData();
   }
 
+  Future<bool> _onWillPop() async {
+    final theme = Theme.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFEF2F2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.exit_to_app_rounded,
+                  color: Color(0xFFDC2626),
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Text(
+                'Keluar Aplikasi',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+              ),
+            ],
+          ),
+          content: Text(
+            'Apakah Anda yakin ingin keluar dari aplikasi MIRU?',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+              height: 1.5,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              style: TextButton.styleFrom(
+                foregroundColor: theme.colorScheme.onSurfaceVariant,
+              ),
+              child: const Text('Batal'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(ctx).pop(true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFDC2626),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text('Ya, Keluar'),
+            ),
+          ],
+        );
+      },
+    );
+
+    return confirmed ?? false;
+  }
+
   void _loadData() {
     final homeProvider = context.read<HomeProvider>();
     if (!homeProvider.isLoading && homeProvider.user == null) {
@@ -36,67 +102,65 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Consumer<HomeProvider>(
-        builder: (context, home, _) {
-          if (home.isLoading && home.user == null) {
-            return const LoadingIndicator(message: 'Memuat data...');
-          }
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        final shouldPop = await _onWillPop();
+        if (shouldPop && context.mounted) {
+          SystemNavigator.pop();
+        }
+      },
+      child: Scaffold(
+        body: Consumer<HomeProvider>(
+          builder: (context, home, _) {
+            if (home.isLoading && home.user == null) {
+              return const LoadingIndicator(message: 'Memuat data...');
+            }
 
-          if (home.hasError && home.user == null) {
-            return ErrorView(
-              title: 'Gagal memuat data',
-              message: home.error!,
-              onRetry: () => home.loadData(),
-            );
-          }
+            if (home.hasError && home.user == null) {
+              return ErrorView(
+                title: 'Gagal memuat data',
+                message: home.error!,
+                onRetry: () => home.loadData(),
+              );
+            }
 
-          return RefreshIndicator(
-            onRefresh: home.refresh,
-            color: AppTheme.primaryColor,
-            child: CustomScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              slivers: [
-                _buildAppBar(context, home),
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                  sliver: SliverList(
-                    delegate: SliverChildListDelegate([
-                      const SizedBox(height: 16),
-                      // ── Saldo Card ──
-                      _buildSaldoSection(context, home),
-                      const SizedBox(height: 20),
-                      // ── Service Hours Banner ──
-                      _buildServiceHoursBanner(context),
-                      const SizedBox(height: 20),
-                      // ── Quick Actions ──
-                      _buildQuickActions(context),
-                      const SizedBox(height: 24),
-                      // ── Info Harga Sampah ──
-                      _buildPriceInfoSection(context, home),
-                      const SizedBox(height: 24),
-                      // ── Aktivitas Terbaru ──
-                      _buildRecentActivity(context, home),
-                      const SizedBox(height: 24),
-                    ]),
+            return RefreshIndicator(
+              onRefresh: home.refresh,
+              color: AppTheme.primaryColor,
+              child: CustomScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: [
+                  _buildAppBar(context, home),
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                    sliver: SliverList(
+                      delegate: SliverChildListDelegate([
+                        const SizedBox(height: 16),
+                        _buildSaldoSection(context, home),
+                        const SizedBox(height: 20),
+                        _buildServiceHoursBanner(context),
+                        const SizedBox(height: 20),
+                        _buildQuickActions(context),
+                        const SizedBox(height: 24),
+                        _buildPriceInfoSection(context, home),
+                        const SizedBox(height: 24),
+                        _buildRecentActivity(context, home),
+                        const SizedBox(height: 24),
+                      ]),
+                    ),
                   ),
-                ),
-              ],
-            ),
-          );
-        },
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }
 
-  // ─────────────────────────────────────────────
-  // AppBar
-  // ─────────────────────────────────────────────
-
-  Widget _buildAppBar(
-    BuildContext context,
-    HomeProvider home,
-  ) {
+  Widget _buildAppBar(BuildContext context, HomeProvider home) {
     return SliverAppBar(
       floating: true,
       pinned: false,
@@ -109,21 +173,16 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       centerTitle: false,
       actions: [
-        // Notification / placeholder
         IconButton(
           icon: const Icon(Icons.notifications_outlined),
           tooltip: 'Pengumuman',
           onPressed: () => context.push('/settings/pengumuman'),
         ),
-        // Profile icon
         CircleAvatar(
           radius: 16,
           backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.15),
           child: Text(
-            (home.namaLengkap.isNotEmpty
-                    ? home.namaLengkap[0]
-                    : 'U')
-                .toUpperCase(),
+            (home.namaLengkap.isNotEmpty ? home.namaLengkap[0] : 'U').toUpperCase(),
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
                   color: AppTheme.primaryColor,
                   fontWeight: FontWeight.w700,
@@ -135,10 +194,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // ─────────────────────────────────────────────
-  // Saldo Section
-  // ─────────────────────────────────────────────
-
   Widget _buildSaldoSection(BuildContext context, HomeProvider home) {
     return SaldoCard(
       saldo: home.saldo,
@@ -147,26 +202,19 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // ─────────────────────────────────────────────
-  // Service Hours Banner
-  // ─────────────────────────────────────────────
-
   Widget _buildServiceHoursBanner(BuildContext context) {
     final theme = Theme.of(context);
     final now = DateTime.now();
-    final dayOfWeek = now.weekday; // 1=Monday ... 7=Sunday
+    final dayOfWeek = now.weekday;
     final hour = now.hour;
     final minute = now.minute;
     final currentMinutes = hour * 60 + minute;
 
-    // Operating hours: Monday-Saturday 08:00-17:00 WIT
-    const openMinutes = 8 * 60; // 08:00
-    const closeMinutes = 17 * 60; // 17:00
+    const openMinutes = 8 * 60;
+    const closeMinutes = 17 * 60;
 
     final bool isSunday = dayOfWeek == DateTime.sunday;
-    final bool isOpen = !isSunday &&
-        currentMinutes >= openMinutes &&
-        currentMinutes < closeMinutes;
+    final bool isOpen = !isSunday && currentMinutes >= openMinutes && currentMinutes < closeMinutes;
 
     final String message;
     final IconData icon;
@@ -213,10 +261,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
-  // ─────────────────────────────────────────────
-  // Quick Actions
-  // ─────────────────────────────────────────────
 
   Widget _buildQuickActions(BuildContext context) {
     final actions = [
@@ -295,23 +339,16 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: action.bgColor,
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Icon(
-                          action.icon,
-                          color: action.color,
-                          size: 22,
-                        ),
+                        child: Icon(action.icon, color: action.color, size: 22),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         action.label,
                         textAlign: TextAlign.center,
-                        style:
-                            Theme.of(context).textTheme.labelSmall?.copyWith(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurfaceVariant,
-                                  height: 1.3,
-                                ),
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              height: 1.3,
+                            ),
                       ),
                     ],
                   ),
@@ -323,10 +360,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ],
     );
   }
-
-  // ─────────────────────────────────────────────
-  // Price Info Section
-  // ─────────────────────────────────────────────
 
   Widget _buildPriceInfoSection(BuildContext context, HomeProvider home) {
     final theme = Theme.of(context);
@@ -360,16 +393,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         const SizedBox(height: 8),
-        ...categories.map(
-          (cat) => _PriceInfoItem(category: cat),
-        ),
+        ...categories.map((cat) => _PriceInfoItem(category: cat)),
       ],
     );
   }
-
-  // ─────────────────────────────────────────────
-  // Recent Activity
-  // ─────────────────────────────────────────────
 
   Widget _buildRecentActivity(BuildContext context, HomeProvider home) {
     final theme = Theme.of(context);
@@ -404,7 +431,6 @@ class _HomeScreenState extends State<HomeScreen> {
         else
           ...deposits.map((deposit) => _ActivityItemWidget(deposit: deposit)),
         const SizedBox(height: 8),
-        // Quick navigate buttons row
         Row(
           children: [
             Expanded(
@@ -464,10 +490,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// ─────────────────────────────────────────────
-// Quick Action Data
-// ─────────────────────────────────────────────
-
 class _QuickAction {
   const _QuickAction({
     required this.icon,
@@ -483,10 +505,6 @@ class _QuickAction {
   final Color bgColor;
   final String route;
 }
-
-// ─────────────────────────────────────────────
-// Price Info Item
-// ─────────────────────────────────────────────
 
 class _PriceInfoItem extends StatelessWidget {
   const _PriceInfoItem({required this.category});
@@ -542,10 +560,6 @@ class _PriceInfoItem extends StatelessWidget {
     );
   }
 }
-
-// ─────────────────────────────────────────────
-// Activity Item
-// ─────────────────────────────────────────────
 
 class _ActivityItemWidget extends StatelessWidget {
   const _ActivityItemWidget({required this.deposit});
