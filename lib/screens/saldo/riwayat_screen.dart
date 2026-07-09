@@ -4,10 +4,12 @@ import 'package:provider/provider.dart';
 
 import '../../config/theme.dart';
 import '../../models/activity_item.dart';
+import '../../providers/auth_session.dart';
 import '../../providers/home_provider.dart';
 import '../../providers/saldo_provider.dart';
 import '../../widgets/error_view.dart';
-import '../../widgets/loading_indicator.dart';
+import '../../widgets/login_prompt.dart';
+import '../../widgets/shimmer_loading.dart';
 
 class RiwayatScreen extends StatefulWidget {
   const RiwayatScreen({super.key});
@@ -60,6 +62,18 @@ class _RiwayatScreenState extends State<RiwayatScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isLoggedIn = context.watch<AuthSession>().isLoggedIn;
+
+    if (!isLoggedIn) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Riwayat')),
+        body: const LoginPrompt(
+          title: 'Riwayat Transaksi',
+          message: 'Masuk untuk melihat riwayat setoran, penarikan, dan penukaran poin Anda.',
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Riwayat'),
@@ -75,7 +89,11 @@ class _RiwayatScreenState extends State<RiwayatScreen>
       body: Consumer<SaldoProvider>(
         builder: (context, saldo, _) {
           if (saldo.isLoading && saldo.items.isEmpty) {
-            return const LoadingIndicator(message: 'Memuat riwayat...');
+            return const SingleChildScrollView(
+              physics: NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.fromLTRB(0, 60, 0, 24),
+              child: ListSkeleton(itemCount: 6),
+            );
           }
 
           if (saldo.hasError && saldo.items.isEmpty) {

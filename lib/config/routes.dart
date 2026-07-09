@@ -22,12 +22,6 @@ import '../screens/settings/settings_screen.dart';
 import '../screens/settings/tentang_screen.dart';
 import '../widgets/bottom_nav_scaffold.dart';
 
-const _publicRoutes = <String>{
-  '/splash',
-  '/login',
-  '/register',
-};
-
 GoRouter createAppRouter(AuthSession authSession) {
   return GoRouter(
     initialLocation: '/splash',
@@ -36,14 +30,7 @@ GoRouter createAppRouter(AuthSession authSession) {
       final location = state.matchedLocation;
       final isLoggedIn = authSession.isLoggedIn;
 
-      if (location == '/splash') {
-        return null;
-      }
-
-      if (!isLoggedIn && !_publicRoutes.contains(location)) {
-        return '/login';
-      }
-
+      // Hanya redirect jika sudah login mencoba akses login/register
       if (isLoggedIn && (location == '/login' || location == '/register')) {
         return '/home';
       }

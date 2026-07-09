@@ -4,8 +4,10 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../config/theme.dart';
+import '../../providers/auth_session.dart';
 import '../../providers/home_provider.dart';
 import '../../providers/saldo_provider.dart';
+import '../../widgets/login_prompt.dart';
 
 class TarikSaldoScreen extends StatefulWidget {
   const TarikSaldoScreen({super.key});
@@ -261,6 +263,18 @@ class _TarikSaldoScreenState extends State<TarikSaldoScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isLoggedIn = context.watch<AuthSession>().isLoggedIn;
+
+    if (!isLoggedIn) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Tarik Saldo')),
+        body: const LoginPrompt(
+          title: 'Tarik Saldo',
+          message: 'Masuk untuk mengajukan penarikan saldo Anda.',
+        ),
+      );
+    }
+
     final formatter = NumberFormat.currency(
       locale: 'id_ID',
       symbol: 'Rp',

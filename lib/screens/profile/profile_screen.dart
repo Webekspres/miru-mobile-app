@@ -5,10 +5,12 @@ import 'package:provider/provider.dart';
 
 import '../../config/theme.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/auth_session.dart';
 import '../../providers/profile_provider.dart';
 import '../../widgets/exit_dialog.dart';
 import '../../widgets/error_view.dart';
-import '../../widgets/loading_indicator.dart';
+import '../../widgets/login_prompt.dart';
+import '../../widgets/shimmer_loading.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -86,6 +88,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isLoggedIn = context.watch<AuthSession>().isLoggedIn;
+
+    if (!isLoggedIn) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Profil Saya')),
+        body: const LoginPrompt(
+          title: 'Profil Nasabah',
+          message: 'Masuk untuk melihat dan mengedit profil Anda, QR kartu digital, serta informasi akun.',
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profil Saya'),
@@ -121,7 +135,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: Consumer<ProfileProvider>(
         builder: (context, profile, _) {
           if (profile.isLoading && profile.user == null) {
-            return const LoadingIndicator(message: 'Memuat profil...');
+            return const SingleChildScrollView(
+              physics: NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  SizedBox(height: 40),
+                  SkeletonCircle(size: 80),
+                  SizedBox(height: 12),
+                  SkeletonBlock(height: 20, width: 160),
+                  SizedBox(height: 24),
+                  SkeletonCard(height: 64),
+                  SizedBox(height: 24),
+                  SkeletonBlock(height: 14, width: 80),
+                  SizedBox(height: 12),
+                  SkeletonCard(height: 200),
+                  SizedBox(height: 24),
+                  SkeletonBlock(height: 14, width: 80),
+                  SizedBox(height: 12),
+                  SkeletonCard(height: 100),
+                  SizedBox(height: 24),
+                  SkeletonBlock(height: 14, width: 80),
+                  SizedBox(height: 12),
+                  SkeletonCard(height: 100),
+                ],
+              ),
+            );
           }
 
           if (profile.hasError && profile.user == null) {

@@ -5,9 +5,11 @@ import 'package:provider/provider.dart';
 
 import '../../config/theme.dart';
 import '../../models/waste_category.dart';
+import '../../providers/auth_session.dart';
 import '../../providers/home_provider.dart';
 import '../../providers/penjemputan_provider.dart';
-import '../../widgets/loading_indicator.dart';
+import '../../widgets/login_prompt.dart';
+import '../../widgets/shimmer_loading.dart';
 
 class AjukanPenjemputanScreen extends StatefulWidget {
   const AjukanPenjemputanScreen({super.key});
@@ -170,6 +172,17 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final dateFormat = DateFormat('d MMMM yyyy', 'id_ID');
+    final isLoggedIn = context.watch<AuthSession>().isLoggedIn;
+
+    if (!isLoggedIn) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Ajukan Penjemputan')),
+        body: const LoginPrompt(
+          title: 'Ajukan Penjemputan',
+          message: 'Masuk untuk mengajukan penjemputan sampah ke alamat Anda.',
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -178,7 +191,11 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
       body: Consumer2<HomeProvider, PenjemputanProvider>(
         builder: (context, home, penjemputan, _) {
           if (_isLoadingCategories && home.categories.isEmpty) {
-            return const LoadingIndicator(message: 'Memuat data sampah...');
+            return const SingleChildScrollView(
+              physics: NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.fromLTRB(16, 60, 16, 24),
+              child: ListSkeleton(itemCount: 4),
+            );
           }
 
           final categories = home.categories;

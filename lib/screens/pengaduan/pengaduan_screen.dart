@@ -5,11 +5,13 @@ import 'package:provider/provider.dart';
 
 import '../../config/theme.dart';
 import '../../models/complaint.dart';
+import '../../providers/auth_session.dart';
 import '../../providers/home_provider.dart';
 import '../../providers/pengaduan_provider.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/error_view.dart';
-import '../../widgets/loading_indicator.dart';
+import '../../widgets/login_prompt.dart';
+import '../../widgets/shimmer_loading.dart';
 import '../../widgets/status_badge.dart';
 
 class PengaduanScreen extends StatefulWidget {
@@ -52,6 +54,17 @@ class _PengaduanScreenState extends State<PengaduanScreen>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isLoggedIn = context.watch<AuthSession>().isLoggedIn;
+
+    if (!isLoggedIn) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Pengaduan')),
+        body: const LoginPrompt(
+          title: 'Pengaduan',
+          message: 'Masuk untuk melihat dan mengajukan pengaduan Anda.',
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -77,7 +90,11 @@ class _PengaduanScreenState extends State<PengaduanScreen>
       body: Consumer<PengaduanProvider>(
         builder: (context, pengaduan, _) {
           if (pengaduan.isLoading && pengaduan.complaints.isEmpty) {
-            return const LoadingIndicator(message: 'Memuat pengaduan...');
+            return const SingleChildScrollView(
+              physics: NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.fromLTRB(0, 16, 0, 24),
+              child: ListSkeleton(itemCount: 4),
+            );
           }
 
           if (pengaduan.hasError && pengaduan.complaints.isEmpty) {

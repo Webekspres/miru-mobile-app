@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../config/theme.dart';
 import '../../models/announcement.dart';
 import '../../providers/pengumuman_provider.dart';
+import '../../widgets/shimmer_loading.dart';
 
 class PengumumanScreen extends StatefulWidget {
   const PengumumanScreen({super.key});
@@ -33,7 +34,19 @@ class _PengumumanScreenState extends State<PengumumanScreen> {
       body: Consumer<PengumumanProvider>(
         builder: (context, provider, _) {
           if (provider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return SingleChildScrollView(
+              physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+              child: const Column(
+                children: [
+                  SkeletonCard(height: 100),
+                  SizedBox(height: 12),
+                  SkeletonCard(height: 100),
+                  SizedBox(height: 12),
+                  SkeletonCard(height: 100),
+                ],
+              ),
+            );
           }
 
           if (provider.hasError) {
@@ -139,10 +152,6 @@ class _PengumumanScreenState extends State<PengumumanScreen> {
   }
 }
 
-// ─────────────────────────────────────────────
-// Announcement Card
-// ─────────────────────────────────────────────
-
 class _AnnouncementCard extends StatelessWidget {
   const _AnnouncementCard({required this.item, required this.onTap});
 
@@ -233,10 +242,6 @@ class _AnnouncementCard extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────
-// Detail Screen
-// ─────────────────────────────────────────────
-
 class _PengumumanDetailScreen extends StatelessWidget {
   const _PengumumanDetailScreen({required this.item});
 
@@ -256,7 +261,6 @@ class _PengumumanDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Header Icon ──
             Center(
               child: Container(
                 width: 64,
@@ -273,8 +277,6 @@ class _PengumumanDetailScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-
-            // ── Judul ──
             Text(
               item.judul,
               style: theme.textTheme.headlineSmall?.copyWith(
@@ -282,8 +284,6 @@ class _PengumumanDetailScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-
-            // ── Tanggal ──
             Row(
               children: [
                 Icon(
@@ -301,8 +301,6 @@ class _PengumumanDetailScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 20),
-
-            // ── Isi ──
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),

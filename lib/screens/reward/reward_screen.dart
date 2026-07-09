@@ -4,11 +4,13 @@ import 'package:provider/provider.dart';
 
 import '../../config/theme.dart';
 import '../../models/reward.dart';
+import '../../providers/auth_session.dart';
 import '../../providers/home_provider.dart';
 import '../../providers/reward_provider.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/error_view.dart';
-import '../../widgets/loading_indicator.dart';
+import '../../widgets/login_prompt.dart';
+import '../../widgets/shimmer_loading.dart';
 
 class RewardScreen extends StatefulWidget {
   const RewardScreen({super.key});
@@ -34,6 +36,17 @@ class _RewardScreenState extends State<RewardScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isLoggedIn = context.watch<AuthSession>().isLoggedIn;
+
+    if (!isLoggedIn) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Tukar Poin')),
+        body: const LoginPrompt(
+          title: 'Tukar Poin',
+          message: 'Masuk untuk menukarkan poin Anda dengan berbagai reward menarik.',
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -42,7 +55,22 @@ class _RewardScreenState extends State<RewardScreen> {
       body: Consumer2<HomeProvider, RewardProvider>(
         builder: (context, home, reward, _) {
           if (reward.isLoading && reward.rewards.isEmpty) {
-            return const LoadingIndicator(message: 'Memuat katalog reward...');
+            return SingleChildScrollView(
+              physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(16),
+              child: const Column(
+                children: [
+                  SkeletonCard(height: 100),
+                  SizedBox(height: 16),
+                  SkeletonBlock(height: 14, width: 120),
+                  SizedBox(height: 12),
+                  _RewardSkeletonItem(),
+                  _RewardSkeletonItem(),
+                  _RewardSkeletonItem(),
+                  _RewardSkeletonItem(),
+                ],
+              ),
+            );
           }
 
           if (reward.hasError && reward.rewards.isEmpty) {
@@ -204,6 +232,18 @@ class _PoinHeaderCard extends StatelessWidget {
 // ─────────────────────────────────────────────
 // Reward Card
 // ─────────────────────────────────────────────
+
+class _RewardSkeletonItem extends StatelessWidget {
+  const _RewardSkeletonItem();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.only(bottom: 12),
+      child: SkeletonCard(height: 120),
+    );
+  }
+}
 
 class _RewardCard extends StatelessWidget {
   const _RewardCard({
