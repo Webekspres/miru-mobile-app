@@ -11,7 +11,6 @@ import '../../providers/auth_session.dart';
 import '../../providers/home_provider.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/error_view.dart';
-import '../../widgets/login_prompt.dart';
 import '../../widgets/saldo_card.dart';
 import '../../widgets/shimmer_loading.dart';
 
@@ -51,6 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
             floating: true,
             pinned: false,
             snap: true,
+            titleSpacing: 16,
             title: Text(
               AppConstants.appName,
               style: theme.textTheme.titleLarge?.copyWith(
@@ -64,6 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 tooltip: 'Pengumuman',
                 onPressed: () => context.push('/settings/pengumuman'),
               ),
+              const SizedBox(width: 4),
               CircleAvatar(
                 radius: 16,
                 backgroundColor: theme.colorScheme.outlineVariant,
@@ -73,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
-              const SizedBox(width: 4),
+              const SizedBox(width: 12),
             ],
           ),
 
@@ -461,6 +462,7 @@ class _HomeScreenState extends State<HomeScreen> {
       floating: true,
       pinned: false,
       snap: true,
+      titleSpacing: 16,
       title: Text(
         AppConstants.appName,
         style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -474,6 +476,7 @@ class _HomeScreenState extends State<HomeScreen> {
           tooltip: 'Pengumuman',
           onPressed: () => context.push('/settings/pengumuman'),
         ),
+        const SizedBox(width: 4),
         CircleAvatar(
           radius: 16,
           backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.15),
@@ -485,7 +488,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
           ),
         ),
-        const SizedBox(width: 4),
+        const SizedBox(width: 12),
       ],
     );
   }

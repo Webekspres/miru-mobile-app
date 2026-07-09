@@ -147,4 +147,17 @@ class PengaduanProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  // ──────────────────────────────────────────────
+  // Clear cache (panggil saat logout)
+  // ──────────────────────────────────────────────
+
+  void clearCache() {
+    _complaints = [];
+    _error = null;
+    _submitError = null;
+    _isLoading = false;
+    _isSubmitting = false;
+    notifyListeners();
+  }
 }

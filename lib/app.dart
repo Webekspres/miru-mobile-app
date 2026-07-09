@@ -71,6 +71,28 @@ class _MiruAppState extends State<MiruApp> {
     _settingsProvider = SettingsProvider(apiClient: _apiClient);
     _router = createAppRouter(_authSession);
     _authSession.refresh();
+
+    // Hapus semua cache provider saat logout
+    _authSession.addListener(_onAuthChanged);
+  }
+
+  @override
+  void dispose() {
+    _authSession.removeListener(_onAuthChanged);
+    super.dispose();
+  }
+
+  void _onAuthChanged() {
+    if (!_authSession.isLoggedIn) {
+      _homeProvider.clearCache();
+      _saldoProvider.clearCache();
+      _profileProvider.clearCache();
+      _penjemputanProvider.clearCache();
+      _pengaduanProvider.clearCache();
+      _rewardProvider.clearCache();
+      _pengumumanProvider.clearCache();
+      _settingsProvider.clearCache();
+    }
   }
 
   @override

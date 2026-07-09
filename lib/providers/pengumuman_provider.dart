@@ -73,4 +73,15 @@ class PengumumanProvider extends ChangeNotifier {
 
     notifyListeners();
   }
+
+  // ──────────────────────────────────────────────
+  // Clear cache (panggil saat logout)
+  // ──────────────────────────────────────────────
+
+  void clearCache() {
+    _announcements = [];
+    _error = null;
+    _isLoading = false;
+    notifyListeners();
+  }
 }

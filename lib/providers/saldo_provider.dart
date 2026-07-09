@@ -258,4 +258,19 @@ class SaldoProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  // ──────────────────────────────────────────────
+  // Clear cache (panggil saat logout)
+  // ──────────────────────────────────────────────
+
+  void clearCache() {
+    _items = [];
+    _error = null;
+    _submitError = null;
+    _activeFilter = null;
+    _currentUserId = 0;
+    _isLoading = false;
+    _isSubmitting = false;
+    notifyListeners();
+  }
 }

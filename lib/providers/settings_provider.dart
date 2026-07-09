@@ -60,4 +60,15 @@ class SettingsProvider extends ChangeNotifier {
     _settings = null;
     await loadSettings();
   }
+
+  // ──────────────────────────────────────────────
+  // Clear cache (panggil saat logout)
+  // ──────────────────────────────────────────────
+
+  void clearCache() {
+    _settings = null;
+    _error = null;
+    _isLoading = false;
+    notifyListeners();
+  }
 }

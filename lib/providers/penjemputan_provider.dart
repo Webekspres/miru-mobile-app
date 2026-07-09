@@ -136,4 +136,17 @@ class PenjemputanProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  // ──────────────────────────────────────────────
+  // Clear cache (panggil saat logout)
+  // ──────────────────────────────────────────────
+
+  void clearCache() {
+    _pickups = [];
+    _error = null;
+    _currentUserId = 0;
+    _isLoading = false;
+    _isSubmitting = false;
+    notifyListeners();
+  }
 }

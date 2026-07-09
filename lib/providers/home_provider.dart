@@ -132,4 +132,18 @@ class HomeProvider extends ChangeNotifier {
       }
     }
   }
+
+  // ──────────────────────────────────────────────
+  // Clear cache (panggil saat logout)
+  // ──────────────────────────────────────────────
+
+  void clearCache() {
+    _user = null;
+    _categories = [];
+    _recentDeposits = [];
+    _error = null;
+    _isLoading = false;
+    _isRefreshing = false;
+    notifyListeners();
+  }
 }
