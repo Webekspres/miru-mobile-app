@@ -54,7 +54,7 @@ class _RiwayatScreenState extends State<RiwayatScreen>
     final saldo = context.read<SaldoProvider>();
     final home = context.read<HomeProvider>();
     final userId = home.user?.id;
-    if (userId != null && saldo.items.isEmpty && !saldo.isLoading) {
+    if (userId != null && !saldo.isLoading) {
       saldo.loadActivity(userId: userId);
     }
   }
@@ -95,7 +95,8 @@ class _RiwayatScreenState extends State<RiwayatScreen>
                   child: const EmptyState(
                     icon: Icons.receipt_long_outlined,
                     title: 'Belum ada transaksi',
-                    description: 'Setoran, penarikan, dan penukaran poin akan muncul di sini.',
+                    description:
+                        'Setoran, penarikan, dan penukaran poin akan muncul di sini.',
                     expand: false,
                   ),
                 ),
@@ -423,7 +424,9 @@ class _ActivityCard extends StatelessWidget {
                     '${item.isCredit ? '+' : '-'}${formatter.format(item.nominalAsDouble)}',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: item.isCredit ? AppTheme.primaryColor : const Color(0xFFDC2626),
+                      color: item.isCredit
+                          ? AppTheme.primaryColor
+                          : const Color(0xFFDC2626),
                     ),
                   )
                 else if (item.poin != null)
@@ -438,7 +441,8 @@ class _ActivityCard extends StatelessWidget {
                 Icon(
                   Icons.chevron_right_rounded,
                   size: 18,
-                  color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                  color: theme.colorScheme.onSurfaceVariant
+                      .withValues(alpha: 0.4),
                 ),
               ],
             ),

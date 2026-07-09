@@ -31,12 +31,10 @@ class SettingsProvider extends ChangeNotifier {
   bool get hasError => _error != null;
 
   // ──────────────────────────────────────────────
-  // Load Settings
+  // Load Settings — selalu fetch fresh dari server
   // ──────────────────────────────────────────────
 
   Future<void> loadSettings() async {
-    if (_settings != null && !_isLoading) return;
-
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -57,22 +55,9 @@ class SettingsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Force-refresh: hapus cache lalu fetch ulang.
   Future<void> refresh() async {
-    _error = null;
-    notifyListeners();
-
-    try {
-      final data = await _apiClient.get<Map<String, dynamic>>(
-        '/settings/',
-        fromJson: (json) => Map<String, dynamic>.from(json as Map),
-      );
-      _settings = InstitutionSettings.fromJson(data);
-    } on DioException catch (e) {
-      _error = parseDioError(e);
-    } catch (e) {
-      _error = 'Terjadi kesalahan. Silakan coba lagi.';
-    }
-
-    notifyListeners();
+    _settings = null;
+    await loadSettings();
   }
 }
