@@ -2,7 +2,7 @@
 
 > **Sumber:** Dokumen jawaban klien (2 Juli 2026), SOP Aplikasi MIRU Bank Sampah
 >
-> **Referensi data lengkap:** Lihat `miru-backend-api/.ai-steering/09-data-dictionary.md`
+> **Referensi data lengkap:** repositori **miru-backend-api** — `.ai-steering/09-data-dictionary.md`
 
 ---
 

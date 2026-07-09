@@ -1,6 +1,6 @@
 # 05 — Business Rules & SOPs (Mobile)
 
-> **Referensi lengkap**: Lihat `miru-backend-api/.ai-steering/05-business-rules-sops.md`
+> **Referensi lengkap**: repositori **miru-backend-api** — `.ai-steering/05-business-rules-sops.md`
 > **Data referensi**: Lihat `09-data-dictionary.md` untuk harga sampah, reward, status badge, format tampilan.
 
 ## Ringkasan Aturan untuk UI Mobile
