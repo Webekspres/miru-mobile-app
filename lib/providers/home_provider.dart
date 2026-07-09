@@ -114,22 +114,17 @@ class HomeProvider extends ChangeNotifier {
 
   Future<void> _fetchRecentDeposits() async {
     try {
-      final depositData = await _apiClient.get<Map<String, dynamic>>(
+      final data = await _apiClient.get<List<dynamic>>(
         '/deposits/',
         queryParameters: {
           'nasabah': _user!.id.toString(),
           'page_size': '3',
           'ordering': '-tanggal',
         },
-        fromJson: (json) => Map<String, dynamic>.from(json as Map),
+        fromJson: (json) => json as List<dynamic>,
       );
 
-      final results = depositData['results'];
-      if (results is List) {
-        _recentDeposits = Deposit.listFromJson(results);
-      } else {
-        _recentDeposits = [];
-      }
+      _recentDeposits = Deposit.listFromJson(data);
     } catch (_) {
       // Deposits fetch is non-critical; keep previous data or empty
       if (_recentDeposits.isEmpty) {
