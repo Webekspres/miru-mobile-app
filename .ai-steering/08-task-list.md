@@ -24,7 +24,7 @@
 | 2 | Auth Flow | Login, register, JWT, splash | Backend Fase 1 ✅ | 🔲 |
 | 3 | MVP Screens | Home, profil, jemput, saldo, reward, pengaduan | Backend Fase 2–3 | ✅ Selesai |
 | 4 | Navigation & UX | Bottom nav, polish, error states | Backend Fase 2–3 | ✅ Selesai |
-| 5 | Settings & Info | Pengumuman, kebijakan, jam layanan | Backend Fase 5 | 🔲 |
+| 5 | Settings & Info | Pengumuman, kebijakan, jam layanan | Backend Fase 5 | ✅ Selesai |
 | 6 | Kualitas & Testing | Widget test, integration, UAT | Backend Fase 6 | 🔲 |
 | 7 | Production Android | APK/AAB, Play Store prep | Backend Fase 7 | 🔲 |
 | 8 | Post-MVP | FCM, iOS, offline cache | Backend Fase 8 | 🔲 |
@@ -307,19 +307,19 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 > **Tujuan:** Info institusi & pengumuman di app.
 
 ### 5.1 SettingsScreen
-- [ ] Menu: Profil, Pengumuman, Kebijakan Data, Tentang, Logout
-- [ ] `GET /api/settings/` — nama institusi, kontak, jam operasional
-- [ ] Link ke ProfileScreen, QRCodeScreen
+- [x] Menu: Profil, Pengumuman, Kebijakan Data, Tentang, Logout
+- [ ] `GET /api/settings/` — nama institusi, kontak, jam operasional *(tunggu backend Fase 5.6)*
+- [x] Link ke ProfileScreen (via settings icon di AppBar)
 
 ### 5.2 Pengumuman
-- [ ] `screens/settings/pengumuman_screen.dart`
-- [ ] `GET /api/pengumuman/` — list aktif
-- [ ] Card: judul, tanggal, isi singkat
-- [ ] Detail pengumuman
+- [x] `screens/settings/pengumuman_screen.dart` — list + detail screen
+- [ ] `GET /api/pengumuman/` — menunggu backend Fase 5.6
+- [x] Card: judul, tanggal, isi singkat
+- [x] Detail pengumuman
 
 ### 5.3 Kebijakan Data
-- [ ] Static page kebijakan data pribadi (UU PDP)
-- [ ] Tampilkan saat registrasi + link di settings
+- [x] Static page kebijakan data pribadi (UU PDP) — `kebijakan_data_screen.dart`
+- [x] Tampilkan saat registrasi *(checkbox sudah ada)* + link di settings
 
 ---
 

@@ -16,6 +16,10 @@ import '../screens/setoran/ajukan_penjemputan_screen.dart';
 import '../screens/setoran/info_sampah_screen.dart';
 import '../screens/setoran/penjemputan_screen.dart';
 import '../screens/splash/splash_screen.dart';
+import '../screens/settings/kebijakan_data_screen.dart';
+import '../screens/settings/pengumuman_screen.dart';
+import '../screens/settings/settings_screen.dart';
+import '../screens/settings/tentang_screen.dart';
 import '../widgets/bottom_nav_scaffold.dart';
 
 const _publicRoutes = <String>{
@@ -148,6 +152,25 @@ GoRouter createAppRouter(AuthSession authSession) {
         ],
       ),
 
+      // ── Settings & Info Routes (standalone, no bottom nav) ──
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const SettingsScreen(),
+        routes: [
+          GoRoute(
+            path: 'pengumuman',
+            builder: (context, state) => const PengumumanScreen(),
+          ),
+          GoRoute(
+            path: 'kebijakan-data',
+            builder: (context, state) => const KebijakanDataScreen(),
+          ),
+          GoRoute(
+            path: 'tentang',
+            builder: (context, state) => const TentangScreen(),
+          ),
+        ],
+      ),
     ],
   );
 }

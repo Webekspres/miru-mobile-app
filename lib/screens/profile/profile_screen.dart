@@ -89,6 +89,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         title: const Text('Profil Saya'),
         actions: [
+          // Settings button
+          IconButton(
+            icon: const Icon(Icons.settings_outlined),
+            tooltip: 'Pengaturan',
+            onPressed: () => context.push('/settings'),
+          ),
           Consumer<ProfileProvider>(
             builder: (context, profile, _) {
               if (profile.user == null) return const SizedBox.shrink();

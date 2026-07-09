@@ -113,9 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
         IconButton(
           icon: const Icon(Icons.notifications_outlined),
           tooltip: 'Pengumuman',
-          onPressed: () {
-            // Navigate to pengumuman (Fase 5)
-          },
+          onPressed: () => context.push('/settings/pengumuman'),
         ),
         // Profile icon
         CircleAvatar(
