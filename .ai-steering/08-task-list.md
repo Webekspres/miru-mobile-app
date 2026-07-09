@@ -308,12 +308,12 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 
 ### 5.1 SettingsScreen
 - [x] Menu: Profil, Pengumuman, Kebijakan Data, Tentang, Logout
-- [ ] `GET /api/settings/` — nama institusi, kontak, jam operasional *(tunggu backend Fase 5.6)*
+- [x] `GET /api/settings/` — nama institusi, kontak, jam operasional
 - [x] Link ke ProfileScreen (via settings icon di AppBar)
 
 ### 5.2 Pengumuman
 - [x] `screens/settings/pengumuman_screen.dart` — list + detail screen
-- [ ] `GET /api/pengumuman/` — menunggu backend Fase 5.6
+- [x] `GET /api/pengumuman/`
 - [x] Card: judul, tanggal, isi singkat
 - [x] Detail pengumuman
 
