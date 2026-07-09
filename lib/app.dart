@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'config/constants.dart';
 import 'config/routes.dart';
 import 'config/theme.dart';
+import 'providers/auth_provider.dart';
 import 'providers/auth_session.dart';
 import 'services/api_client.dart';
 import 'services/auth_service.dart';
@@ -20,6 +21,7 @@ class MiruApp extends StatefulWidget {
 class _MiruAppState extends State<MiruApp> {
   late final StorageService _storageService;
   late final AuthSession _authSession;
+  late final AuthProvider _authProvider;
   late final ApiClient _apiClient;
   late final AuthService _authService;
   late final GoRouter _router;
@@ -38,6 +40,11 @@ class _MiruAppState extends State<MiruApp> {
       storageService: _storageService,
       authSession: _authSession,
     );
+    _authProvider = AuthProvider(
+      authService: _authService,
+      storageService: _storageService,
+      authSession: _authSession,
+    );
     _router = createAppRouter(_authSession);
     _authSession.refresh();
   }
@@ -48,6 +55,7 @@ class _MiruAppState extends State<MiruApp> {
       providers: [
         Provider.value(value: _storageService),
         ChangeNotifierProvider.value(value: _authSession),
+        ChangeNotifierProvider.value(value: _authProvider),
         Provider.value(value: _apiClient),
         Provider.value(value: _authService),
       ],

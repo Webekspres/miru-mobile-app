@@ -147,38 +147,38 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 > **Tujuan:** Nasabah bisa daftar & login; staff ditolak.
 
 ### 2.1 AuthProvider
-- [ ] `providers/auth_provider.dart` — user, isLoggedIn, isLoading, error
-- [ ] `login(username, password)` → guard `role == nasabah`
-- [ ] `register(data)` → `POST /api/users/` + auto login
-- [ ] `logout()` — clear storage, navigate login
-- [ ] `checkAuthStatus()` — splash auto-login
-- [ ] Reject non-nasabah: "Akun petugas/admin hanya untuk Web Admin MIRU"
+- [x] `providers/auth_provider.dart` — user, isLoggedIn, isLoading, error
+- [x] `login(username, password)` → guard `role == nasabah`
+- [x] `register(data)` → `POST /api/users/` + auto login
+- [x] `logout()` — clear storage, navigate login
+- [x] `checkAuthStatus()` — splash auto-login
+- [x] Reject non-nasabah: "Akun petugas/admin hanya untuk Web Admin MIRU"
 
 ### 2.2 SplashScreen
-- [ ] Logo MIRU + loading
-- [ ] Cek token → `GET /api/auth/me/` → `/home` atau `/login`
-- [ ] Handle expired token gracefully
+- [x] Logo MIRU + loading
+- [x] Cek token → `GET /api/auth/me/` → `/home` atau `/login`
+- [x] Handle expired token gracefully
 
 ### 2.3 LoginScreen
-- [ ] Form username + password
-- [ ] Validasi: field tidak kosong
-- [ ] `POST /api/auth/login/`
-- [ ] Error SnackBar dari envelope `message`
-- [ ] Link ke RegisterScreen
-- [ ] Loading disable button
+- [x] Form username + password
+- [x] Validasi: field tidak kosong
+- [x] `POST /api/auth/login/`
+- [x] Error SnackBar dari envelope `message`
+- [x] Link ke RegisterScreen
+- [x] Loading disable button
 
 ### 2.4 RegisterScreen
-- [ ] Field: nama_lengkap, username, password, no_hp, alamat
-- [ ] NIK opsional
-- [ ] Checkbox `setuju_kebijakan_data` — required *(backend Fase 5.5)*
-- [ ] Validasi password min 6 karakter
-- [ ] `POST /api/users/` → success → login → Home
-- [ ] Tampilkan error field-level dari `envelope.errors`
+- [x] Field: nama_lengkap, username, password, no_hp, alamat
+- [x] NIK opsional
+- [x] Checkbox `setuju_kebijakan_data` — required *(backend Fase 5.5)*
+- [x] Validasi password min 6 karakter
+- [x] `POST /api/users/` → success → login → Home
+- [x] Tampilkan error field-level dari `envelope.errors`
 
 ### 2.5 Auth Routing
-- [ ] go_router redirect: unauthenticated → `/login`
-- [ ] Deep link guard — no access without token
-- [ ] Back button behavior dari auth screens
+- [x] go_router redirect: unauthenticated → `/login`
+- [x] Deep link guard — no access without token
+- [x] Back button behavior dari auth screens
 
 ---
 
