@@ -6,7 +6,6 @@ import '../../config/theme.dart';
 import '../../models/activity_item.dart';
 import '../../providers/home_provider.dart';
 import '../../providers/saldo_provider.dart';
-import '../../widgets/empty_state.dart';
 import '../../widgets/error_view.dart';
 import '../../widgets/loading_indicator.dart';
 
@@ -88,19 +87,48 @@ class _RiwayatScreenState extends State<RiwayatScreen>
           }
 
           if (saldo.items.isEmpty) {
-            return ListView(
-              children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.5,
-                  child: const EmptyState(
-                    icon: Icons.receipt_long_outlined,
-                    title: 'Belum ada transaksi',
-                    description:
+            final emptyTheme = Theme.of(context);
+            return Center(
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 72,
+                        height: 72,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF3F4F6),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.receipt_long_outlined,
+                          size: 36,
+                          color: Color(0xFF9CA3AF),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'Belum ada transaksi',
+                        style: emptyTheme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
                         'Setoran, penarikan, dan penukaran poin akan muncul di sini.',
-                    expand: false,
+                        style: emptyTheme.textTheme.bodyMedium?.copyWith(
+                          color: emptyTheme.colorScheme.onSurfaceVariant,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
                 ),
-              ],
+              ),
             );
           }
 

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -28,71 +27,6 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadData();
   }
 
-  Future<bool> _onWillPop() async {
-    final theme = Theme.of(context);
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFEF2F2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                  Icons.exit_to_app_rounded,
-                  color: Color(0xFFDC2626),
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 12),
-              const Text(
-                'Keluar Aplikasi',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-              ),
-            ],
-          ),
-          content: Text(
-            'Apakah Anda yakin ingin keluar dari aplikasi MIRU?',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-              height: 1.5,
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(false),
-              style: TextButton.styleFrom(
-                foregroundColor: theme.colorScheme.onSurfaceVariant,
-              ),
-              child: const Text('Batal'),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.of(ctx).pop(true),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFDC2626),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: const Text('Ya, Keluar'),
-            ),
-          ],
-        );
-      },
-    );
-
-    return confirmed ?? false;
-  }
-
   void _loadData() {
     final homeProvider = context.read<HomeProvider>();
     if (!homeProvider.isLoading && homeProvider.user == null) {
@@ -102,60 +36,50 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) async {
-        if (didPop) return;
-        final shouldPop = await _onWillPop();
-        if (shouldPop && context.mounted) {
-          SystemNavigator.pop();
-        }
-      },
-      child: Scaffold(
-        body: Consumer<HomeProvider>(
-          builder: (context, home, _) {
-            if (home.isLoading && home.user == null) {
-              return const LoadingIndicator(message: 'Memuat data...');
-            }
+    return Scaffold(
+      body: Consumer<HomeProvider>(
+        builder: (context, home, _) {
+          if (home.isLoading && home.user == null) {
+            return const LoadingIndicator(message: 'Memuat data...');
+          }
 
-            if (home.hasError && home.user == null) {
-              return ErrorView(
-                title: 'Gagal memuat data',
-                message: home.error!,
-                onRetry: () => home.loadData(),
-              );
-            }
-
-            return RefreshIndicator(
-              onRefresh: home.refresh,
-              color: AppTheme.primaryColor,
-              child: CustomScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                slivers: [
-                  _buildAppBar(context, home),
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                    sliver: SliverList(
-                      delegate: SliverChildListDelegate([
-                        const SizedBox(height: 16),
-                        _buildSaldoSection(context, home),
-                        const SizedBox(height: 20),
-                        _buildServiceHoursBanner(context),
-                        const SizedBox(height: 20),
-                        _buildQuickActions(context),
-                        const SizedBox(height: 24),
-                        _buildPriceInfoSection(context, home),
-                        const SizedBox(height: 24),
-                        _buildRecentActivity(context, home),
-                        const SizedBox(height: 24),
-                      ]),
-                    ),
-                  ),
-                ],
-              ),
+          if (home.hasError && home.user == null) {
+            return ErrorView(
+              title: 'Gagal memuat data',
+              message: home.error!,
+              onRetry: () => home.loadData(),
             );
-          },
-        ),
+          }
+
+          return RefreshIndicator(
+            onRefresh: home.refresh,
+            color: AppTheme.primaryColor,
+            child: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                _buildAppBar(context, home),
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate([
+                      const SizedBox(height: 16),
+                      _buildSaldoSection(context, home),
+                      const SizedBox(height: 20),
+                      _buildServiceHoursBanner(context),
+                      const SizedBox(height: 20),
+                      _buildQuickActions(context),
+                      const SizedBox(height: 24),
+                      _buildPriceInfoSection(context, home),
+                      const SizedBox(height: 24),
+                      _buildRecentActivity(context, home),
+                      const SizedBox(height: 24),
+                    ]),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
