@@ -1,0 +1,149 @@
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+
+import '../models/api_exception.dart';
+import '../models/user.dart';
+import '../services/api_client.dart';
+
+/// Provider for Profile screen (Fase 3.2).
+///
+/// Handles:
+/// - Fetching user profile from `/api/auth/me/`
+/// - Updating profile via `PATCH /api/users/{id}/`
+class ProfileProvider extends ChangeNotifier {
+  ProfileProvider({required this._apiClient});
+
+  final ApiClient _apiClient;
+
+  // ──────────────────────────────────────────────
+  // State
+  // ──────────────────────────────────────────────
+
+  User? _user;
+  bool _isLoading = false;
+  bool _isSaving = false;
+  String? _error;
+  bool _isEditMode = false;
+
+  // ──────────────────────────────────────────────
+  // Getters
+  // ──────────────────────────────────────────────
+
+  User? get user => _user;
+  bool get isLoading => _isLoading;
+  bool get isSaving => _isSaving;
+  String? get error => _error;
+  bool get hasError => _error != null;
+  bool get isEditMode => _isEditMode;
+  bool get isLoggedIn => _user != null;
+
+  // ──────────────────────────────────────────────
+  // Edit mode
+  // ──────────────────────────────────────────────
+
+  void toggleEditMode() {
+    _isEditMode = !_isEditMode;
+    _error = null;
+    notifyListeners();
+  }
+
+  void enableEditMode() {
+    if (!_isEditMode) {
+      _isEditMode = true;
+      _error = null;
+      notifyListeners();
+    }
+  }
+
+  void disableEditMode() {
+    if (_isEditMode) {
+      _isEditMode = false;
+      _error = null;
+      notifyListeners();
+    }
+  }
+
+  // ──────────────────────────────────────────────
+  // Fetch Profile
+  // ──────────────────────────────────────────────
+
+  Future<void> loadProfile() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final userData = await _apiClient.get<Map<String, dynamic>>(
+        '/auth/me/',
+        fromJson: (json) => Map<String, dynamic>.from(json as Map),
+      );
+      _user = User.fromJson(userData);
+    } on DioException catch (e) {
+      _error = parseDioError(e);
+    } catch (_) {
+      _error = 'Terjadi kesalahan. Silakan coba lagi.';
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // ──────────────────────────────────────────────
+  // Update Profile
+  // ──────────────────────────────────────────────
+
+  /// Updates profile fields: nama_lengkap, no_hp, alamat.
+  ///
+  /// Other fields like saldo, poin, role are NOT sent to the API.
+  /// Returns `true` on success, `false` on error.
+  Future<bool> updateProfile({
+    required String namaLengkap,
+    required String noHp,
+    required String alamat,
+  }) async {
+    if (_user == null) return false;
+
+    _isSaving = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final updatedData = await _apiClient.patch<Map<String, dynamic>>(
+        '/users/${_user!.id}/',
+        data: {
+          'nama_lengkap': namaLengkap,
+          'no_hp': noHp,
+          'alamat': alamat,
+        },
+        fromJson: (json) => Map<String, dynamic>.from(json as Map),
+      );
+
+      _user = User.fromJson(updatedData);
+      _isEditMode = false;
+      _isSaving = false;
+      notifyListeners();
+      return true;
+    } on DioException catch (e) {
+      _error = parseDioError(e);
+      _isSaving = false;
+      notifyListeners();
+      return false;
+    } catch (_) {
+      _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      _isSaving = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  // ──────────────────────────────────────────────
+  // Clear error
+  // ──────────────────────────────────────────────
+
+  void clearError() {
+    if (_error != null) {
+      _error = null;
+      notifyListeners();
+    }
+  }
+}

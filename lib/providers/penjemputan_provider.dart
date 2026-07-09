@@ -1,0 +1,144 @@
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+
+import '../models/api_exception.dart';
+import '../models/pickup.dart';
+import '../services/api_client.dart';
+
+/// Provider for Penjemputan (Fase 3.4).
+///
+/// Handles:
+/// - Fetching pickups from `/api/pickups/?nasabah={id}`
+/// - Creating new pickups via `POST /api/pickups/`
+class PenjemputanProvider extends ChangeNotifier {
+  PenjemputanProvider({required this._apiClient});
+
+  final ApiClient _apiClient;
+
+  // ──────────────────────────────────────────────
+  // State
+  // ──────────────────────────────────────────────
+
+  List<Pickup> _pickups = [];
+  bool _isLoading = false;
+  bool _isSubmitting = false;
+  String? _error;
+  int _currentUserId = 0;
+
+  // ──────────────────────────────────────────────
+  // Getters
+  // ──────────────────────────────────────────────
+
+  List<Pickup> get pickups => _pickups;
+
+  /// Active pickups (menunggu, disetujui, dijadwalkan, dalam_perjalanan, dijemput).
+  List<Pickup> get activePickups =>
+      _pickups.where((p) => p.status.isActive).toList();
+
+  /// Historical pickups (selesai, ditolak).
+  List<Pickup> get historyPickups =>
+      _pickups.where((p) => !p.status.isActive).toList();
+
+  bool get isLoading => _isLoading;
+  bool get isSubmitting => _isSubmitting;
+  String? get error => _error;
+  bool get hasError => _error != null;
+
+  // ──────────────────────────────────────────────
+  // Load Pickups
+  // ──────────────────────────────────────────────
+
+  Future<void> loadPickups({required int userId}) async {
+    _currentUserId = userId;
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final data = await _apiClient.get<Map<String, dynamic>>(
+        '/pickups/',
+        queryParameters: {
+          'nasabah': userId.toString(),
+          'ordering': '-jadwal',
+        },
+        fromJson: (json) => Map<String, dynamic>.from(json as Map),
+      );
+
+      final results = data['results'];
+      if (results is List) {
+        _pickups = Pickup.listFromJson(results);
+      } else {
+        _pickups = [];
+      }
+    } on DioException catch (e) {
+      _error = parseDioError(e);
+    } catch (_) {
+      _error = 'Terjadi kesalahan. Silakan coba lagi.';
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Pull-to-refresh.
+  Future<void> refresh() async {
+    if (_currentUserId == 0) return;
+    await loadPickups(userId: _currentUserId);
+  }
+
+  // ──────────────────────────────────────────────
+  // Create Pickup
+  // ──────────────────────────────────────────────
+
+  /// Creates a new pickup request.
+  ///
+  /// Returns the created [Pickup] on success, `null` on error.
+  Future<Pickup?> createPickup({
+    required double estimasiBerat,
+    required String alamatJemput,
+    required DateTime jadwal,
+  }) async {
+    _isSubmitting = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final data = await _apiClient.post<Map<String, dynamic>>(
+        '/pickups/',
+        data: {
+          'estimasi_berat': estimasiBerat,
+          'alamat_jemput': alamatJemput,
+          'jadwal': jadwal.toIso8601String(),
+        },
+        fromJson: (json) => Map<String, dynamic>.from(json as Map),
+      );
+
+      final pickup = Pickup.fromJson(data);
+      _pickups.insert(0, pickup);
+      _isSubmitting = false;
+      notifyListeners();
+      return pickup;
+    } on DioException catch (e) {
+      _error = parseDioError(e);
+      _isSubmitting = false;
+      notifyListeners();
+      return null;
+    } catch (_) {
+      _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      _isSubmitting = false;
+      notifyListeners();
+      return null;
+    }
+  }
+
+  // ──────────────────────────────────────────────
+  // Clear error
+  // ──────────────────────────────────────────────
+
+  void clearError() {
+    if (_error != null) {
+      _error = null;
+      notifyListeners();
+    }
+  }
+}

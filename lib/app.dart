@@ -7,6 +7,12 @@ import 'config/routes.dart';
 import 'config/theme.dart';
 import 'providers/auth_provider.dart';
 import 'providers/auth_session.dart';
+import 'providers/home_provider.dart';
+import 'providers/pengaduan_provider.dart';
+import 'providers/penjemputan_provider.dart';
+import 'providers/profile_provider.dart';
+import 'providers/reward_provider.dart';
+import 'providers/saldo_provider.dart';
 import 'services/api_client.dart';
 import 'services/auth_service.dart';
 import 'services/storage_service.dart';
@@ -22,6 +28,12 @@ class _MiruAppState extends State<MiruApp> {
   late final StorageService _storageService;
   late final AuthSession _authSession;
   late final AuthProvider _authProvider;
+  late final HomeProvider _homeProvider;
+  late final PengaduanProvider _pengaduanProvider;
+  late final PenjemputanProvider _penjemputanProvider;
+  late final ProfileProvider _profileProvider;
+  late final RewardProvider _rewardProvider;
+  late final SaldoProvider _saldoProvider;
   late final ApiClient _apiClient;
   late final AuthService _authService;
   late final GoRouter _router;
@@ -45,6 +57,12 @@ class _MiruAppState extends State<MiruApp> {
       storageService: _storageService,
       authSession: _authSession,
     );
+    _homeProvider = HomeProvider(apiClient: _apiClient);
+    _pengaduanProvider = PengaduanProvider(apiClient: _apiClient);
+    _penjemputanProvider = PenjemputanProvider(apiClient: _apiClient);
+    _profileProvider = ProfileProvider(apiClient: _apiClient);
+    _rewardProvider = RewardProvider(apiClient: _apiClient);
+    _saldoProvider = SaldoProvider(apiClient: _apiClient);
     _router = createAppRouter(_authSession);
     _authSession.refresh();
   }
@@ -56,6 +74,12 @@ class _MiruAppState extends State<MiruApp> {
         Provider.value(value: _storageService),
         ChangeNotifierProvider.value(value: _authSession),
         ChangeNotifierProvider.value(value: _authProvider),
+        ChangeNotifierProvider.value(value: _homeProvider),
+        ChangeNotifierProvider.value(value: _pengaduanProvider),
+        ChangeNotifierProvider.value(value: _penjemputanProvider),
+        ChangeNotifierProvider.value(value: _profileProvider),
+        ChangeNotifierProvider.value(value: _rewardProvider),
+        ChangeNotifierProvider.value(value: _saldoProvider),
         Provider.value(value: _apiClient),
         Provider.value(value: _authService),
       ],

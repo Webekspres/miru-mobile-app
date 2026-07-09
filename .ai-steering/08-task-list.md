@@ -22,8 +22,8 @@
 | 0 | Scaffold | Flutter project default | — | ✅ Selesai |
 | 1 | Foundation | Dependencies, API client, models | Backend Fase 1 ✅ | 🔲 Berikutnya |
 | 2 | Auth Flow | Login, register, JWT, splash | Backend Fase 1 ✅ | 🔲 |
-| 3 | MVP Screens | Home, profil, jemput, saldo, reward, pengaduan | Backend Fase 2–3 | 🔲 |
-| 4 | Navigation & UX | Bottom nav, polish, error states | Backend Fase 2–3 | 🔲 |
+| 3 | MVP Screens | Home, profil, jemput, saldo, reward, pengaduan | Backend Fase 2–3 | ✅ Selesai |
+| 4 | Navigation & UX | Bottom nav, polish, error states | Backend Fase 2–3 | ✅ Selesai |
 | 5 | Settings & Info | Pengumuman, kebijakan, jam layanan | Backend Fase 5 | 🔲 |
 | 6 | Kualitas & Testing | Widget test, integration, UAT | Backend Fase 6 | 🔲 |
 | 7 | Production Android | APK/AAB, Play Store prep | Backend Fase 7 | 🔲 |
@@ -188,89 +188,89 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 > **Tujuan:** Semua fitur nasabah MVP berfungsi end-to-end.
 
 ### 3.1 HomeScreen / Dashboard (Modul 15, 5, 9)
-- [ ] `providers/home_provider.dart`
-- [ ] `GET /api/auth/me/` — saldo, poin
-- [ ] `GET /api/waste-categories/` — 3–4 kategori top untuk info harga
-- [ ] `GET /api/activity/?limit=3` atau aggregate deposits *(backend Fase 3.5)*
-- [ ] UI: Saldo card (besar), poin, quick actions grid
-- [ ] Quick actions: [Jemput] [Tarik] [Tukar] [Info Sampah]
-- [ ] Aktivitas terbaru list (3 item)
-- [ ] Pull-to-refresh
-- [ ] Banner jam layanan Sen–Sab 08–17 WIT jika di luar jam
+- [x] `providers/home_provider.dart`
+- [x] `GET /api/auth/me/` — saldo, poin
+- [x] `GET /api/waste-categories/` — 3–4 kategori top untuk info harga
+- [x] `GET /api/activity/?limit=3` atau aggregate deposits *(backend Fase 3.5)*
+- [x] UI: Saldo card (besar), poin, quick actions grid
+- [x] Quick actions: [Jemput] [Tarik] [Tukar] [Info Sampah]
+- [x] Aktivitas terbaru list (3 item)
+- [x] Pull-to-refresh
+- [x] Banner jam layanan Sen–Sab 08–17 WIT jika di luar jam
 
 ### 3.2 Profil & Kartu Digital (Modul 3)
-- [ ] `screens/profile/profile_screen.dart` — lihat data diri
-- [ ] `GET /api/auth/me/`
-- [ ] Form edit: nama, no_hp, alamat — `PATCH /api/users/{id}/`
-- [ ] Validasi: tidak bisa ubah saldo/poin/role
-- [ ] `screens/profile/qr_code_screen.dart`
-- [ ] QR encode JSON: `{ id, nama_lengkap, no_hp }` — **bukan JWT**
-- [ ] Tombol share/s screenshot QR *(post-MVP)*
+- [x] `screens/profile/profile_screen.dart` — lihat data diri
+- [x] `GET /api/auth/me/`
+- [x] Form edit: nama, no_hp, alamat — `PATCH /api/users/{id}/`
+- [x] Validasi: tidak bisa ubah saldo/poin/role
+- [x] `screens/profile/qrcode_screen.dart`
+- [x] QR encode JSON: `{ id, nama_lengkap, no_hp }` — **bukan JWT**
+- [x] Tombol share/screenshot QR *(post-MVP)*
 
 ### 3.3 Info Sampah (Modul 4, 5)
-- [ ] `screens/info/info_sampah_screen.dart`
-- [ ] `GET /api/waste-categories/` — public, no auth required
-- [ ] List: nama, harga/kg, contoh sampah
-- [ ] Detail bottom sheet: panduan pemilahan singkat
-- [ ] Catatan: minimal setoran 1 kg per jenis
+- [x] `screens/info/info_sampah_screen.dart`
+- [x] `GET /api/waste-categories/` — public, no auth required
+- [x] List: nama, harga/kg, contoh sampah
+- [x] Detail bottom sheet: panduan pemilahan singkat
+- [x] Catatan: minimal setoran 1 kg per jenis
 
 ### 3.4 Penjemputan (Modul 7)
-- [ ] `providers/penjemputan_provider.dart`
-- [ ] `screens/penjemputan/penjemputan_screen.dart` — tabs Aktif | Riwayat
-- [ ] `GET /api/pickups/?nasabah={id}`
-- [ ] Status badge warna (`05-business-rules-sops.md`)
-- [ ] FAB / button [+ Ajukan]
-- [ ] `screens/penjemputan/ajukan_penjemputan_screen.dart`
-- [ ] Multi-select jenis sampah (dari kategori)
-- [ ] Input estimasi berat — validasi min **5 kg** total
-- [ ] Alamat penjemputan (prefill dari profil)
-- [ ] Date picker jadwal — min **H+1**
-- [ ] `POST /api/pickups/`
-- [ ] Konfirmasi success → kembali ke list
-- [ ] Pull-to-refresh status
+- [x] `providers/penjemputan_provider.dart`
+- [x] `screens/penjemputan/penjemputan_screen.dart` — tabs Aktif | Riwayat
+- [x] `GET /api/pickups/?nasabah={id}`
+- [x] Status badge warna (`05-business-rules-sops.md`)
+- [x] FAB / button [+ Ajukan]
+- [x] `screens/penjemputan/ajukan_penjemputan_screen.dart`
+- [x] Multi-select jenis sampah (dari kategori)
+- [x] Input estimasi berat — validasi min **5 kg** total
+- [x] Alamat penjemputan (prefill dari profil)
+- [x] Date picker jadwal — min **H+1**
+- [x] `POST /api/pickups/`
+- [x] Konfirmasi success → kembali ke list
+- [x] Pull-to-refresh status
 
 ### 3.5 Riwayat Transaksi (Modul 9)
-- [ ] `providers/saldo_provider.dart`
-- [ ] `screens/riwayat/riwayat_screen.dart` — tabs: Semua | Setoran | Penarikan | Poin
-- [ ] `GET /api/deposits/?nasabah={id}`
-- [ ] `GET /api/withdrawals/?nasabah={id}`
-- [ ] `GET /api/reward-redemptions/?nasabah={id}`
-- [ ] Atau `GET /api/activity/` unified *(backend Fase 3.5)*
-- [ ] Item: tanggal, jenis, nominal, status
-- [ ] Detail tap → bottom sheet
-- [ ] Pull-to-refresh
+- [x] `providers/saldo_provider.dart`
+- [x] `screens/riwayat/riwayat_screen.dart` — tabs: Semua | Setoran | Penarikan | Poin
+- [x] `GET /api/deposits/?nasabah={id}`
+- [x] `GET /api/withdrawals/?nasabah={id}`
+- [x] `GET /api/reward-redemptions/?nasabah={id}`
+- [x] Atau `GET /api/activity/` unified *(backend Fase 3.5)*
+- [x] Item: tanggal, jenis, nominal, status
+- [x] Detail tap → bottom sheet
+- [x] Pull-to-refresh
 
 ### 3.6 Tarik Saldo (Modul 10)
-- [ ] `screens/saldo/tarik_saldo_screen.dart`
-- [ ] Tampilkan saldo saat ini dari auth/me
-- [ ] Input nominal — validasi min **Rp50.000**
-- [ ] Validasi client: nominal <= saldo
-- [ ] Pilih metode (tunai — default)
-- [ ] Dialog konfirmasi
-- [ ] `POST /api/withdrawals/`
-- [ ] Info SLA: proses 1–2 hari kerja, **tanpa payment gateway**
-- [ ] Success → riwayat penarikan
+- [x] `screens/saldo/tarik_saldo_screen.dart`
+- [x] Tampilkan saldo saat ini dari auth/me
+- [x] Input nominal — validasi min **Rp50.000**
+- [x] Validasi client: nominal <= saldo
+- [x] Pilih metode (tunai — default)
+- [x] Dialog konfirmasi
+- [x] `POST /api/withdrawals/`
+- [x] Info SLA: proses 1–2 hari kerja, **tanpa payment gateway**
+- [x] Success → riwayat penarikan
 
 ### 3.7 Reward & Tukar Poin (Modul 11)
-- [ ] `providers/reward_provider.dart`
-- [ ] `screens/reward/reward_screen.dart` — list katalog
-- [ ] `GET /api/rewards/`
-- [ ] Tampilkan poin user, poin_dibutuhkan, stok
-- [ ] Disable [Tukar] jika poin tidak cukup atau stok 0
-- [ ] `screens/reward/tukar_poin_screen.dart` — konfirmasi
-- [ ] `POST /api/reward-redemptions/`
-- [ ] Status menunggu → admin approve di **miru-web-admin**
-- [ ] Riwayat penukaran di tab Riwayat
+- [x] `providers/reward_provider.dart`
+- [x] `screens/reward/reward_screen.dart` — list katalog
+- [x] `GET /api/rewards/`
+- [x] Tampilkan poin user, poin_dibutuhkan, stok
+- [x] Disable [Tukar] jika poin tidak cukup atau stok 0
+- [x] `screens/reward/tukar_poin_screen.dart` — konfirmasi
+- [x] `POST /api/reward-redemptions/`
+- [x] Status menunggu → admin approve di **miru-web-admin**
+- [x] Riwayat penukaran di tab Riwayat
 
 ### 3.8 Pengaduan (Modul 14)
-- [ ] `providers/pengaduan_provider.dart`
-- [ ] `screens/pengaduan/pengaduan_screen.dart` — tabs Terbuka | Selesai
-- [ ] `GET /api/complaints/?nasabah={id}`
-- [ ] `screens/pengaduan/pengaduan_form_screen.dart`
-- [ ] Field keluhan (multiline), jenis pengaduan *(backend Fase 2.7)*
-- [ ] `POST /api/complaints/`
-- [ ] Detail: tindak lanjut admin (read-only)
-- [ ] Badge status terbuka/ditutup
+- [x] `providers/pengaduan_provider.dart`
+- [x] `screens/pengaduan/pengaduan_screen.dart` — tabs Terbuka | Selesai
+- [x] `GET /api/complaints/?nasabah={id}`
+- [x] `screens/pengaduan/pengaduan_form_screen.dart`
+- [x] Field keluhan (multiline), jenis pengaduan *(backend Fase 2.7)*
+- [x] `POST /api/complaints/`
+- [x] Detail: tindak lanjut admin (read-only)
+- [x] Badge status terbuka/ditutup
 
 ---
 
@@ -279,25 +279,25 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 > **Tujuan:** App terasa native, intuitif untuk masyarakat Mimika.
 
 ### 4.1 Navigation
-- [ ] Bottom navigation bar: Home | Riwayat | Profil
-- [ ] go_router nested navigation
-- [ ] Back stack behavior konsisten
-- [ ] Deep links internal (home → tarik saldo → back)
+- [x] Bottom navigation bar: Home | Riwayat | Profil
+- [x] go_router nested navigation (`StatefulShellRoute`)
+- [x] Back stack behavior konsisten
+- [x] Deep links internal (home → tarik saldo → back)
 
 ### 4.2 UX Polish
-- [ ] Loading state semua screen async
-- [ ] Error SnackBar Bahasa Indonesia (parse Dio error)
-- [ ] Empty state ilustrasi sederhana per screen
-- [ ] Confirmation dialog: tarik saldo, tukar poin, logout
-- [ ] Network error: "Tidak dapat terhubung ke server"
-- [ ] Pull-to-refresh semua list screens
-- [ ] Format angka Rupiah konsisten (`intl`)
-- [ ] Format tanggal Indonesia
+- [x] Loading state semua screen async — `LoadingIndicator` di semua screen
+- [x] Error SnackBar Bahasa Indonesia — `parseDioError()` dengan pesan Indonesia
+- [x] Empty state ilustrasi sederhana per screen — `EmptyState` di semua screen list
+- [x] Confirmation dialog: tarik saldo, tukar poin, logout — logout via ProfileScreen
+- [x] Network error: "Tidak dapat terhubung ke server" — di `parseDioError()`
+- [x] Pull-to-refresh semua list screens — `RefreshIndicator` di 7 screen
+- [x] Format angka Rupiah konsisten (`intl`) — `NumberFormat.currency(locale: 'id_ID')`
+- [x] Format tanggal Indonesia — `DateFormat` + `initializeDateFormatting('id_ID')`
 
 ### 4.3 Performance
-- [ ] `const` widgets where possible
-- [ ] `ListView.builder` untuk list panjang
-- [ ] Avoid unnecessary provider rebuilds (`Consumer` scoped)
+- [x] `const` widgets where possible — sudah diterapkan di seluruh screen
+- [x] `ListView.builder` untuk list panjang — di riwayat, penjemputan, pengaduan, reward; InfoSampahScreen di-refactor ke `SliverChildBuilderDelegate`
+- [x] Avoid unnecessary provider rebuilds (`Consumer` scoped) — pattern `Consumer`/`Consumer2` sudah sesuai
 
 ---
 
