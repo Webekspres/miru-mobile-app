@@ -144,10 +144,11 @@ class _PengaduanScreenState extends State<PengaduanScreen>
     required String isEmptyDetail,
   }) {
     if (complaints.isEmpty) {
-      return ListView(
-        children: [
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.5,
+      return Center(
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 48),
             child: EmptyState(
               icon: Icons.report_outlined,
               title: isEmptyMessage,
@@ -155,7 +156,7 @@ class _PengaduanScreenState extends State<PengaduanScreen>
               expand: false,
             ),
           ),
-        ],
+        ),
       );
     }
 

@@ -8,6 +8,7 @@ import 'config/theme.dart';
 import 'providers/auth_provider.dart';
 import 'providers/auth_session.dart';
 import 'providers/home_provider.dart';
+import 'providers/notification_provider.dart';
 import 'providers/pengaduan_provider.dart';
 import 'providers/pengumuman_provider.dart';
 import 'providers/penjemputan_provider.dart';
@@ -31,6 +32,7 @@ class _MiruAppState extends State<MiruApp> {
   late final AuthSession _authSession;
   late final AuthProvider _authProvider;
   late final HomeProvider _homeProvider;
+  late final NotificationProvider _notificationProvider;
   late final PengaduanProvider _pengaduanProvider;
   late final PengumumanProvider _pengumumanProvider;
   late final PenjemputanProvider _penjemputanProvider;
@@ -62,6 +64,7 @@ class _MiruAppState extends State<MiruApp> {
       authSession: _authSession,
     );
     _homeProvider = HomeProvider(apiClient: _apiClient);
+    _notificationProvider = NotificationProvider(apiClient: _apiClient);
     _pengaduanProvider = PengaduanProvider(apiClient: _apiClient);
     _pengumumanProvider = PengumumanProvider(apiClient: _apiClient);
     _penjemputanProvider = PenjemputanProvider(apiClient: _apiClient);
@@ -91,6 +94,7 @@ class _MiruAppState extends State<MiruApp> {
       _pengaduanProvider.clearCache();
       _rewardProvider.clearCache();
       _pengumumanProvider.clearCache();
+      _notificationProvider.clearCache();
       _settingsProvider.clearCache();
     }
   }
@@ -103,6 +107,7 @@ class _MiruAppState extends State<MiruApp> {
         ChangeNotifierProvider.value(value: _authSession),
         ChangeNotifierProvider.value(value: _authProvider),
         ChangeNotifierProvider.value(value: _homeProvider),
+        ChangeNotifierProvider.value(value: _notificationProvider),
         ChangeNotifierProvider.value(value: _pengaduanProvider),
         ChangeNotifierProvider.value(value: _pengumumanProvider),
         ChangeNotifierProvider.value(value: _penjemputanProvider),

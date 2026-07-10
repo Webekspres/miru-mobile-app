@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 
-import '../../config/constants.dart';
 import '../../config/theme.dart';
-import '../../services/storage_service.dart';
 import '../../widgets/shimmer_loading.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -18,17 +15,11 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _checkAuth();
-  }
-
-  Future<void> _checkAuth() async {
-    final storage = context.read<StorageService>();
-    final token = await storage.read(AppConstants.accessTokenKey);
-
-    if (!mounted) return;
-
-    // Always go to /home — let HomeScreen handle login prompt
-    context.go('/home');
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      // Always go to /home — let HomeScreen handle login prompt
+      context.go('/home');
+    });
   }
 
   @override

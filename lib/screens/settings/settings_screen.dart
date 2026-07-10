@@ -26,8 +26,8 @@ class SettingsScreen extends StatelessWidget {
                 icon: Icons.person_outline,
                 iconBgColor: AppTheme.primaryColor.withValues(alpha: 0.1),
                 iconColor: AppTheme.primaryColor,
-                label: 'Profil Saya',
-                subtitle: 'Lihat dan edit data diri',
+                label: 'Edit Profil',
+                subtitle: 'Ubah data diri Anda',
                 onTap: () => context.push('/profile'),
               ),
             ],
@@ -39,14 +39,6 @@ class SettingsScreen extends StatelessWidget {
           _SectionHeader(title: 'Informasi'),
           _SettingsCard(
             items: [
-              _MenuItem(
-                icon: Icons.campaign_outlined,
-                iconBgColor: const Color(0xFFDBEAFE),
-                iconColor: const Color(0xFF2563EB),
-                label: 'Pengumuman',
-                subtitle: 'Informasi terbaru dari MIRU',
-                onTap: () => context.push('/settings/pengumuman'),
-              ),
               _MenuItem(
                 icon: Icons.description_outlined,
                 iconBgColor: const Color(0xFFFEF3C7),

@@ -134,6 +134,33 @@ class HomeProvider extends ChangeNotifier {
   }
 
   // ──────────────────────────────────────────────
+  // Load Categories Only (public, no auth required)
+  // ──────────────────────────────────────────────
+
+  /// Fetches ONLY waste categories (public endpoint).
+  /// No auth required — used by InfoSampahScreen for unauthenticated users.
+  Future<void> loadCategoriesOnly() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final catData = await _apiClient.get<List<dynamic>>(
+        '/waste-categories/',
+        fromJson: (json) => json as List<dynamic>,
+      );
+      _categories = WasteCategory.listFromJson(catData);
+    } on DioException catch (e) {
+      _error = parseDioError(e);
+    } catch (e) {
+      _error = 'Terjadi kesalahan. Silakan coba lagi.';
+    }
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  // ──────────────────────────────────────────────
   // Clear cache (panggil saat logout)
   // ──────────────────────────────────────────────
 

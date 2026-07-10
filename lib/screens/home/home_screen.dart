@@ -9,10 +9,13 @@ import '../../models/deposit.dart';
 import '../../models/waste_category.dart';
 import '../../providers/auth_session.dart';
 import '../../providers/home_provider.dart';
+import '../../providers/notification_provider.dart';
+import '../../providers/pengumuman_provider.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/error_view.dart';
 import '../../widgets/saldo_card.dart';
 import '../../widgets/shimmer_loading.dart';
+import '../notifikasi/detail_notifikasi_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -34,6 +37,16 @@ class _HomeScreenState extends State<HomeScreen> {
     final homeProvider = context.read<HomeProvider>();
     if (!homeProvider.isLoading && homeProvider.user == null) {
       homeProvider.loadData();
+    }
+    // Load announcements for banners
+    final pengumuman = context.read<PengumumanProvider>();
+    if (pengumuman.announcements.isEmpty && !pengumuman.isLoading) {
+      pengumuman.loadPengumuman();
+    }
+    // Load notifications
+    final notif = context.read<NotificationProvider>();
+    if (notif.notifications.isEmpty && !notif.isLoading) {
+      notif.loadNotifications();
     }
   }
 
@@ -59,11 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             centerTitle: false,
             actions: [
-              IconButton(
-                icon: const Icon(Icons.notifications_outlined),
-                tooltip: 'Pengumuman',
-                onPressed: () => context.push('/settings/pengumuman'),
-              ),
+              _buildNotifBell(context),
               const SizedBox(width: 4),
               CircleAvatar(
                 radius: 16,
@@ -314,14 +323,6 @@ class _HomeScreenState extends State<HomeScreen> {
         route: '/home/info-sampah',
       ),
       _PublicLink(
-        icon: Icons.campaign_outlined,
-        label: 'Pengumuman',
-        subtitle: 'Informasi terkini dari MIRU',
-        color: const Color(0xFF2563EB),
-        bgColor: const Color(0xFFDBEAFE),
-        route: '/settings/pengumuman',
-      ),
-      _PublicLink(
         icon: Icons.description_outlined,
         label: 'Kebijakan Data',
         subtitle: 'Kebijakan privasi dan data',
@@ -401,6 +402,239 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // ─────────────────────────────────────────────
+  // Notification Bell with Unread Badge & Popup
+  // ─────────────────────────────────────────────
+
+  Widget _buildNotifBell(BuildContext context) {
+    return Consumer<NotificationProvider>(
+      builder: (context, notif, _) {
+        final unread = notif.unreadCount;
+        return Stack(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.notifications_outlined),
+              tooltip: 'Notifikasi',
+              onPressed: () => _showNotifPopup(context, notif),
+            ),
+            if (unread > 0)
+              Positioned(
+                right: 6,
+                top: 6,
+                child: Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFDC2626),
+                    shape: BoxShape.circle,
+                  ),
+                  constraints: const BoxConstraints(
+                    minWidth: 18,
+                    minHeight: 18,
+                  ),
+                  child: Text(
+                    unread > 99 ? '99+' : unread.toString(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 9,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showNotifPopup(
+      BuildContext context, NotificationProvider notif) {
+    final theme = Theme.of(context);
+    final dateFormat = DateFormat('d MMM HH:mm', 'id_ID');
+    final latest = notif.latestNotifications;
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Handle
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.outlineVariant,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Header
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Notifikasi',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  if (notif.unreadCount > 0)
+                    TextButton(
+                      onPressed: () {
+                        notif.markAllAsRead();
+                        Navigator.of(ctx).pop();
+                      },
+                      child: const Text(
+                        'Tandai sudah dibaca',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 8),
+
+              if (latest.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 32),
+                  child: Center(
+                    child: Text(
+                      'Tidak ada notifikasi baru',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                )
+              else
+                ...latest.map((item) => Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(12),
+                          onTap: () {
+                            Navigator.of(ctx).pop();
+                            if (!item.isRead) {
+                              notif.markAsRead(item.id);
+                            }
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    DetailNotifikasiScreen(
+                                        notification: item),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: !item.isRead
+                                  ? AppTheme.primaryColor
+                                      .withValues(alpha: 0.04)
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                              children: [
+                                if (!item.isRead)
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.only(
+                                            top: 5, right: 8),
+                                    child: Container(
+                                      width: 6,
+                                      height: 6,
+                                      decoration: const BoxDecoration(
+                                        color: AppTheme.primaryColor,
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                  ),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        item.judul,
+                                        style: theme.textTheme
+                                            .bodyMedium
+                                            ?.copyWith(
+                                          fontWeight:
+                                              FontWeight.w600,
+                                        ),
+                                        maxLines: 1,
+                                        overflow:
+                                            TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        item.deskripsi,
+                                        style: theme.textTheme
+                                            .bodySmall
+                                            ?.copyWith(
+                                          color: theme.colorScheme
+                                              .onSurfaceVariant,
+                                        ),
+                                        maxLines: 1,
+                                        overflow:
+                                            TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        dateFormat
+                                            .format(item.createdAt),
+                                        style: theme.textTheme
+                                            .labelSmall
+                                            ?.copyWith(
+                                          color: theme.colorScheme
+                                              .onSurfaceVariant
+                                              .withValues(alpha: 0.7),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    )),
+
+              if (latest.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: () {
+                      Navigator.of(ctx).pop();
+                      context.push('/notifikasi');
+                    },
+                    child: const Text('Lihat Semua Notifikasi'),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isLoggedIn = context.watch<AuthSession>().isLoggedIn;
@@ -437,7 +671,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     delegate: SliverChildListDelegate([
                       const SizedBox(height: 16),
                       _buildSaldoSection(context, home),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 16),
+
+                      // ── Announcement Banners ──
+                      _buildAnnouncementBanners(context),
+                      const SizedBox(height: 16),
+
                       _buildServiceHoursBanner(context),
                       const SizedBox(height: 20),
                       _buildQuickActions(context),
@@ -457,6 +696,33 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // ─────────────────────────────────────────────
+  // Announcement Banners (like ad banners)
+  // ─────────────────────────────────────────────
+
+  Widget _buildAnnouncementBanners(BuildContext context) {
+    return Consumer<PengumumanProvider>(
+      builder: (context, pengumuman, _) {
+        final items = pengumuman.announcements;
+        if (items.isEmpty) return const SizedBox.shrink();
+
+        return SizedBox(
+          height: 160,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            itemCount: items.length,
+            separatorBuilder: (context, index) => const SizedBox(width: 12),
+            itemBuilder: (context, index) {
+              final item = items[index];
+              return _AnnouncementBanner(item: item);
+            },
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildAppBar(BuildContext context, HomeProvider home) {
     return SliverAppBar(
       floating: true,
@@ -471,11 +737,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       centerTitle: false,
       actions: [
-        IconButton(
-          icon: const Icon(Icons.notifications_outlined),
-          tooltip: 'Pengumuman',
-          onPressed: () => context.push('/settings/pengumuman'),
-        ),
+        _buildNotifBell(context),
         const SizedBox(width: 4),
         CircleAvatar(
           radius: 16,
@@ -602,7 +864,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -788,6 +1050,187 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+
+// ─────────────────────────────────────────────
+// Announcement Banner (horizontal card)
+// ─────────────────────────────────────────────
+
+class _AnnouncementBanner extends StatelessWidget {
+  const _AnnouncementBanner({required this.item});
+
+  final dynamic item; // Announcement
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final dateFormat = DateFormat('d MMM', 'id_ID');
+    final colors = [
+      const LinearGradient(
+        colors: [Color(0xFF2563EB), Color(0xFF1D4ED8)],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
+      const LinearGradient(
+        colors: [Color(0xFF7C3AED), Color(0xFF6D28D9)],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
+      const LinearGradient(
+        colors: [Color(0xFF16A34A), Color(0xFF15803D)],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
+      const LinearGradient(
+        colors: [Color(0xFFD97706), Color(0xFFB45309)],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
+    ];
+
+    // Use different gradient based on index (cycling through colors)
+    final int safeIndex =
+        item.id is int ? item.id.abs() % colors.length : 0;
+    final gradient = colors[safeIndex];
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () {
+          // Navigate to settings/pengumuman or show detail
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => Scaffold(
+                appBar: AppBar(title: const Text('Pengumuman')),
+                body: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item.judul,
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        dateFormat.format(item.tanggal),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                              color: theme.colorScheme.outlineVariant),
+                        ),
+                        child: Text(
+                          item.isi.isNotEmpty ? item.isi : 'Tidak ada konten.',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            height: 1.7,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+        child: Container(
+          width: 280,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: gradient,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: gradient.colors[0].withValues(alpha: 0.3),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(
+                      Icons.campaign_rounded,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                  ),
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      dateFormat.format(item.tanggal),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const Spacer(),
+              Text(
+                item.judul,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  height: 1.2,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 4),
+              if (item.isi.isNotEmpty)
+                Text(
+                  item.isi,
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.85),
+                    fontSize: 12,
+                    height: 1.3,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+// Helper Classes
+// ─────────────────────────────────────────────
 
 class _QuickAction {
   const _QuickAction({

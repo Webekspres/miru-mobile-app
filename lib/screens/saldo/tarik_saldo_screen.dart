@@ -21,10 +21,105 @@ class _TarikSaldoScreenState extends State<TarikSaldoScreen> {
   final _nominalController = TextEditingController();
   bool _hasInteracted = false;
 
+  // Validation state
+  String? _validationMessage;
+  bool _isValid = false;
+  Color _validationColor = Colors.transparent;
+
+  static const double _minWithdrawal = 50000;
+  static const List<double> _quickAmounts = [
+    50000,
+    100000,
+    150000,
+    200000,
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _nominalController.addListener(_onNominalChanged);
+  }
+
   @override
   void dispose() {
+    _nominalController.removeListener(_onNominalChanged);
     _nominalController.dispose();
     super.dispose();
+  }
+
+  // ─────────────────────────────────────────────
+  // Real-time Input Formatting & Validation
+  // ─────────────────────────────────────────────
+
+  void _onNominalChanged() {
+    final text = _nominalController.text;
+    if (text.isEmpty) {
+      setState(() {
+        _hasInteracted = false;
+        _validationMessage = null;
+        _isValid = false;
+        _validationColor = Colors.transparent;
+      });
+      return;
+    }
+
+    setState(() => _hasInteracted = true);
+
+    // Parse raw value (remove dots)
+    final rawValue = text.replaceAll('.', '');
+    final nominal = int.tryParse(rawValue);
+
+    if (nominal == null || nominal <= 0) {
+      setState(() {
+        _validationMessage = 'Masukkan nominal yang valid';
+        _isValid = false;
+        _validationColor = AppTheme.errorColor;
+      });
+      return;
+    }
+
+    // Format with dots (e.g., 50000 → 50.000)
+    final formatted = NumberFormat.decimalPattern('id_ID').format(nominal);
+    if (text != formatted) {
+      _nominalController.text = formatted;
+      _nominalController.selection = TextSelection.fromPosition(
+        TextPosition(offset: formatted.length),
+      );
+    }
+
+    // Validate
+    final saldo = _getSaldo();
+
+    if (nominal < _minWithdrawal) {
+      setState(() {
+        _validationMessage =
+            'Minimal penarikan Rp${NumberFormat.decimalPattern('id_ID').format(_minWithdrawal)}';
+        _isValid = false;
+        _validationColor = AppTheme.errorColor;
+      });
+      return;
+    }
+
+    if (nominal > saldo) {
+      final formatter = NumberFormat.currency(
+        locale: 'id_ID',
+        symbol: 'Rp',
+        decimalDigits: 0,
+      );
+      setState(() {
+        _validationMessage =
+            'Nominal melebihi saldo (${formatter.format(saldo)})';
+        _isValid = false;
+        _validationColor = AppTheme.errorColor;
+      });
+      return;
+    }
+
+    setState(() {
+      _validationMessage = null;
+      _isValid = true;
+      _validationColor = AppTheme.primaryColor;
+    });
   }
 
   // ─────────────────────────────────────────────
@@ -48,25 +143,10 @@ class _TarikSaldoScreenState extends State<TarikSaldoScreen> {
   // ─────────────────────────────────────────────
 
   void _setQuickAmount(double amount) {
-    _nominalController.text = amount.toInt().toString();
+    _nominalController.text =
+        NumberFormat.decimalPattern('id_ID').format(amount.toInt());
     setState(() => _hasInteracted = true);
-  }
-
-  List<double> _quickAmounts(double saldo) {
-    final amounts = <double>[];
-    if (saldo >= 50000) amounts.add(50000.0);
-    if (saldo >= 100000) amounts.add(100000.0);
-    if (saldo >= 200000) amounts.add(200000.0);
-    if (saldo >= 500000) amounts.add(500000.0);
-    if (saldo >= 1000000) amounts.add(1000000.0);
-    // If saldo is larger but not exactly matching, add rounded value
-    if (saldo > 1000000) {
-      final rounded = ((saldo / 10000).floor() * 10000).toDouble();
-      if (rounded > 50000 && !amounts.contains(rounded)) {
-        amounts.add(rounded);
-      }
-    }
-    return amounts;
+    _onNominalChanged();
   }
 
   // ─────────────────────────────────────────────
@@ -112,14 +192,12 @@ class _TarikSaldoScreenState extends State<TarikSaldoScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 4),
-              // Nominal
               _ConfirmationRow(
                 label: 'Nominal',
                 value: _formatRupiah(nominal),
                 valueColor: const Color(0xFF2563EB),
               ),
               const SizedBox(height: 12),
-              // Metode
               _ConfirmationRow(
                 label: 'Metode',
                 value: metode == 'tunai' ? 'Tunai' : metode,
@@ -202,7 +280,6 @@ class _TarikSaldoScreenState extends State<TarikSaldoScreen> {
     if (!mounted) return;
 
     if (result != null) {
-      // Success — show snackbar and pop back to home
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Pengajuan penarikan berhasil dikirim'),
@@ -223,16 +300,16 @@ class _TarikSaldoScreenState extends State<TarikSaldoScreen> {
   void _onSubmit() {
     if (!_formKey.currentState!.validate()) return;
 
-    final nominal = double.tryParse(
-          _nominalController.text.replaceAll('.', '').replaceAll(',', '.'),
-        ) ??
-        0;
+    final rawValue =
+        _nominalController.text.replaceAll('.', '').replaceAll(',', '.');
+    final nominal = double.tryParse(rawValue) ?? 0;
     final saldo = _getSaldo();
 
-    if (nominal < 50000) {
+    if (nominal < _minWithdrawal) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Minimal penarikan adalah Rp50.000'),
+        SnackBar(
+          content: Text(
+              'Minimal penarikan adalah Rp${NumberFormat.decimalPattern('id_ID').format(_minWithdrawal.toInt())}'),
           backgroundColor: AppTheme.errorColor,
         ),
       );
@@ -249,7 +326,6 @@ class _TarikSaldoScreenState extends State<TarikSaldoScreen> {
       return;
     }
 
-    // Show confirmation dialog
     _showConfirmationDialog(
       nominal: nominal,
       metode: 'tunai',
@@ -315,30 +391,34 @@ class _TarikSaldoScreenState extends State<TarikSaldoScreen> {
                   TextFormField(
                     controller: _nominalController,
                     keyboardType: TextInputType.number,
-                    onChanged: (_) {
-                      if (!_hasInteracted) {
-                        setState(() => _hasInteracted = true);
-                      }
-                    },
                     decoration: InputDecoration(
                       prefixText: 'Rp ',
                       hintText: '0',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
+                      suffixIcon: _nominalController.text.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear_rounded, size: 18),
+                              onPressed: () {
+                                _nominalController.clear();
+                                setState(() => _hasInteracted = false);
+                              },
+                            )
+                          : null,
                     ),
                     validator: (v) {
                       if (v == null || v.trim().isEmpty) {
                         return 'Nominal penarikan wajib diisi';
                       }
-                      final nominal = double.tryParse(
-                        v.replaceAll('.', '').replaceAll(',', '.'),
-                      );
+                      final rawValue =
+                          v.replaceAll('.', '').replaceAll(',', '.');
+                      final nominal = double.tryParse(rawValue);
                       if (nominal == null || nominal <= 0) {
                         return 'Masukkan nominal yang valid';
                       }
-                      if (nominal < 50000) {
-                        return 'Minimal penarikan Rp50.000';
+                      if (nominal < _minWithdrawal) {
+                        return 'Minimal penarikan Rp${NumberFormat.decimalPattern('id_ID').format(_minWithdrawal.toInt())}';
                       }
                       if (nominal > currentSaldo) {
                         return 'Nominal melebihi saldo Anda (${formatter.format(currentSaldo)})';
@@ -346,9 +426,55 @@ class _TarikSaldoScreenState extends State<TarikSaldoScreen> {
                       return null;
                     },
                   ),
+
+                  // ── Real-time validation message ──
+                  if (_hasInteracted && _validationMessage != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 6),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.error_outline_rounded,
+                            size: 14,
+                            color: _validationColor,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            _validationMessage!,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: _validationColor,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                  if (_hasInteracted && _isValid && _validationMessage == null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 6),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.check_circle_rounded,
+                            size: 14,
+                            color: _validationColor,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            'Nominal valid',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: _validationColor,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
                   const SizedBox(height: 4),
                   Text(
-                    'Minimal Rp50.000',
+                    'Minimal Rp${NumberFormat.decimalPattern('id_ID').format(_minWithdrawal.toInt())}',
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -356,7 +482,7 @@ class _TarikSaldoScreenState extends State<TarikSaldoScreen> {
                   const SizedBox(height: 12),
 
                   // ── Quick Amount Buttons ──
-                  if (_hasInteracted) ..._buildQuickAmountChips(theme, currentSaldo),
+                  _buildQuickAmountChips(theme, currentSaldo),
 
                   const SizedBox(height: 20),
 
@@ -379,7 +505,9 @@ class _TarikSaldoScreenState extends State<TarikSaldoScreen> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: saldo.isSubmitting ? null : _onSubmit,
+                      onPressed: (!_hasInteracted || !_isValid)
+                          ? null
+                          : (saldo.isSubmitting ? null : _onSubmit),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF2563EB),
                         foregroundColor: Colors.white,
@@ -417,35 +545,47 @@ class _TarikSaldoScreenState extends State<TarikSaldoScreen> {
     );
   }
 
-  List<Widget> _buildQuickAmountChips(ThemeData theme, double saldo) {
-    final amounts = _quickAmounts(saldo);
-    if (amounts.isEmpty) return [];
+  Widget _buildQuickAmountChips(ThemeData theme, double saldo) {
+    // Filter quick amounts based on saldo
+    final availableAmounts =
+        _quickAmounts.where((a) => a <= saldo).toList();
 
-    return [
-      Wrap(
-        spacing: 8,
-        runSpacing: 8,
-        children: amounts.map((amount) {
-          final label = _formatRupiah(amount);
-          return ActionChip(
-            label: Text(
-              label,
-              style: theme.textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w600,
+    if (availableAmounts.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Pilih nominal cepat',
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: availableAmounts.map((amount) {
+            final label = _formatRupiah(amount);
+            return ActionChip(
+              label: Text(
+                label,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
-            onPressed: () => _setQuickAmount(amount),
-            backgroundColor: const Color(0xFFDBEAFE),
-            side: const BorderSide(color: Color(0xFFBFDBFE)),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-          );
-        }).toList(),
-      ),
-      const SizedBox(height: 8),
-    ];
+              onPressed: () => _setQuickAmount(amount),
+              backgroundColor: const Color(0xFFDBEAFE),
+              side: const BorderSide(color: Color(0xFFBFDBFE)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+            );
+          }).toList(),
+        ),
+      ],
+    );
   }
 }
 
@@ -646,10 +786,7 @@ class _SlaInfoBanner extends StatelessWidget {
           const SizedBox(height: 6),
           _infoBullet(theme, 'Pengambilan tunai di kantor MIRU Bank Sampah'),
           const SizedBox(height: 6),
-          _infoBullet(
-            theme,
-            'Tidak ada biaya administrasi untuk penarikan',
-          ),
+          _infoBullet(theme, 'Tidak ada biaya administrasi untuk penarikan'),
           const SizedBox(height: 6),
           _infoBullet(
             theme,
@@ -666,11 +803,7 @@ class _SlaInfoBanner extends StatelessWidget {
       children: [
         const Padding(
           padding: EdgeInsets.only(top: 5),
-          child: Icon(
-            Icons.circle,
-            size: 5,
-            color: Color(0xFF0369A1),
-          ),
+          child: Icon(Icons.circle, size: 5, color: Color(0xFF0369A1)),
         ),
         const SizedBox(width: 10),
         Expanded(

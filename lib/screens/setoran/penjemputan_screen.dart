@@ -134,11 +134,11 @@ class _PenjemputanScreenState extends State<PenjemputanScreen>
     required String isEmptyDetail,
   }) {
     if (pickups.isEmpty) {
-      return ListView(
-        // Enable pull-to-refresh even when empty
-        children: [
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.5,
+      return Center(
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 48),
             child: EmptyState(
               icon: Icons.local_shipping_outlined,
               title: isEmptyMessage,
@@ -146,7 +146,7 @@ class _PenjemputanScreenState extends State<PenjemputanScreen>
               expand: false,
             ),
           ),
-        ],
+        ),
       );
     }
 

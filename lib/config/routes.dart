@@ -4,6 +4,7 @@ import '../providers/auth_session.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/auth/register_screen.dart';
 import '../screens/home/home_screen.dart';
+import '../screens/notifikasi/notifikasi_screen.dart';
 import '../screens/pengaduan/pengaduan_form_screen.dart';
 import '../screens/pengaduan/pengaduan_screen.dart';
 import '../screens/profile/profile_screen.dart';
@@ -17,7 +18,6 @@ import '../screens/setoran/info_sampah_screen.dart';
 import '../screens/setoran/penjemputan_screen.dart';
 import '../screens/splash/splash_screen.dart';
 import '../screens/settings/kebijakan_data_screen.dart';
-import '../screens/settings/pengumuman_screen.dart';
 import '../screens/settings/settings_screen.dart';
 import '../screens/settings/tentang_screen.dart';
 import '../widgets/bottom_nav_scaffold.dart';
@@ -53,60 +53,20 @@ GoRouter createAppRouter(AuthSession authSession) {
       ),
 
       // ── Main app shell with bottom nav ──
+      // Hanya halaman utama (root pages) ada di dalam StatefulShellRoute.
+      // Halaman detail (tarik saldo, penjemputan, dll) adalah standalone
+      // sehingga bottom nav hilang dan routing behavior lebih intuitif.
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return BottomNavScaffold(navigationShell: navigationShell);
         },
         branches: [
-          // Branch 0: Home
+          // Branch 0: Beranda
           StatefulShellBranch(
             routes: [
               GoRoute(
                 path: '/home',
                 builder: (context, state) => const HomeScreen(),
-                routes: [
-                  GoRoute(
-                    path: 'info-sampah',
-                    builder: (context, state) => const InfoSampahScreen(),
-                  ),
-                  GoRoute(
-                    path: 'penjemputan',
-                    builder: (context, state) => const PenjemputanScreen(),
-                    routes: [
-                      GoRoute(
-                        path: 'ajukan',
-                        builder: (context, state) =>
-                            const AjukanPenjemputanScreen(),
-                      ),
-                    ],
-                  ),
-                  GoRoute(
-                    path: 'tarik-saldo',
-                    builder: (context, state) => const TarikSaldoScreen(),
-                  ),
-                  GoRoute(
-                    path: 'reward',
-                    builder: (context, state) => const RewardScreen(),
-                    routes: [
-                      GoRoute(
-                        path: 'tukar',
-                        builder: (context, state) =>
-                            const TukarPoinScreen(),
-                      ),
-                    ],
-                  ),
-                  GoRoute(
-                    path: 'pengaduan',
-                    builder: (context, state) => const PengaduanScreen(),
-                    routes: [
-                      GoRoute(
-                        path: 'form',
-                        builder: (context, state) =>
-                            const PengaduanFormScreen(),
-                      ),
-                    ],
-                  ),
-                ],
               ),
             ],
           ),
@@ -121,33 +81,79 @@ GoRouter createAppRouter(AuthSession authSession) {
             ],
           ),
 
-          // Branch 2: Profil
+          // Branch 2: Notifikasi
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/notifikasi',
+                builder: (context, state) => const NotifikasiScreen(),
+              ),
+            ],
+          ),
+
+          // Branch 3: Profil
           StatefulShellBranch(
             routes: [
               GoRoute(
                 path: '/profile',
                 builder: (context, state) => const ProfileScreen(),
-                routes: [
-                  GoRoute(
-                    path: 'qrcode',
-                    builder: (context, state) => const QRCodeScreen(),
-                  ),
-                ],
               ),
             ],
           ),
         ],
       ),
 
-      // ── Settings & Info Routes (standalone, no bottom nav) ──
+      // ── Detail Screens (standalone, no bottom nav) ──
+      // Halaman-halaman ini tidak memiliki bottom nav
+      // agar pengalaman navigasi lebih intuitif.
+      GoRoute(
+        path: '/home/tarik-saldo',
+        builder: (context, state) => const TarikSaldoScreen(),
+      ),
+      GoRoute(
+        path: '/home/penjemputan',
+        builder: (context, state) => const PenjemputanScreen(),
+        routes: [
+          GoRoute(
+            path: 'ajukan',
+            builder: (context, state) => const AjukanPenjemputanScreen(),
+          ),
+        ],
+      ),
+      GoRoute(
+        path: '/home/info-sampah',
+        builder: (context, state) => const InfoSampahScreen(),
+      ),
+      GoRoute(
+        path: '/home/reward',
+        builder: (context, state) => const RewardScreen(),
+        routes: [
+          GoRoute(
+            path: 'tukar',
+            builder: (context, state) => const TukarPoinScreen(),
+          ),
+        ],
+      ),
+      GoRoute(
+        path: '/home/pengaduan',
+        builder: (context, state) => const PengaduanScreen(),
+        routes: [
+          GoRoute(
+            path: 'form',
+            builder: (context, state) => const PengaduanFormScreen(),
+          ),
+        ],
+      ),
+      GoRoute(
+        path: '/profile/qrcode',
+        builder: (context, state) => const QRCodeScreen(),
+      ),
+
+      // ── Settings Routes (standalone, no bottom nav) ──
       GoRoute(
         path: '/settings',
         builder: (context, state) => const SettingsScreen(),
         routes: [
-          GoRoute(
-            path: 'pengumuman',
-            builder: (context, state) => const PengumumanScreen(),
-          ),
           GoRoute(
             path: 'kebijakan-data',
             builder: (context, state) => const KebijakanDataScreen(),

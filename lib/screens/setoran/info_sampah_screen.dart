@@ -120,7 +120,7 @@ class _InfoSampahScreenState extends State<InfoSampahScreen> {
   void _loadData() {
     final home = context.read<HomeProvider>();
     if (home.categories.isEmpty && !home.isLoading) {
-      home.loadData();
+      home.loadCategoriesOnly();
     }
   }
 
@@ -158,7 +158,7 @@ class _InfoSampahScreenState extends State<InfoSampahScreen> {
             return ErrorView(
               title: 'Gagal memuat data',
               message: home.error!,
-              onRetry: () => home.refresh(),
+              onRetry: () => home.loadCategoriesOnly(),
             );
           }
 
@@ -173,7 +173,7 @@ class _InfoSampahScreenState extends State<InfoSampahScreen> {
           }
 
           return RefreshIndicator(
-            onRefresh: home.refresh,
+            onRefresh: () => home.loadCategoriesOnly(),
             color: AppTheme.primaryColor,
             child: CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
