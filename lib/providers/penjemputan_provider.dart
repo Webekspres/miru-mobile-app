@@ -55,21 +55,16 @@ class PenjemputanProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final data = await _apiClient.get<Map<String, dynamic>>(
+      final data = await _apiClient.get<List<dynamic>>(
         '/pickups/',
         queryParameters: {
           'nasabah': userId.toString(),
           'ordering': '-jadwal',
         },
-        fromJson: (json) => Map<String, dynamic>.from(json as Map),
+        fromJson: (json) => json as List<dynamic>,
       );
 
-      final results = data['results'];
-      if (results is List) {
-        _pickups = Pickup.listFromJson(results);
-      } else {
-        _pickups = [];
-      }
+      _pickups = Pickup.listFromJson(data);
     } on DioException catch (e) {
       _error = parseDioError(e);
     } catch (_) {
@@ -140,5 +135,18 @@ class PenjemputanProvider extends ChangeNotifier {
       _error = null;
       notifyListeners();
     }
+  }
+
+  // ──────────────────────────────────────────────
+  // Clear cache (panggil saat logout)
+  // ──────────────────────────────────────────────
+
+  void clearCache() {
+    _pickups = [];
+    _error = null;
+    _currentUserId = 0;
+    _isLoading = false;
+    _isSubmitting = false;
+    notifyListeners();
   }
 }

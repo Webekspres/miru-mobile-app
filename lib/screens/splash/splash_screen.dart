@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 
 import '../../config/theme.dart';
-import '../../providers/auth_provider.dart';
+import '../../widgets/shimmer_loading.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -16,20 +15,11 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _checkAuth();
-  }
-
-  Future<void> _checkAuth() async {
-    final auth = context.read<AuthProvider>();
-    final isLoggedIn = await auth.checkAuthStatus();
-
-    if (!mounted) return;
-
-    if (isLoggedIn) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      // Always go to /home — let HomeScreen handle login prompt
       context.go('/home');
-    } else {
-      context.go('/login');
-    }
+    });
   }
 
   @override
@@ -72,13 +62,10 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
             ),
             const SizedBox(height: 48),
-            const SizedBox(
-              width: 24,
-              height: 24,
-              child: CircularProgressIndicator(
-                strokeWidth: 2.5,
-              ),
-            ),
+            // Skeleton sebagai pengganti spinner
+            const SkeletonBlock(height: 14, width: 140),
+            const SizedBox(height: 12),
+            const SkeletonBlock(height: 10, width: 100),
           ],
         ),
       ),

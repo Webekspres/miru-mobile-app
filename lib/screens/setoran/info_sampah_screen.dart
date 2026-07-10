@@ -7,7 +7,7 @@ import '../../models/waste_category.dart';
 import '../../providers/home_provider.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/error_view.dart';
-import '../../widgets/loading_indicator.dart';
+import '../../widgets/shimmer_loading.dart';
 
 /// Static descriptions for common waste types based on category name.
 /// Since backend only stores nama + harga, we provide static examples.
@@ -120,7 +120,7 @@ class _InfoSampahScreenState extends State<InfoSampahScreen> {
   void _loadData() {
     final home = context.read<HomeProvider>();
     if (home.categories.isEmpty && !home.isLoading) {
-      home.loadData();
+      home.loadCategoriesOnly();
     }
   }
 
@@ -134,14 +134,31 @@ class _InfoSampahScreenState extends State<InfoSampahScreen> {
       body: Consumer<HomeProvider>(
         builder: (context, home, _) {
           if (home.isLoading && home.categories.isEmpty) {
-            return const LoadingIndicator(message: 'Memuat data sampah...');
+            return SingleChildScrollView(
+              physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(16),
+              child: const Column(
+                children: [
+                  SkeletonCard(height: 80),
+                  SizedBox(height: 24),
+                  _InfoSkeletonItem(),
+                  _InfoSkeletonItem(),
+                  _InfoSkeletonItem(),
+                  _InfoSkeletonItem(),
+                  _InfoSkeletonItem(),
+                  _InfoSkeletonItem(),
+                  _InfoSkeletonItem(),
+                  _InfoSkeletonItem(),
+                ],
+              ),
+            );
           }
 
           if (home.hasError && home.categories.isEmpty) {
             return ErrorView(
               title: 'Gagal memuat data',
               message: home.error!,
-              onRetry: () => home.refresh(),
+              onRetry: () => home.loadCategoriesOnly(),
             );
           }
 
@@ -156,7 +173,7 @@ class _InfoSampahScreenState extends State<InfoSampahScreen> {
           }
 
           return RefreshIndicator(
-            onRefresh: home.refresh,
+            onRefresh: () => home.loadCategoriesOnly(),
             color: AppTheme.primaryColor,
             child: CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
@@ -514,6 +531,18 @@ class _DetailSection extends StatelessWidget {
 // ─────────────────────────────────────────────
 // Category Card
 // ─────────────────────────────────────────────
+
+class _InfoSkeletonItem extends StatelessWidget {
+  const _InfoSkeletonItem();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.only(bottom: 10),
+      child: SkeletonCard(height: 76),
+    );
+  }
+}
 
 class _CategoryCard extends StatelessWidget {
   const _CategoryCard({

@@ -59,21 +59,16 @@ class PengaduanProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final data = await _apiClient.get<Map<String, dynamic>>(
+      final data = await _apiClient.get<List<dynamic>>(
         '/complaints/',
         queryParameters: {
           'nasabah': userId.toString(),
           'ordering': '-tanggal',
         },
-        fromJson: (json) => Map<String, dynamic>.from(json as Map),
+        fromJson: (json) => json as List<dynamic>,
       );
 
-      final results = data['results'];
-      if (results is List) {
-        _complaints = Complaint.listFromJson(results);
-      } else {
-        _complaints = [];
-      }
+      _complaints = Complaint.listFromJson(data);
     } on DioException catch (e) {
       _error = parseDioError(e);
     } catch (_) {
@@ -151,5 +146,18 @@ class PengaduanProvider extends ChangeNotifier {
       _submitError = null;
       notifyListeners();
     }
+  }
+
+  // ──────────────────────────────────────────────
+  // Clear cache (panggil saat logout)
+  // ──────────────────────────────────────────────
+
+  void clearCache() {
+    _complaints = [];
+    _error = null;
+    _submitError = null;
+    _isLoading = false;
+    _isSubmitting = false;
+    notifyListeners();
   }
 }

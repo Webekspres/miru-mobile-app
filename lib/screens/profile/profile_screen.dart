@@ -5,9 +5,13 @@ import 'package:provider/provider.dart';
 
 import '../../config/theme.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/auth_session.dart';
 import '../../providers/profile_provider.dart';
+import '../../widgets/exit_dialog.dart';
 import '../../widgets/error_view.dart';
-import '../../widgets/loading_indicator.dart';
+import '../../widgets/login_prompt.dart';
+import '../../widgets/shimmer_loading.dart';
+import 'edit_profile_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -17,26 +21,10 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final _formKey = GlobalKey<FormState>();
-  late TextEditingController _namaController;
-  late TextEditingController _noHpController;
-  late TextEditingController _alamatController;
-
   @override
   void initState() {
     super.initState();
-    _namaController = TextEditingController();
-    _noHpController = TextEditingController();
-    _alamatController = TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadProfile());
-  }
-
-  @override
-  void dispose() {
-    _namaController.dispose();
-    _noHpController.dispose();
-    _alamatController.dispose();
-    super.dispose();
   }
 
   void _loadProfile() {
@@ -46,45 +34,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  void _populateFields(ProfileProvider profile) {
-    final user = profile.user;
-    if (user == null) return;
-    _namaController.text = user.namaLengkap;
-    _noHpController.text = user.noHp;
-    _alamatController.text = user.alamat;
-  }
+  @override
+  Widget build(BuildContext context) {
+    final isLoggedIn = context.watch<AuthSession>().isLoggedIn;
 
-  Future<void> _saveProfile() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    final profile = context.read<ProfileProvider>();
-    final success = await profile.updateProfile(
-      namaLengkap: _namaController.text.trim(),
-      noHp: _noHpController.text.trim(),
-      alamat: _alamatController.text.trim(),
-    );
-
-    if (!mounted) return;
-
-    if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Profil berhasil diperbarui'),
-          backgroundColor: AppTheme.primaryColor,
-        ),
-      );
-    } else if (profile.hasError) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(profile.error!),
-          backgroundColor: AppTheme.errorColor,
+    if (!isLoggedIn) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Profil Saya')),
+        body: const LoginPrompt(
+          title: 'Profil Nasabah',
+          message:
+              'Masuk untuk melihat dan mengedit profil Anda, QR kartu digital, serta informasi akun.',
         ),
       );
     }
-  }
 
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profil Saya'),
@@ -95,22 +59,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
             tooltip: 'Pengaturan',
             onPressed: () => context.push('/settings'),
           ),
+          // Edit button — navigates to dedicated edit page
           Consumer<ProfileProvider>(
             builder: (context, profile, _) {
               if (profile.user == null) return const SizedBox.shrink();
               return IconButton(
-                icon: Icon(
-                  profile.isEditMode ? Icons.close_rounded : Icons.edit_outlined,
-                ),
-                tooltip: profile.isEditMode ? 'Batal' : 'Edit profil',
+                icon: const Icon(Icons.edit_outlined),
+                tooltip: 'Edit profil',
                 onPressed: () {
-                  if (profile.isEditMode) {
-                    profile.disableEditMode();
-                    _populateFields(profile);
-                  } else {
-                    profile.enableEditMode();
-                    _populateFields(profile);
-                  }
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => EditProfileScreen(
+                        initialUser: profile.user!,
+                      ),
+                    ),
+                  );
                 },
               );
             },
@@ -120,7 +83,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: Consumer<ProfileProvider>(
         builder: (context, profile, _) {
           if (profile.isLoading && profile.user == null) {
-            return const LoadingIndicator(message: 'Memuat profil...');
+            return _buildSkeleton(context);
           }
 
           if (profile.hasError && profile.user == null) {
@@ -139,48 +102,70 @@ class _ProfileScreenState extends State<ProfileScreen> {
             );
           }
 
-          if (!profile.isEditMode) {
-            _populateFields(profile);
-          }
-
           return RefreshIndicator(
             onRefresh: profile.loadProfile,
             color: AppTheme.primaryColor,
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.all(16),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    // ── Avatar & Nama ──
-                    _buildAvatarSection(context, user.namaLengkap),
-                    const SizedBox(height: 24),
-                    // ── Kartu Digital Link ──
-                    _buildQRCard(context),
-                    const SizedBox(height: 20),
-                    // ── Informasi Profil ──
-                    _buildInfoSection(context, profile, user),
-                    const SizedBox(height: 24),
-                    // ── Saldo & Poin ──
-                    _buildSaldoSection(context, user),
-                    const SizedBox(height: 24),
-                    // ── Info Akun ──
-                    _buildAccountInfo(context, user),
-                    const SizedBox(height: 24),
-                    // ── Logout Button ──
-                    if (!profile.isEditMode) _buildLogoutSection(context),
-                    const SizedBox(height: 16),
-
-                    // ── Save Button (edit mode) ──
-                    if (profile.isEditMode) _buildSaveButton(context, profile),
-                    const SizedBox(height: 32),
-                  ],
-                ),
+              child: Column(
+                children: [
+                  // ── Avatar & Nama ──
+                  _buildAvatarSection(context, user.namaLengkap),
+                  const SizedBox(height: 24),
+                  // ── Kartu Digital Link ──
+                  _buildQRCard(context),
+                  const SizedBox(height: 20),
+                  // ── Informasi Profil ──
+                  _buildInfoSection(context, user),
+                  const SizedBox(height: 24),
+                  // ── Saldo & Poin ──
+                  _buildSaldoSection(context, user),
+                  const SizedBox(height: 24),
+                  // ── Info Akun ──
+                  _buildAccountInfo(context, user),
+                  const SizedBox(height: 24),
+                  // ── Logout Button ──
+                  _buildLogoutSection(context),
+                  const SizedBox(height: 32),
+                ],
               ),
             ),
           );
         },
+      ),
+    );
+  }
+
+  // ─────────────────────────────────────────────
+  // Skeleton (only dynamic parts)
+  // ─────────────────────────────────────────────
+
+  Widget _buildSkeleton(BuildContext context) {
+    return const SingleChildScrollView(
+      physics: NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.all(16),
+      child: Column(
+        children: [
+          SizedBox(height: 40),
+          SkeletonCircle(size: 80),
+          SizedBox(height: 12),
+          SkeletonBlock(height: 20, width: 160),
+          SizedBox(height: 24),
+          SkeletonCard(height: 64),
+          SizedBox(height: 24),
+          SkeletonBlock(height: 14, width: 80),
+          SizedBox(height: 12),
+          SkeletonCard(height: 200),
+          SizedBox(height: 24),
+          SkeletonBlock(height: 14, width: 80),
+          SizedBox(height: 12),
+          SkeletonCard(height: 100),
+          SizedBox(height: 24),
+          SkeletonBlock(height: 14, width: 80),
+          SizedBox(height: 12),
+          SkeletonCard(height: 100),
+        ],
       ),
     );
   }
@@ -290,16 +275,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   // ─────────────────────────────────────────────
-  // Info Section (read-only or editable)
+  // Info Section (read-only view)
   // ─────────────────────────────────────────────
 
-  Widget _buildInfoSection(
-    BuildContext context,
-    ProfileProvider profile,
-    dynamic user,
-  ) {
+  Widget _buildInfoSection(BuildContext context, dynamic user) {
     final theme = Theme.of(context);
-    final isEdit = profile.isEditMode;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -322,36 +302,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           child: Column(
             children: [
-              _InfoField(
+              _StaticField(
                 icon: Icons.person_outline,
                 label: 'Nama Lengkap',
                 value: user.namaLengkap,
-                isEdit: isEdit,
-                controller: _namaController,
-                validator: (v) =>
-                    v == null || v.trim().isEmpty ? 'Nama tidak boleh kosong' : null,
               ),
               _divider(theme),
-              _InfoField(
+              _StaticField(
                 icon: Icons.phone_outlined,
                 label: 'No. Handphone',
                 value: user.noHp,
-                isEdit: isEdit,
-                controller: _noHpController,
-                keyboardType: TextInputType.phone,
-                validator: (v) =>
-                    v == null || v.trim().isEmpty ? 'No. HP tidak boleh kosong' : null,
               ),
               _divider(theme),
-              _InfoField(
+              _StaticField(
                 icon: Icons.location_on_outlined,
                 label: 'Alamat',
                 value: user.alamat,
-                isEdit: isEdit,
-                controller: _alamatController,
-                maxLines: 2,
-                validator: (v) =>
-                    v == null || v.trim().isEmpty ? 'Alamat tidak boleh kosong' : null,
               ),
               _divider(theme),
               _StaticField(
@@ -369,16 +335,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ],
           ),
         ),
-        if (isEdit)
-          Padding(
-            padding: const EdgeInsets.only(top: 12, left: 4),
-            child: Text(
-              'Saldo, poin, dan role tidak dapat diubah.',
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ),
       ],
     );
   }
@@ -485,29 +441,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   // ─────────────────────────────────────────────
-  // Save Button
-  // ─────────────────────────────────────────────
-
-  Widget _buildSaveButton(BuildContext context, ProfileProvider profile) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: profile.isSaving ? null : _saveProfile,
-        child: profile.isSaving
-            ? const SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Colors.white,
-                ),
-              )
-            : const Text('Simpan Perubahan'),
-      ),
-    );
-  }
-
-  // ─────────────────────────────────────────────
   // Logout Section
   // ─────────────────────────────────────────────
 
@@ -553,71 +486,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _showLogoutConfirmation() async {
-    final theme = Theme.of(context);
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFEF2F2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                  Icons.logout_rounded,
-                  color: Color(0xFFDC2626),
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 12),
-              const Text(
-                'Konfirmasi Keluar',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-              ),
-            ],
-          ),
-          content: Text(
-            'Apakah Anda yakin ingin keluar dari akun MIRU?\n\n'
-            'Anda dapat masuk kembali menggunakan username dan password.',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-              height: 1.5,
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(false),
-              style: TextButton.styleFrom(
-                foregroundColor: theme.colorScheme.onSurfaceVariant,
-              ),
-              child: const Text('Batal'),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.of(ctx).pop(true),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFDC2626),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: const Text('Ya, Keluar'),
-            ),
-          ],
-        );
-      },
+    final confirmed = await showExitDialog(
+      context,
+      title: 'Konfirmasi Keluar',
+      message: 'Apakah Anda yakin ingin keluar dari akun MIRU?\n\n'
+          'Anda dapat masuk kembali menggunakan username dan password.',
+      icon: Container(
+        width: 48,
+        height: 48,
+        decoration: BoxDecoration(
+          color: const Color(0xFFFEF2F2),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: const Icon(
+          Icons.logout_rounded,
+          color: Color(0xFFDC2626),
+          size: 26,
+        ),
+      ),
     );
 
-    if (confirmed == true && mounted) {
+    if (confirmed && mounted) {
       await context.read<AuthProvider>().logout();
-      // GoRouter redirect akan otomatis mengarahkan ke /login
     }
   }
 
@@ -627,95 +517,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       thickness: 1,
       indent: 56,
       color: theme.colorScheme.outlineVariant,
-    );
-  }
-}
-
-// ─────────────────────────────────────────────
-// Editable Field
-// ─────────────────────────────────────────────
-
-class _InfoField extends StatelessWidget {
-  const _InfoField({
-    required this.icon,
-    required this.label,
-    required this.value,
-    required this.isEdit,
-    required this.controller,
-    this.keyboardType,
-    this.maxLines = 1,
-    this.validator,
-  });
-
-  final IconData icon;
-  final String label;
-  final String value;
-  final bool isEdit;
-  final TextEditingController controller;
-  final TextInputType? keyboardType;
-  final int maxLines;
-  final String? Function(String?)? validator;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 32,
-            height: 32,
-            decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(icon, size: 18, color: AppTheme.primaryColor),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: isEdit
-                ? TextFormField(
-                    controller: controller,
-                    keyboardType: keyboardType,
-                    maxLines: maxLines,
-                    validator: validator,
-                    decoration: InputDecoration(
-                      labelText: label,
-                      isDense: true,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 10,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    style: theme.textTheme.bodyMedium,
-                  )
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        label,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        value,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-          ),
-        ],
-      ),
     );
   }
 }

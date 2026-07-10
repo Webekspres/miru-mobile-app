@@ -114,27 +114,63 @@ class HomeProvider extends ChangeNotifier {
 
   Future<void> _fetchRecentDeposits() async {
     try {
-      final depositData = await _apiClient.get<Map<String, dynamic>>(
+      final data = await _apiClient.get<List<dynamic>>(
         '/deposits/',
         queryParameters: {
           'nasabah': _user!.id.toString(),
           'page_size': '3',
           'ordering': '-tanggal',
         },
-        fromJson: (json) => Map<String, dynamic>.from(json as Map),
+        fromJson: (json) => json as List<dynamic>,
       );
 
-      final results = depositData['results'];
-      if (results is List) {
-        _recentDeposits = Deposit.listFromJson(results);
-      } else {
-        _recentDeposits = [];
-      }
+      _recentDeposits = Deposit.listFromJson(data);
     } catch (_) {
       // Deposits fetch is non-critical; keep previous data or empty
       if (_recentDeposits.isEmpty) {
         _recentDeposits = [];
       }
     }
+  }
+
+  // ──────────────────────────────────────────────
+  // Load Categories Only (public, no auth required)
+  // ──────────────────────────────────────────────
+
+  /// Fetches ONLY waste categories (public endpoint).
+  /// No auth required — used by InfoSampahScreen for unauthenticated users.
+  Future<void> loadCategoriesOnly() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final catData = await _apiClient.get<List<dynamic>>(
+        '/waste-categories/',
+        fromJson: (json) => json as List<dynamic>,
+      );
+      _categories = WasteCategory.listFromJson(catData);
+    } on DioException catch (e) {
+      _error = parseDioError(e);
+    } catch (e) {
+      _error = 'Terjadi kesalahan. Silakan coba lagi.';
+    }
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  // ──────────────────────────────────────────────
+  // Clear cache (panggil saat logout)
+  // ──────────────────────────────────────────────
+
+  void clearCache() {
+    _user = null;
+    _categories = [];
+    _recentDeposits = [];
+    _error = null;
+    _isLoading = false;
+    _isRefreshing = false;
+    notifyListeners();
   }
 }

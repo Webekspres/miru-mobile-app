@@ -142,4 +142,17 @@ class RewardProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  // ──────────────────────────────────────────────
+  // Clear cache (panggil saat logout)
+  // ──────────────────────────────────────────────
+
+  void clearCache() {
+    _rewards = [];
+    _error = null;
+    _submitError = null;
+    _isLoading = false;
+    _isSubmitting = false;
+    notifyListeners();
+  }
 }

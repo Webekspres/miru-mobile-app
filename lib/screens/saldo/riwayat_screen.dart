@@ -4,11 +4,12 @@ import 'package:provider/provider.dart';
 
 import '../../config/theme.dart';
 import '../../models/activity_item.dart';
+import '../../providers/auth_session.dart';
 import '../../providers/home_provider.dart';
 import '../../providers/saldo_provider.dart';
-import '../../widgets/empty_state.dart';
 import '../../widgets/error_view.dart';
-import '../../widgets/loading_indicator.dart';
+import '../../widgets/login_prompt.dart';
+import '../../widgets/shimmer_loading.dart';
 
 class RiwayatScreen extends StatefulWidget {
   const RiwayatScreen({super.key});
@@ -54,13 +55,25 @@ class _RiwayatScreenState extends State<RiwayatScreen>
     final saldo = context.read<SaldoProvider>();
     final home = context.read<HomeProvider>();
     final userId = home.user?.id;
-    if (userId != null && saldo.items.isEmpty && !saldo.isLoading) {
+    if (userId != null && !saldo.isLoading) {
       saldo.loadActivity(userId: userId);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isLoggedIn = context.watch<AuthSession>().isLoggedIn;
+
+    if (!isLoggedIn) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Riwayat')),
+        body: const LoginPrompt(
+          title: 'Riwayat Transaksi',
+          message: 'Masuk untuk melihat riwayat setoran, penarikan, dan penukaran poin Anda.',
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Riwayat'),
@@ -76,7 +89,11 @@ class _RiwayatScreenState extends State<RiwayatScreen>
       body: Consumer<SaldoProvider>(
         builder: (context, saldo, _) {
           if (saldo.isLoading && saldo.items.isEmpty) {
-            return const LoadingIndicator(message: 'Memuat riwayat...');
+            return const SingleChildScrollView(
+              physics: NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.fromLTRB(0, 60, 0, 24),
+              child: ListSkeleton(itemCount: 6),
+            );
           }
 
           if (saldo.hasError && saldo.items.isEmpty) {
@@ -88,18 +105,48 @@ class _RiwayatScreenState extends State<RiwayatScreen>
           }
 
           if (saldo.items.isEmpty) {
-            return ListView(
-              children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.5,
-                  child: const EmptyState(
-                    icon: Icons.receipt_long_outlined,
-                    title: 'Belum ada transaksi',
-                    description: 'Setoran, penarikan, dan penukaran poin akan muncul di sini.',
-                    expand: false,
+            final emptyTheme = Theme.of(context);
+            return Center(
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 72,
+                        height: 72,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF3F4F6),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.receipt_long_outlined,
+                          size: 36,
+                          color: Color(0xFF9CA3AF),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'Belum ada transaksi',
+                        style: emptyTheme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Setoran, penarikan, dan penukaran poin akan muncul di sini.',
+                        style: emptyTheme.textTheme.bodyMedium?.copyWith(
+                          color: emptyTheme.colorScheme.onSurfaceVariant,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
                 ),
-              ],
+              ),
             );
           }
 
@@ -423,7 +470,9 @@ class _ActivityCard extends StatelessWidget {
                     '${item.isCredit ? '+' : '-'}${formatter.format(item.nominalAsDouble)}',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: item.isCredit ? AppTheme.primaryColor : const Color(0xFFDC2626),
+                      color: item.isCredit
+                          ? AppTheme.primaryColor
+                          : const Color(0xFFDC2626),
                     ),
                   )
                 else if (item.poin != null)
@@ -438,7 +487,8 @@ class _ActivityCard extends StatelessWidget {
                 Icon(
                   Icons.chevron_right_rounded,
                   size: 18,
-                  color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                  color: theme.colorScheme.onSurfaceVariant
+                      .withValues(alpha: 0.4),
                 ),
               ],
             ),

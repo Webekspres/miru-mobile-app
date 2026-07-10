@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 import '../../config/theme.dart';
 import '../../models/announcement.dart';
+import '../../providers/pengumuman_provider.dart';
+import '../../widgets/shimmer_loading.dart';
 
 class PengumumanScreen extends StatefulWidget {
   const PengumumanScreen({super.key});
@@ -12,12 +15,13 @@ class PengumumanScreen extends StatefulWidget {
 }
 
 class _PengumumanScreenState extends State<PengumumanScreen> {
-  // TODO: Integrate with API GET /api/pengumuman/ when backend Fase 5 is ready.
-  // For now, show placeholder with empty state.
-
-  final _isLoading = false;
-  final _hasError = false;
-  final _announcements = <Announcement>[];
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<PengumumanProvider>().loadPengumuman();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,8 +31,62 @@ class _PengumumanScreenState extends State<PengumumanScreen> {
       appBar: AppBar(
         title: const Text('Pengumuman'),
       ),
-      body: _announcements.isEmpty && !_isLoading
-          ? Center(
+      body: Consumer<PengumumanProvider>(
+        builder: (context, provider, _) {
+          if (provider.isLoading) {
+            return SingleChildScrollView(
+              physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+              child: const Column(
+                children: [
+                  SkeletonCard(height: 100),
+                  SizedBox(height: 12),
+                  SkeletonCard(height: 100),
+                  SizedBox(height: 12),
+                  SkeletonCard(height: 100),
+                ],
+              ),
+            );
+          }
+
+          if (provider.hasError) {
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.error_outline_rounded,
+                    size: 48,
+                    color: AppTheme.errorColor,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Gagal memuat pengumuman',
+                    style: theme.textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 40),
+                    child: Text(
+                      provider.error ?? 'Terjadi kesalahan.',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  OutlinedButton(
+                    onPressed: () => provider.loadPengumuman(),
+                    child: const Text('Coba Lagi'),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          if (provider.announcements.isEmpty) {
+            return Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -63,45 +121,25 @@ class _PengumumanScreenState extends State<PengumumanScreen> {
                   ),
                 ],
               ),
-            )
-          : _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : _hasError
-                  ? Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.error_outline_rounded,
-                            size: 48,
-                            color: AppTheme.errorColor,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'Gagal memuat pengumuman',
-                            style: theme.textTheme.titleMedium,
-                          ),
-                          const SizedBox(height: 20),
-                          OutlinedButton(
-                            onPressed: () {
-                              // TODO: reload
-                            },
-                            child: const Text('Coba Lagi'),
-                          ),
-                        ],
-                      ),
-                    )
-                  : ListView.builder(
-                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-                      itemCount: _announcements.length,
-                      itemBuilder: (context, index) {
-                        final item = _announcements[index];
-                        return _AnnouncementCard(
-                          item: item,
-                          onTap: () => _showDetail(context, item),
-                        );
-                      },
-                    ),
+            );
+          }
+
+          return RefreshIndicator(
+            onRefresh: () => provider.refresh(),
+            child: ListView.builder(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+              itemCount: provider.announcements.length,
+              itemBuilder: (context, index) {
+                final item = provider.announcements[index];
+                return _AnnouncementCard(
+                  item: item,
+                  onTap: () => _showDetail(context, item),
+                );
+              },
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -113,10 +151,6 @@ class _PengumumanScreenState extends State<PengumumanScreen> {
     );
   }
 }
-
-// ─────────────────────────────────────────────
-// Announcement Card
-// ─────────────────────────────────────────────
 
 class _AnnouncementCard extends StatelessWidget {
   const _AnnouncementCard({required this.item, required this.onTap});
@@ -208,10 +242,6 @@ class _AnnouncementCard extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────
-// Detail Screen
-// ─────────────────────────────────────────────
-
 class _PengumumanDetailScreen extends StatelessWidget {
   const _PengumumanDetailScreen({required this.item});
 
@@ -231,7 +261,6 @@ class _PengumumanDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Header Icon ──
             Center(
               child: Container(
                 width: 64,
@@ -248,8 +277,6 @@ class _PengumumanDetailScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-
-            // ── Judul ──
             Text(
               item.judul,
               style: theme.textTheme.headlineSmall?.copyWith(
@@ -257,8 +284,6 @@ class _PengumumanDetailScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-
-            // ── Tanggal ──
             Row(
               children: [
                 Icon(
@@ -276,8 +301,6 @@ class _PengumumanDetailScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 20),
-
-            // ── Isi ──
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),

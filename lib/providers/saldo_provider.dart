@@ -76,21 +76,16 @@ class SaldoProvider extends ChangeNotifier {
   }
 
   Future<void> _fetchFromActivity() async {
-    final data = await _apiClient.get<Map<String, dynamic>>(
+    final data = await _apiClient.get<List<dynamic>>(
       '/activity/',
       queryParameters: {
         'nasabah': _currentUserId.toString(),
         'page_size': '50',
       },
-      fromJson: (json) => Map<String, dynamic>.from(json as Map),
+      fromJson: (json) => json as List<dynamic>,
     );
 
-    final results = data['results'];
-    if (results is List) {
-      _items = ActivityItem.listFromJson(results);
-    } else {
-      _items = [];
-    }
+    _items = ActivityItem.listFromJson(data);
   }
 
   Future<void> _fetchFromIndividualEndpoints() async {
@@ -98,28 +93,25 @@ class SaldoProvider extends ChangeNotifier {
 
     try {
       // Fetch deposits
-      final depositData = await _apiClient.get<Map<String, dynamic>>(
+      final depositData = await _apiClient.get<List<dynamic>>(
         '/deposits/',
         queryParameters: {
           'nasabah': _currentUserId.toString(),
           'page_size': '20',
           'ordering': '-tanggal',
         },
-        fromJson: (json) => Map<String, dynamic>.from(json as Map),
+        fromJson: (json) => json as List<dynamic>,
       );
-      final depositResults = depositData['results'];
-      if (depositResults is List) {
-        for (final d in depositResults) {
-          _items.add(ActivityItem(
-            id: d['id'] as int,
-            type: ActivityType.setoran,
-            status: d['status'] as String? ?? 'selesai',
-            keterangan: 'Setoran sampah',
-            tanggal: DateTime.parse(d['tanggal'] as String),
-            nominal: d['total_nilai']?.toString(),
-            poin: d['poin_didapat'] as int?,
-          ));
-        }
+      for (final d in depositData) {
+        _items.add(ActivityItem(
+          id: d['id'] as int,
+          type: ActivityType.setoran,
+          status: d['status'] as String? ?? 'selesai',
+          keterangan: 'Setoran sampah',
+          tanggal: DateTime.parse(d['tanggal'] as String),
+          nominal: d['total_nilai']?.toString(),
+          poin: d['poin_didapat'] as int?,
+        ));
       }
     } catch (_) {
       // Non-critical
@@ -127,27 +119,24 @@ class SaldoProvider extends ChangeNotifier {
 
     try {
       // Fetch withdrawals
-      final wdData = await _apiClient.get<Map<String, dynamic>>(
+      final wdData = await _apiClient.get<List<dynamic>>(
         '/withdrawals/',
         queryParameters: {
           'nasabah': _currentUserId.toString(),
           'page_size': '20',
           'ordering': '-tanggal',
         },
-        fromJson: (json) => Map<String, dynamic>.from(json as Map),
+        fromJson: (json) => json as List<dynamic>,
       );
-      final wdResults = wdData['results'];
-      if (wdResults is List) {
-        for (final w in wdResults) {
-          _items.add(ActivityItem(
-            id: w['id'] as int,
-            type: ActivityType.penarikan,
-            status: w['status'] as String? ?? 'menunggu',
-            keterangan: 'Penarikan saldo',
-            tanggal: DateTime.parse(w['tanggal'] as String),
-            nominal: w['nominal']?.toString(),
-          ));
-        }
+      for (final w in wdData) {
+        _items.add(ActivityItem(
+          id: w['id'] as int,
+          type: ActivityType.penarikan,
+          status: w['status'] as String? ?? 'menunggu',
+          keterangan: 'Penarikan saldo',
+          tanggal: DateTime.parse(w['tanggal'] as String),
+          nominal: w['nominal']?.toString(),
+        ));
       }
     } catch (_) {
       // Non-critical
@@ -155,27 +144,24 @@ class SaldoProvider extends ChangeNotifier {
 
     try {
       // Fetch reward redemptions
-      final rrData = await _apiClient.get<Map<String, dynamic>>(
+      final rrData = await _apiClient.get<List<dynamic>>(
         '/reward-redemptions/',
         queryParameters: {
           'nasabah': _currentUserId.toString(),
           'page_size': '20',
           'ordering': '-tanggal',
         },
-        fromJson: (json) => Map<String, dynamic>.from(json as Map),
+        fromJson: (json) => json as List<dynamic>,
       );
-      final rrResults = rrData['results'];
-      if (rrResults is List) {
-        for (final r in rrResults) {
-          _items.add(ActivityItem(
-            id: r['id'] as int,
-            type: ActivityType.penukaranPoin,
-            status: r['status'] as String? ?? 'menunggu',
-            keterangan: 'Tukar ${r['reward_nama'] ?? 'poin'}',
-            tanggal: DateTime.parse(r['tanggal'] as String),
-            poin: r['poin_dibutuhkan'] as int?,
-          ));
-        }
+      for (final r in rrData) {
+        _items.add(ActivityItem(
+          id: r['id'] as int,
+          type: ActivityType.penukaranPoin,
+          status: r['status'] as String? ?? 'menunggu',
+          keterangan: 'Tukar ${r['reward_nama'] ?? 'poin'}',
+          tanggal: DateTime.parse(r['tanggal'] as String),
+          poin: r['poin_dibutuhkan'] as int?,
+        ));
       }
     } catch (_) {
       // Non-critical
@@ -271,5 +257,20 @@ class SaldoProvider extends ChangeNotifier {
       _submitError = null;
       notifyListeners();
     }
+  }
+
+  // ──────────────────────────────────────────────
+  // Clear cache (panggil saat logout)
+  // ──────────────────────────────────────────────
+
+  void clearCache() {
+    _items = [];
+    _error = null;
+    _submitError = null;
+    _activeFilter = null;
+    _currentUserId = 0;
+    _isLoading = false;
+    _isSubmitting = false;
+    notifyListeners();
   }
 }

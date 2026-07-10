@@ -146,4 +146,17 @@ class ProfileProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  // ──────────────────────────────────────────────
+  // Clear cache (panggil saat logout)
+  // ──────────────────────────────────────────────
+
+  void clearCache() {
+    _user = null;
+    _error = null;
+    _isEditMode = false;
+    _isLoading = false;
+    _isSaving = false;
+    notifyListeners();
+  }
 }

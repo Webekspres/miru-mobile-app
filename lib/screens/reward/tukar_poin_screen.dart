@@ -4,8 +4,10 @@ import 'package:provider/provider.dart';
 
 import '../../config/theme.dart';
 import '../../models/reward.dart';
+import '../../providers/auth_session.dart';
 import '../../providers/home_provider.dart';
 import '../../providers/reward_provider.dart';
+import '../../widgets/login_prompt.dart';
 
 class TukarPoinScreen extends StatelessWidget {
   const TukarPoinScreen({super.key});
@@ -34,6 +36,34 @@ class _TukarPoinContent extends StatefulWidget {
 }
 
 class _TukarPoinContentState extends State<_TukarPoinContent> {
+  @override
+  Widget build(BuildContext context) {
+    final isLoggedIn = context.watch<AuthSession>().isLoggedIn;
+
+    if (!isLoggedIn) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Tukar Poin')),
+        body: const LoginPrompt(
+          title: 'Tukar Poin',
+          message: 'Masuk untuk menukarkan poin Anda.',
+        ),
+      );
+    }
+
+    return _TukarPoinBody(reward: widget.reward);
+  }
+}
+
+class _TukarPoinBody extends StatefulWidget {
+  const _TukarPoinBody({required this.reward});
+
+  final Reward reward;
+
+  @override
+  State<_TukarPoinBody> createState() => _TukarPoinBodyState();
+}
+
+class _TukarPoinBodyState extends State<_TukarPoinBody> {
   bool _isProcessing = false;
 
   Future<void> _confirmRedemption() async {
@@ -216,9 +246,7 @@ class _TukarPoinContentState extends State<_TukarPoinContent> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tukar Poin'),
-      ),
+      appBar: AppBar(title: const Text('Tukar Poin')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(

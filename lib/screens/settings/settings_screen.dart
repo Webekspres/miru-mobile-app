@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../config/theme.dart';
 import '../../providers/auth_provider.dart';
+import '../../widgets/exit_dialog.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -25,8 +26,8 @@ class SettingsScreen extends StatelessWidget {
                 icon: Icons.person_outline,
                 iconBgColor: AppTheme.primaryColor.withValues(alpha: 0.1),
                 iconColor: AppTheme.primaryColor,
-                label: 'Profil Saya',
-                subtitle: 'Lihat dan edit data diri',
+                label: 'Edit Profil',
+                subtitle: 'Ubah data diri Anda',
                 onTap: () => context.push('/profile'),
               ),
             ],
@@ -38,14 +39,6 @@ class SettingsScreen extends StatelessWidget {
           _SectionHeader(title: 'Informasi'),
           _SettingsCard(
             items: [
-              _MenuItem(
-                icon: Icons.campaign_outlined,
-                iconBgColor: const Color(0xFFDBEAFE),
-                iconColor: const Color(0xFF2563EB),
-                label: 'Pengumuman',
-                subtitle: 'Informasi terbaru dari MIRU',
-                onTap: () => context.push('/settings/pengumuman'),
-              ),
               _MenuItem(
                 icon: Icons.description_outlined,
                 iconBgColor: const Color(0xFFFEF3C7),
@@ -87,70 +80,27 @@ class SettingsScreen extends StatelessWidget {
   }
 
   Future<void> _showLogoutConfirmation(BuildContext context) async {
-    final theme = Theme.of(context);
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFEF2F2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                  Icons.logout_rounded,
-                  color: Color(0xFFDC2626),
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 12),
-              const Text(
-                'Konfirmasi Keluar',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-              ),
-            ],
-          ),
-          content: Text(
-            'Apakah Anda yakin ingin keluar dari akun MIRU?',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-              height: 1.5,
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(false),
-              style: TextButton.styleFrom(
-                foregroundColor: theme.colorScheme.onSurfaceVariant,
-              ),
-              child: const Text('Batal'),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.of(ctx).pop(true),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFDC2626),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: const Text('Ya, Keluar'),
-            ),
-          ],
-        );
-      },
+    final confirmed = await showExitDialog(
+      context,
+      title: 'Konfirmasi Keluar',
+      message: 'Apakah Anda yakin ingin keluar dari akun MIRU?',
+      icon: Container(
+        width: 48,
+        height: 48,
+        decoration: BoxDecoration(
+          color: const Color(0xFFFEF2F2),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: const Icon(
+          Icons.logout_rounded,
+          color: Color(0xFFDC2626),
+          size: 26,
+        ),
+      ),
     );
 
-    if (confirmed == true && context.mounted) {
+    if (confirmed && context.mounted) {
       await context.read<AuthProvider>().logout();
-      // GoRouter redirect will navigate to /login
     }
   }
 }

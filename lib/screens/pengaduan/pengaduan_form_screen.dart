@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 
 import '../../config/theme.dart';
 import '../../models/complaint.dart';
+import '../../providers/auth_session.dart';
 import '../../providers/pengaduan_provider.dart';
+import '../../widgets/login_prompt.dart';
 
 class PengaduanFormScreen extends StatefulWidget {
   const PengaduanFormScreen({super.key});
@@ -66,6 +68,17 @@ class _PengaduanFormScreenState extends State<PengaduanFormScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isLoggedIn = context.watch<AuthSession>().isLoggedIn;
+
+    if (!isLoggedIn) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Pengaduan Baru')),
+        body: const LoginPrompt(
+          title: 'Pengaduan Baru',
+          message: 'Masuk untuk mengajukan pengaduan kepada MIRU Bank Sampah.',
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
