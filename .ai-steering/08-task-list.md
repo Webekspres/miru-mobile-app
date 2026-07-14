@@ -1,17 +1,17 @@
 # 08 — Task List: Mobile App Development Roadmap
 
-> **Dokumen ini** adalah roadmap pengembangan **mirumobileapp** dari scaffold hingga production-ready (Android prioritas).
-> Urutan task mengikuti dependensi **miru-backend-api**; mobile adalah **prioritas ketiga** setelah web admin operasional.
+> **Dokumen ini** adalah roadmap **mirumobileapp** (Android prioritas).
+> Urutan: **yang belum selesai di atas**, arsip MVP yang sudah selesai di bawah.
 >
-> **Referensi terkait (repo ini):**
-> - `04-api-integration.md` — Dio client & JSON Envelope
-> - `07-modules-and-features.md` — wireframe & 14 fitur nasabah
-> - `10-integration-and-roles.md` — alur nasabah & integrasi staff
+> Item pengembangan lanjutan hanya dari dokumen persyaratan (Proposal, Jawaban,
+> Modules, Business Rules, Constraints).
 >
-> **Referensi backend (repositori terpisah):**
-> - **miru-backend-api** — `.ai-steering/08-task-list.md` (roadmap API)
-> - **miru-backend-api** — `.ai-steering/04-api-contracts-and-standards.md` (kontrak endpoint)
-> - **miru-backend-api** — `.ai-steering/07-modules-and-features.md` (17 modul sistem)
+> **Referensi (repo ini):**
+> - `04-api-integration.md`, `07-modules-and-features.md`, `10-integration-and-roles.md`
+> - `05-business-rules-sops.md`, `06-system-constraints.md`
+>
+> **Referensi backend:**
+> - `miru-backend-api` → `.ai-steering/08-task-list.md`, `04-api-contracts`, `07-modules`
 
 ---
 
@@ -19,336 +19,64 @@
 
 | Fase | Nama | Tujuan | Backend Min. | Status |
 |------|------|--------|--------------|--------|
-| 0 | Scaffold | Flutter project default | — | ✅ Selesai |
-| 1 | Foundation | Dependencies, API client, models | Backend Fase 1 ✅ | 🔲 Berikutnya |
-| 2 | Auth Flow | Login, register, JWT, splash | Backend Fase 1 ✅ | 🔲 |
-| 3 | MVP Screens | Home, profil, jemput, saldo, reward, pengaduan | Backend Fase 2–3 | ✅ Selesai |
-| 4 | Navigation & UX | Bottom nav, polish, error states | Backend Fase 2–3 | ✅ Selesai |
-| 5 | Settings & Info | Pengumuman, kebijakan, jam layanan | Backend Fase 5 | ✅ Selesai |
-| 6 | Kualitas & Testing | Widget test, integration, UAT | Backend Fase 6 | 🔲 |
-| 7 | Production Android | APK/AAB, Play Store prep | Backend Fase 7 | 🔲 |
-| 8 | Post-MVP | FCM, iOS, offline cache | Backend Fase 8 | 🔲 |
+| 0–5 | Scaffold → Settings | Auth, MVP screens, UX, pengumuman | Fase 1–5 ✅ | ✅ Selesai |
+| 6 | Kualitas & UAT | Widget/unit test + checklist UAT | Fase 6 | 🔲 Aktif |
+| 7 | Production Android | APK/AAB, Play Store | Fase 7 | 🔲 Aktif |
+| 8 | Pengembangan Lanjutan | FCM, edukasi, lupa password, iOS, dll. | Fase 8 | 🔲 Post-MVP |
+| — | Out of Scope | Larangan sistem | — | ⛔ |
 
----
+### Cakupan Modul — Mobile (Nasabah)
 
-## Cakupan Modul — Mobile (Nasabah)
+Dari 17 modul sistem, **sebagian** di mobile; sisanya staff-only di web-admin.
 
-Dari 17 modul sistem, **10 modul** diimplementasikan di mobile (sisanya staff-only di **miru-web-admin**).
-
-| No | Modul | Screen | Fase | Backend API |
-|----|-------|--------|------|-------------|
-| 2 | Autentikasi | `LoginScreen`, `RegisterScreen`, `SplashScreen` | Fase 2 | `/api/auth/*`, `POST /api/users/` |
-| 3 | Profil & QR | `ProfileScreen`, `QRCodeScreen` | Fase 3 | `/api/auth/me/`, `PATCH /api/users/{id}/` |
-| 4 | Info & Edukasi | `InfoSampahScreen` | Fase 3 | `GET /api/waste-categories/` (public) |
-| 5 | Katalog Harga | (bagian InfoSampah & Home) | Fase 3 | `GET /api/waste-categories/` |
-| 7 | Penjemputan | `PenjemputanScreen`, `AjukanPenjemputanScreen` | Fase 3 | `/api/pickups/` |
-| 9 | Saldo & Riwayat | `RiwayatScreen`, `HomeScreen` | Fase 3 | `/api/deposits/`, `/api/activity/` |
-| 10 | Tarik Saldo | `TarikSaldoScreen` | Fase 3 | `/api/withdrawals/` |
-| 11 | Poin & Reward | `RewardScreen`, `TukarPoinScreen` | Fase 3 | `/api/rewards/`, `/api/reward-redemptions/` |
-| 14 | Pengaduan | `PengaduanScreen`, `PengaduanFormScreen` | Fase 3 | `/api/complaints/` |
-| 15 | Dashboard | `HomeScreen` | Fase 3 | `/api/auth/me/`, waste-categories |
-| 17 | Settings | `SettingsScreen` | Fase 5 | `/api/settings/`, `/api/pengumuman/` |
+| No | Modul | Screen | Status MVP | Lanjutan |
+|----|-------|--------|------------|----------|
+| 2 | Autentikasi | Login, Register, Splash | ✅ | Lupa password; verifikasi HP/email (opsional) |
+| 3 | Profil & QR | Profile, QRCode | ✅ | RT/RW–kelurahan; share QR |
+| 4 | Info & Edukasi | InfoSampah | ✅ (kategori/harga) | Artikel edukasi dari API |
+| 5 | Katalog Harga | (InfoSampah / Home) | ✅ | Banner harga H-3 |
+| 7 | Penjemputan | List + Ajukan | ✅ | Wilayah/kuota; Maps sederhana |
+| 9 | Saldo & Riwayat | Riwayat, Home | ✅ | Notifikasi status |
+| 10 | Tarik Saldo | TarikSaldo | ✅ | Bukti PDF; metode metadata |
+| 11 | Poin & Reward | Reward, Tukar | ✅ | Info masa berlaku poin |
+| 14 | Pengaduan | List + Form | ✅ | — |
+| 15 | Dashboard | Home | ✅ | — |
+| 17 | Settings | Settings, Pengumuman, Kebijakan | ✅ | FCM settings |
 
 Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 
 ---
 
-## Matriks Dependensi Backend → Mobile
-
-| Backend Fase (miru-backend-api) | Fitur API | Task Mobile yang Unblock |
-|---------------------------------|-----------|--------------------------|
-| Fase 1 ✅ | Auth, register, me, waste-categories public | Fase 1–2, InfoSampah, Home (partial) |
-| Fase 2 | Validasi penjemputan, penarikan, penukaran | Fase 3 forms dengan error bisnis benar |
-| Fase 3 | Pickup workflow, activity feed, approve flows | Fase 3 status jemput real-time, riwayat gabungan |
-| Fase 5 | Settings, pengumuman | Fase 5 announcements |
-| Fase 8 | Push notification trigger | Fase 8 FCM |
-
-| Backend Fase | Integrasi Staff (miru-web-admin) |
-|--------------|----------------------------------|
-| Fase 2–3 | Petugas input setoran → nasabah lihat saldo di Home |
-| Fase 2–3 | Admin approve penarikan → status update di Riwayat |
-| Fase 2–3 | Petugas update penjemputan → badge status di PenjemputanScreen |
+# BAGIAN A — BELUM SELESAI (prioritas atas)
 
 ---
 
-## Fase 0: Scaffold ✅ Selesai
+## Fase 6: Kualitas & Testing (UAT Ready)
 
-### 0.1 Project Setup ✅
-- [x] Create Flutter project (`mirumobileapp`, Dart ^3.12.2)
-- [x] Android/iOS folder structure
-- [x] `flutter_lints` configured
-- [x] Dokumentasi `.ai-steering/` selaras **miru-backend-api**
-
----
-
-## Fase 1: Foundation
-
-> **Backend:** Fase 1 ✅
-> **Tujuan:** Arsitektur Provider + Dio + go_router siap.
-
-### 1.1 Dependencies (`pubspec.yaml`)
-- [x] `provider` — state management
-- [x] `dio` — HTTP client
-- [x] `go_router` — declarative routing
-- [x] `flutter_secure_storage` — token storage
-- [x] `qr_flutter` — QR code kartu digital
-- [x] `intl` — format Rupiah & tanggal Indonesia
-- [x] `cached_network_image` (opsional) — logo/avatar
-- [x] Run `flutter pub get`
-
-### 1.2 Folder Structure
-- [x] `lib/config/` — constants, theme, routes
-- [x] `lib/models/` — data classes
-- [x] `lib/services/` — api_client, auth_service, storage_service
-- [x] `lib/providers/` — ChangeNotifier per domain
-- [x] `lib/screens/` — UI per fitur
-- [x] `lib/widgets/` — reusable widgets
-- [x] `lib/app.dart` — MaterialApp + MultiProvider
-- [x] Refactor `main.dart` → entry point minimal
-
-### 1.3 Config & Theme
-- [x] `config/constants.dart` — `apiBaseUrl` (10.0.2.2 emulator, LAN IP device)
-- [x] `config/theme.dart` — Material 3, primary `#16a34a`, typography
-- [x] `config/routes.dart` — go_router routes + auth redirect
-- [x] Environment notes di README (emulator vs device fisik)
-
-### 1.4 API Client (Modul 2 — infrastruktur)
-- [x] `services/api_client.dart` — Dio instance, timeouts
-- [x] `EnvelopeInterceptor` — unwrap `data`, throw on `success: false`
-- [x] `AuthInterceptor` — attach Bearer token
-- [x] Refresh token on 401 → retry request
-- [x] `services/auth_service.dart` — login, register, logout, getMe, token R/W
-- [x] `services/storage_service.dart` — wrapper secure storage
-- [x] `models/api_envelope.dart` — parse envelope (fallback jika no interceptor)
-
-### 1.5 Core Models
-- [x] `models/user.dart` — fromJson, saldo as String → double helper
-- [x] `models/waste_category.dart`
-- [x] `models/deposit.dart` + `deposit_detail.dart`
-- [x] `models/pickup.dart` — status enum + badge color
-- [x] `models/withdrawal.dart`
-- [x] `models/reward.dart`, `models/reward_redemption.dart`
-- [x] `models/complaint.dart`
-- [x] `models/activity_item.dart` — untuk riwayat gabungan *(backend Fase 3.5)*
-
-### 1.6 Shared Widgets
-- [x] `widgets/loading_indicator.dart`
-- [x] `widgets/error_view.dart` — message + retry
-- [x] `widgets/empty_state.dart`
-- [x] `widgets/saldo_card.dart` — prominent saldo display
-- [x] `widgets/status_badge.dart` — penjemputan/pengaduan status
-- [x] `widgets/app_scaffold.dart` — AppBar konsisten MIRU
-
----
-
-## Fase 2: Auth Flow (Modul 2)
-
-> **Backend:** Fase 1 ✅ — `POST /api/auth/login/`, `POST /api/users/`, `GET /api/auth/me/`
-> **Tujuan:** Nasabah bisa daftar & login; staff ditolak.
-
-### 2.1 AuthProvider
-- [x] `providers/auth_provider.dart` — user, isLoggedIn, isLoading, error
-- [x] `login(username, password)` → guard `role == nasabah`
-- [x] `register(data)` → `POST /api/users/` + auto login
-- [x] `logout()` — clear storage, navigate login
-- [x] `checkAuthStatus()` — splash auto-login
-- [x] Reject non-nasabah: "Akun petugas/admin hanya untuk Web Admin MIRU"
-
-### 2.2 SplashScreen
-- [x] Logo MIRU + loading
-- [x] Cek token → `GET /api/auth/me/` → `/home` atau `/login`
-- [x] Handle expired token gracefully
-
-### 2.3 LoginScreen
-- [x] Form username + password
-- [x] Validasi: field tidak kosong
-- [x] `POST /api/auth/login/`
-- [x] Error SnackBar dari envelope `message`
-- [x] Link ke RegisterScreen
-- [x] Loading disable button
-
-### 2.4 RegisterScreen
-- [x] Field: nama_lengkap, username, password, no_hp, alamat
-- [x] NIK opsional
-- [x] Checkbox `setuju_kebijakan_data` — required *(backend Fase 5.5)*
-- [x] Validasi password min 6 karakter
-- [x] `POST /api/users/` → success → login → Home
-- [x] Tampilkan error field-level dari `envelope.errors`
-
-### 2.5 Auth Routing
-- [x] go_router redirect: unauthenticated → `/login`
-- [x] Deep link guard — no access without token
-- [x] Back button behavior dari auth screens
-
----
-
-## Fase 3: MVP Screens
-
-> **Backend:** Fase 2–3 — validasi bisnis & workflow
-> **Tujuan:** Semua fitur nasabah MVP berfungsi end-to-end.
-
-### 3.1 HomeScreen / Dashboard (Modul 15, 5, 9)
-- [x] `providers/home_provider.dart`
-- [x] `GET /api/auth/me/` — saldo, poin
-- [x] `GET /api/waste-categories/` — 3–4 kategori top untuk info harga
-- [x] `GET /api/activity/?limit=3` atau aggregate deposits *(backend Fase 3.5)*
-- [x] UI: Saldo card (besar), poin, quick actions grid
-- [x] Quick actions: [Jemput] [Tarik] [Tukar] [Info Sampah]
-- [x] Aktivitas terbaru list (3 item)
-- [x] Pull-to-refresh
-- [x] Banner jam layanan Sen–Sab 08–17 WIT jika di luar jam
-
-### 3.2 Profil & Kartu Digital (Modul 3)
-- [x] `screens/profile/profile_screen.dart` — lihat data diri
-- [x] `GET /api/auth/me/`
-- [x] Form edit: nama, no_hp, alamat — `PATCH /api/users/{id}/`
-- [x] Validasi: tidak bisa ubah saldo/poin/role
-- [x] `screens/profile/qrcode_screen.dart`
-- [x] QR encode JSON: `{ id, nama_lengkap, no_hp }` — **bukan JWT**
-- [x] Tombol share/screenshot QR *(post-MVP)*
-
-### 3.3 Info Sampah (Modul 4, 5)
-- [x] `screens/info/info_sampah_screen.dart`
-- [x] `GET /api/waste-categories/` — public, no auth required
-- [x] List: nama, harga/kg, contoh sampah
-- [x] Detail bottom sheet: panduan pemilahan singkat
-- [x] Catatan: minimal setoran 1 kg per jenis
-
-### 3.4 Penjemputan (Modul 7)
-- [x] `providers/penjemputan_provider.dart`
-- [x] `screens/penjemputan/penjemputan_screen.dart` — tabs Aktif | Riwayat
-- [x] `GET /api/pickups/?nasabah={id}`
-- [x] Status badge warna (`05-business-rules-sops.md`)
-- [x] FAB / button [+ Ajukan]
-- [x] `screens/penjemputan/ajukan_penjemputan_screen.dart`
-- [x] Multi-select jenis sampah (dari kategori)
-- [x] Input estimasi berat — validasi min **5 kg** total
-- [x] Alamat penjemputan (prefill dari profil)
-- [x] Date picker jadwal — min **H+1**
-- [x] `POST /api/pickups/`
-- [x] Konfirmasi success → kembali ke list
-- [x] Pull-to-refresh status
-
-### 3.5 Riwayat Transaksi (Modul 9)
-- [x] `providers/saldo_provider.dart`
-- [x] `screens/riwayat/riwayat_screen.dart` — tabs: Semua | Setoran | Penarikan | Poin
-- [x] `GET /api/deposits/?nasabah={id}`
-- [x] `GET /api/withdrawals/?nasabah={id}`
-- [x] `GET /api/reward-redemptions/?nasabah={id}`
-- [x] Atau `GET /api/activity/` unified *(backend Fase 3.5)*
-- [x] Item: tanggal, jenis, nominal, status
-- [x] Detail tap → bottom sheet
-- [x] Pull-to-refresh
-
-### 3.6 Tarik Saldo (Modul 10)
-- [x] `screens/saldo/tarik_saldo_screen.dart`
-- [x] Tampilkan saldo saat ini dari auth/me
-- [x] Input nominal — validasi min **Rp50.000**
-- [x] Validasi client: nominal <= saldo
-- [x] Pilih metode (tunai — default)
-- [x] Dialog konfirmasi
-- [x] `POST /api/withdrawals/`
-- [x] Info SLA: proses 1–2 hari kerja, **tanpa payment gateway**
-- [x] Success → riwayat penarikan
-
-### 3.7 Reward & Tukar Poin (Modul 11)
-- [x] `providers/reward_provider.dart`
-- [x] `screens/reward/reward_screen.dart` — list katalog
-- [x] `GET /api/rewards/`
-- [x] Tampilkan poin user, poin_dibutuhkan, stok
-- [x] Disable [Tukar] jika poin tidak cukup atau stok 0
-- [x] `screens/reward/tukar_poin_screen.dart` — konfirmasi
-- [x] `POST /api/reward-redemptions/`
-- [x] Status menunggu → admin approve di **miru-web-admin**
-- [x] Riwayat penukaran di tab Riwayat
-
-### 3.8 Pengaduan (Modul 14)
-- [x] `providers/pengaduan_provider.dart`
-- [x] `screens/pengaduan/pengaduan_screen.dart` — tabs Terbuka | Selesai
-- [x] `GET /api/complaints/?nasabah={id}`
-- [x] `screens/pengaduan/pengaduan_form_screen.dart`
-- [x] Field keluhan (multiline), jenis pengaduan *(backend Fase 2.7)*
-- [x] `POST /api/complaints/`
-- [x] Detail: tindak lanjut admin (read-only)
-- [x] Badge status terbuka/ditutup
-
----
-
-## Fase 4: Navigation & UX Polish
-
-> **Tujuan:** App terasa native, intuitif untuk masyarakat Mimika.
-
-### 4.1 Navigation
-- [x] Bottom navigation bar: Home | Riwayat | Profil
-- [x] go_router nested navigation (`StatefulShellRoute`)
-- [x] Back stack behavior konsisten
-- [x] Deep links internal (home → tarik saldo → back)
-
-### 4.2 UX Polish
-- [x] Loading state semua screen async — `LoadingIndicator` di semua screen
-- [x] Error SnackBar Bahasa Indonesia — `parseDioError()` dengan pesan Indonesia
-- [x] Empty state ilustrasi sederhana per screen — `EmptyState` di semua screen list
-- [x] Confirmation dialog: tarik saldo, tukar poin, logout — logout via ProfileScreen
-- [x] Network error: "Tidak dapat terhubung ke server" — di `parseDioError()`
-- [x] Pull-to-refresh semua list screens — `RefreshIndicator` di 7 screen
-- [x] Format angka Rupiah konsisten (`intl`) — `NumberFormat.currency(locale: 'id_ID')`
-- [x] Format tanggal Indonesia — `DateFormat` + `initializeDateFormatting('id_ID')`
-
-### 4.3 Performance
-- [x] `const` widgets where possible — sudah diterapkan di seluruh screen
-- [x] `ListView.builder` untuk list panjang — di riwayat, penjemputan, pengaduan, reward; InfoSampahScreen di-refactor ke `SliverChildBuilderDelegate`
-- [x] Avoid unnecessary provider rebuilds (`Consumer` scoped) — pattern `Consumer`/`Consumer2` sudah sesuai
-
----
-
-## Fase 5: Settings & Informasi (Modul 17)
-
-> **Backend:** Fase 5 — `/api/settings/`, `/api/pengumuman/`
-> **Tujuan:** Info institusi & pengumuman di app.
-
-### 5.1 SettingsScreen
-- [x] Menu: Profil, Pengumuman, Kebijakan Data, Tentang, Logout
-- [x] `GET /api/settings/` — nama institusi, kontak, jam operasional
-- [x] Link ke ProfileScreen (via settings icon di AppBar)
-
-### 5.2 Pengumuman
-- [x] `screens/settings/pengumuman_screen.dart` — list + detail screen
-- [x] `GET /api/pengumuman/`
-- [x] Card: judul, tanggal, isi singkat
-- [x] Detail pengumuman
-
-### 5.3 Kebijakan Data
-- [x] Static page kebijakan data pribadi (UU PDP) — `kebijakan_data_screen.dart`
-- [x] Tampilkan saat registrasi *(checkbox sudah ada)* + link di settings
-
----
-
-## Fase 6: Kualitas & Testing
-
-> **Backend:** Fase 6 tested
-> **Tujuan:** App siap UAT dengan nasabah pilot.
+> **Sumber:** Kriteria UAT roadmap; checklist integrasi E2E.
 
 ### 6.1 Automated Tests
 - [ ] `test/models/user_test.dart` — fromJson saldo string
 - [ ] `test/services/api_envelope_test.dart` — parse success/error
 - [ ] `test/providers/auth_provider_test.dart` — mock dio
 - [ ] Widget test LoginScreen — form validation
-- [ ] Widget test TarikSaldoScreen — min 50rb validation
+- [ ] Widget test TarikSaldoScreen — min Rp50.000
+- [x] `test/widget_test.dart` — splash/MIRU smoke *(minimal)*
 
 ### 6.2 Manual / UAT Checklist
 - [ ] Registrasi akun baru → login → home
-- [ ] Login akun demo `nasabah001` / `nasabah123`
-- [ ] Ajukan penjemputan → cek status setelah petugas update (**miru-web-admin**)
+- [ ] Login demo `nasabah001` / `nasabah123` (setelah seed backend)
+- [ ] Ajukan penjemputan → status update dari web-admin
 - [ ] Tarik saldo → approve admin → saldo berkurang di home
 - [ ] Tukar poin → approve admin → poin berkurang
-- [ ] Ajukan pengaduan → admin tindak lanjut → status ditutup
-- [ ] QR code discan petugas → setoran → saldo naik di home refresh
+- [ ] Ajukan pengaduan → admin tindak lanjut → ditutup
+- [ ] QR discan petugas → setoran → saldo naik setelah refresh
 - [ ] Test Android emulator (`10.0.2.2:8000`)
 - [ ] Test device fisik via LAN IP
 
 ### 6.3 Edge Cases
 - [ ] Token expired mid-session
-- [ ] Server 500 → pesan ramah
+- [ ] Server 500 → pesan ramah Indonesia
 - [ ] Double tap submit prevention
 - [ ] App background/foreground token restore
 
@@ -356,115 +84,229 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 
 ## Fase 7: Production Android
 
-> **Backend:** Fase 7 — production API HTTPS
-> **Tujuan:** Rilis Google Play Store.
+> **Sumber:** Jawaban §6.4 (Play Console, branding, privacy policy); Constraints §10 (Android prioritas).
 
 ### 7.1 Build Configuration
-- [ ] `constants.dart` production URL `https://api.mirubanksampah.id`
+- [ ] `constants.dart` production URL HTTPS
 - [ ] App name, icon, splash screen MIRU branding
 - [ ] `android/app/build.gradle` — versionCode, versionName
 - [ ] ProGuard/R8 rules jika perlu
 - [ ] `flutter build apk --release`
-- [ ] `flutter build appbundle` — untuk Play Store
+- [ ] `flutter build appbundle` — Play Store
 
 ### 7.2 Play Store Preparation
-- [ ] Privacy policy URL
-- [ ] Screenshot  phone & tablet
+- [ ] Privacy policy URL (dari kebijakan data + hosting)
+- [ ] Screenshot phone (& tablet jika relevan)
 - [ ] Deskripsi Bahasa Indonesia
 - [ ] Content rating questionnaire
 - [ ] Internal testing track upload
-- [ ] Akun Google Play Console dari klien
+- [ ] Akun Google Play Console dari klien *(Jawaban §6.4.1)*
 
 ### 7.3 Security
-- [ ] Certificate pinning *(evaluasi post-MVP)*
 - [ ] No sensitive data in logs (release)
 - [ ] Secure storage verified on Android
+- [ ] Certificate pinning *(evaluasi saja — opsional post-launch)*
 
 ---
 
-## Fase 8: Post-MVP
+## Fase 8: Pengembangan Lanjutan (pasca-MVP)
 
-> **Backend:** Fase 8
-> **Tujuan:** Peningkatan setelah go-live.
+> Bergantung Backend Fase 8. Hanya item dari dokumen persyaratan.
 
-### 8.1 Push Notifications
-- [ ] Firebase project setup
-- [ ] `firebase_messaging` integration
-- [ ] Handle: penjemputan status change, penarikan approved, pengumuman baru
-- [ ] Backend trigger API *(miru-backend-api Fase 8.1)*
+### 8.1 Modul 2 — Autentikasi lanjutan
+> **Sumber:** Proposal §4 modul 2 (lupa password, verifikasi nomor/email).
 
-### 8.2 iOS
-- [ ] iOS build configuration
-- [ ] App Store Connect setup
-- [ ] TestFlight beta
-- [ ] Adapt UI safe area / Cupertino where needed
+- [ ] Lupa password flow (butuh endpoint backend)
+- [ ] (Opsional) verifikasi nomor HP/email — hanya jika disepakati klien
 
-### 8.3 Enhancements
-- [ ] Biometric unlock (optional)
-- [ ] Share QR code intent
-- [ ] Offline cache last-loaded saldo *(future)*
-- [ ] Lupa password flow *(butuh backend endpoint)*
-- [ ] In-app rating prompt
+### 8.2 Modul 3 — Profil & kartu digital
+> **Sumber:** Proposal modul 3 (alamat, RT/RW, kelurahan, QR digital).
 
-### 8.4 Yang TIDAK BOLEH Diimplementasikan
+- [ ] Field RT/RW dan kelurahan di profil / registrasi
+- [ ] Share / screenshot QR code intent
+
+### 8.3 Modul 4 — Artikel edukasi
+> **Sumber:** Proposal modul 4 (artikel edukasi); Modules Web/Mobile.
+
+- [ ] Tampil list + detail artikel edukasi dari API (selain kategori/harga)
+- [ ] Tetap tampilkan panduan pemilahan singkat di InfoSampah
+
+### 8.4 Modul 5 / 9 — Harga terjadwal & notifikasi
+> **Sumber:** Jawaban §6.2.4 (pengumuman harga H-3); Jawaban §6.6.5 FCM; Proposal modul 9.
+
+- [ ] Banner/info harga akan berubah pada tanggal berlaku
+- [ ] Firebase Cloud Messaging setup
+- [ ] Handle push: status penjemputan, penarikan approved, pengumuman, harga baru
+- [ ] Wire layar notifikasi ke API list/mark-read (screen sudah ada)
+
+### 8.5 Modul 7 — Wilayah & peta sederhana
+> **Sumber:** Jawaban §6.2.12–13, §6.6.1; Constraints §5 (tanpa live tracking).
+
+- [ ] Validasi / pesan error wilayah & kuota 2×/minggu dari envelope backend
+- [ ] Pilih/lihat lokasi sederhana (static map atau pin alamat) — **bukan** GPS live armada
+
+### 8.6 Modul 10 / 11 — Bukti & masa berlaku poin
+> **Sumber:** Jawaban §6.2.10 (poin 1 tahun); §6.3.6 bukti; Business Rules §A.4.
+
+- [ ] Tampilkan info masa berlaku / sisa poin (setelah backend expire task)
+- [ ] Unduh atau share bukti transaksi / tanda terima (PDF atau gambar)
+- [ ] UI metode pencairan (tunai / transfer metadata) — **tanpa** payment gateway
+
+### 8.7 iOS & peningkatan opsional
+> **Sumber:** Constraints §10 / Jawaban §6.4 (iOS menyusul); Constraints offline “tidak wajib MVP”.
+
+- [ ] iOS build configuration + App Store Connect / TestFlight
+- [ ] Adapt UI safe area / Cupertino jika perlu
+- [ ] Offline cache last-loaded saldo *(future — tidak blocker)*
+- [ ] Biometric unlock *(opsional — bukan persyaratan wajib)*
+- [ ] In-app rating prompt *(opsional store policy)*
+
+### 8.8 Out of Scope / larangan
+> **Sumber:** `06-system-constraints.md`; Proposal §5.
+
 - [ ] ❌ Login petugas/admin/koordinator
-- [ ] ❌ Input setoran sampah (petugas di web admin)
-- [ ] ❌ Payment gateway / e-wallet integration
+- [ ] ❌ Input setoran sampah (hanya petugas di web admin)
+- [ ] ❌ Payment gateway / e-wallet otomatis
 - [ ] ❌ GPS live tracking penjemputan
-- [ ] ❌ Scan KTP / face recognition registrasi
-- [ ] ❌ Integrasi Dukcapil NIK validation
+- [ ] ❌ Scan KTP / face recognition / Dukcapil NIK validation
+- [ ] ❌ Integrasi hardware timbangan/barcode
 
 ---
 
-## Urutan Sprint (Selaras Backend & Web Admin)
-
-| Sprint | Backend | Web Admin | Mobile |
-|--------|---------|-----------|--------|
-| 1 | Fase 1 ✅ | Foundation + Auth | Fase 1–2 Foundation + Auth |
-| 2 | Fase 2.1–2.2 Setoran | Input setoran | Home + Info Sampah + Profil |
-| 3 | Fase 2.3–2.5 Workflow | Penjemputan, tarik, pengaduan | Penjemputan + Tarik + Reward |
-| 4 | Fase 2.6–3 E2E | Manajemen & stok | Riwayat + Pengaduan + UX polish |
-| 5 | Fase 4 Dashboard | Monitoring UI | — (stabilisasi mobile) |
-| 6 | Fase 5–6 Governance | Settings, QA | Fase 5–6 Settings, testing |
-| 7 | Fase 7 Production | Deploy | Fase 7 Play Store |
-| Post | Fase 8 | Post-MVP | FCM, iOS |
+# BAGIAN B — ARSIP MVP (Selesai) — urutan bawah
 
 ---
 
-## Definisi "Selesai" per Tahap
+## Fase 0: Scaffold ✅
 
-| Tahap | Kriteria Selesai (Mobile) |
-|-------|---------------------------|
-| **Auth Ready** | Fase 1–2; nasabah register & login |
-| **MVP Nasabah** | Fase 3–4; semua fitur core + UX polish |
-| **UAT Ready** | Fase 6; checklist UAT lulus dengan backend + web admin |
-| **Play Store Beta** | Fase 7; internal testing track live |
-| **Go-Live** | Production API + app published |
+- [x] Flutter project (`mirumobileapp`, Dart ^3.12.2)
+- [x] Android/iOS folder structure; `flutter_lints`
+- [x] Dokumentasi `.ai-steering/` selaras backend
 
 ---
 
-## Checklist Integrasi End-to-End (Mobile ↔ Backend ↔ Web Admin)
+## Fase 1: Foundation ✅
 
-| # | Alur Nasabah (Mobile) | Aksi Staff (miru-web-admin) | API Backend |
-|---|----------------------|----------------------------|-------------|
-| 1 | Register & login | — | Fase 1 ✅ |
-| 2 | Lihat saldo di Home | Petugas input setoran | Fase 2–3 |
-| 3 | Tunjukkan QR | Petugas scan → setoran | Fase 2–3 |
-| 4 | Ajukan penjemputan | Approve & update status | Fase 2–3 |
-| 5 | Ajukan tarik saldo | Admin approve manual | Fase 2–3 |
-| 6 | Tukar poin | Admin serahkan & approve | Fase 2–3 |
-| 7 | Ajukan pengaduan | Admin tindak lanjut | Fase 2–3 |
-| 8 | Lihat pengumuman | Admin publish | Fase 5 |
-| 9 | Refresh riwayat | — | Fase 3.5 activity |
+### 1.1–1.3 Dependencies, structure, theme ✅
+- [x] `provider`, `dio`, `go_router`, `flutter_secure_storage`, `qr_flutter`, `intl`, dll.
+- [x] Folder `config/`, `models/`, `services/`, `providers/`, `screens/`, `widgets/`
+- [x] Theme Material 3 primary `#16a34a`; routes + auth redirect
+
+### 1.4 API Client ✅
+- [x] Dio + EnvelopeInterceptor + AuthInterceptor + refresh 401
+- [x] `auth_service`, `storage_service`, `api_envelope`
+
+### 1.5–1.6 Models & Shared Widgets ✅
+- [x] User, WasteCategory, Deposit, Pickup, Withdrawal, Reward, Complaint, ActivityItem, dll.
+- [x] LoadingIndicator, ErrorView, EmptyState, SaldoCard, StatusBadge, AppScaffold
+
+---
+
+## Fase 2: Auth Flow ✅
+
+- [x] AuthProvider — guard `role == nasabah`; reject staff
+- [x] Splash → me / login
+- [x] LoginScreen + RegisterScreen (consent `setuju_kebijakan_data`, password min 6)
+- [x] go_router redirect unauthenticated
+
+---
+
+## Fase 3: MVP Screens ✅
+
+### 3.1 Home ✅
+- [x] Saldo, poin, quick actions, aktivitas, pull-to-refresh, banner jam layanan
+
+### 3.2 Profil & QR ✅
+- [x] Profile + edit; QR JSON `{ id, nama_lengkap, no_hp }`
+
+### 3.3 Info Sampah ✅
+- [x] List kategori/harga/panduan singkat; catatan min 1 kg
+
+### 3.4 Penjemputan ✅
+- [x] Tabs aktif/riwayat; ajukan min 5 kg, H+1; status badge
+
+### 3.5 Riwayat ✅
+- [x] Tabs semua/setoran/penarikan/poin; detail bottom sheet
+
+### 3.6 Tarik Saldo ✅
+- [x] Min Rp50.000; konfirmasi; SLA 1–2 hari; tanpa gateway
+
+### 3.7 Reward ✅
+- [x] Katalog; tukar; disable jika poin/stok kurang
+
+### 3.8 Pengaduan ✅
+- [x] Form jenis + keluhan; tabs; tindak lanjut read-only
+
+---
+
+## Fase 4: Navigation & UX Polish ✅
+
+- [x] Bottom nav Home | Riwayat | Profil; StatefulShellRoute
+- [x] Loading / error BI / empty / confirm dialogs / pull-to-refresh
+- [x] Format Rupiah & tanggal `id_ID`
+- [x] `ListView.builder` / Consumer scoped
+
+---
+
+## Fase 5: Settings & Informasi ✅
+
+- [x] Settings: profil, pengumuman, kebijakan data, tentang, logout
+- [x] `GET /api/settings/`, `GET /api/pengumuman/`
+- [x] Kebijakan data (UU PDP) static + checkbox registrasi
+
+---
+
+## Matriks Dependensi Backend → Mobile
+
+| Backend | Unblock Mobile |
+|---------|----------------|
+| Fase 1–5 ✅ | Fase 0–5 MVP |
+| Fase 7 HTTPS | Fase 7 Play Store |
+| Fase 8.1 edukasi | Fase 8.3 |
+| Fase 8.2 harga H-3 | Fase 8.4 banner |
+| Fase 8.3 wilayah | Fase 8.5 |
+| Fase 8.4 lupa password / PDF | Fase 8.1 / 8.6 |
+| Fase 8.5 poin expire | Fase 8.6 |
+| Fase 8.6 FCM trigger | Fase 8.4 push |
+
+---
+
+## Checklist Integrasi End-to-End
+
+| # | Alur Nasabah (Mobile) | Aksi Staff (Web Admin) | API |
+|---|----------------------|------------------------|-----|
+| 1 | Register & login | — | ✅ |
+| 2 | Lihat saldo Home | Petugas input setoran | ✅ |
+| 3 | Tunjukkan QR | Petugas setoran | ✅ |
+| 4 | Ajukan penjemputan | Approve & update status | ✅ |
+| 5 | Ajukan tarik saldo | Admin approve manual | ✅ |
+| 6 | Tukar poin | Admin serahkan & approve | ✅ |
+| 7 | Ajukan pengaduan | Admin tindak lanjut | ✅ |
+| 8 | Lihat pengumuman | Admin publish | ✅ |
+| 9 | Refresh riwayat | — | ✅ |
+| 10 | Baca artikel edukasi | Admin kelola konten | Backend Fase 8 |
 
 ---
 
 ## Environment Testing
 
-| Target | API Base URL | Backend Command |
-|--------|--------------|-----------------|
-| Android Emulator | `http://10.0.2.2:8000` | `runserver` di **miru-backend-api** |
-| Device fisik (LAN) | `http://<IP-PC>:8000` | `runserver 0.0.0.0:8000` |
-| Production | `https://api.mirubanksampah.id` | Deploy backend Fase 7 |
+| Target | API Base URL |
+|--------|--------------|
+| Android Emulator | `http://10.0.2.2:8000` |
+| Device fisik (LAN) | `http://<IP-PC>:8000` |
+| Production | `https://…` (domain final klien / Webekspres) |
 
-Seed data: `python manage.py seed_data --flush` di **miru-backend-api** → akun `nasabah001` / `nasabah123`.
+Seed: `python manage.py seed_data` di backend → akun demo nasabah.
+
+---
+
+## Definisi "Selesai" per Tahap
+
+| Tahap | Kriteria |
+|-------|----------|
+| **Auth Ready** | Fase 0–2 |
+| **MVP Nasabah** | Fase 3–5 |
+| **UAT Ready** | Fase 6 checklist lulus + backend + web admin |
+| **Play Store Beta** | Fase 7 internal testing |
+| **Go-Live Android** | Production API + app published |
+| **Pengembangan Lanjutan** | Fase 8 iteratif (FCM, edukasi, iOS, dll.) |
