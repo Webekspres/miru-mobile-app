@@ -9,9 +9,11 @@
 > **Referensi (repo ini):**
 > - `04-api-integration.md`, `07-modules-and-features.md`, `10-integration-and-roles.md`
 > - `05-business-rules-sops.md`, `06-system-constraints.md`
+> - `11-security-and-privacy.md` — **pedoman keamanan & privasi mobile**
 >
 > **Referensi backend:**
-> - `miru-backend-api` → `.ai-steering/08-task-list.md`, `04-api-contracts`, `07-modules`
+> - `miru-backend-api` → `.ai-steering/08-task-list.md`, `04-api-contracts`, `07-modules`,
+>   **`11-security-and-privacy.md` (kanonik)**
 
 ---
 
@@ -53,12 +55,25 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 
 ## Fase 6: Kualitas & Testing (UAT Ready)
 
-> **Sumber:** Kriteria UAT roadmap; checklist integrasi E2E.
+> **Sumber:** Kriteria UAT roadmap; checklist integrasi E2E;
+> **`11-security-and-privacy.md`** §2, §7, §10.
+
+### 6.0 Keamanan Client (sebelum / beriringan UAT)
+> Detail: `11-security-and-privacy.md`.
+
+- [x] Guard login hanya `nasabah`; tolak staff
+- [x] Token di `flutter_secure_storage`; logout clear credential
+- [x] Consent `setuju_kebijakan_data` di registrasi
+- [x] QR payload JSON `{ id, nama_lengkap, no_hp }` — **bukan JWT**
+- [ ] Verifikasi tidak ada log token/password/NIK di path release
+- [ ] Double tap submit prevention pada tarik saldo / tukar poin / ajukan jemput
+- [ ] Token expired mid-session → refresh atau logout ramah
+- [ ] Jangan kurangi saldo/poin lokal sebelum server confirm
 
 ### 6.1 Automated Tests
 - [ ] `test/models/user_test.dart` — fromJson saldo string
 - [ ] `test/services/api_envelope_test.dart` — parse success/error
-- [ ] `test/providers/auth_provider_test.dart` — mock dio
+- [ ] `test/providers/auth_provider_test.dart` — mock dio; reject non-nasabah
 - [ ] Widget test LoginScreen — form validation
 - [ ] Widget test TarikSaldoScreen — min Rp50.000
 - [x] `test/widget_test.dart` — splash/MIRU smoke *(minimal)*
@@ -66,6 +81,7 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 ### 6.2 Manual / UAT Checklist
 - [ ] Registrasi akun baru → login → home
 - [ ] Login demo `nasabah001` / `nasabah123` (setelah seed backend)
+- [ ] Login akun staff ditolak dengan pesan benar
 - [ ] Ajukan penjemputan → status update dari web-admin
 - [ ] Tarik saldo → approve admin → saldo berkurang di home
 - [ ] Tukar poin → approve admin → poin berkurang
@@ -75,19 +91,19 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 - [ ] Test device fisik via LAN IP
 
 ### 6.3 Edge Cases
-- [ ] Token expired mid-session
 - [ ] Server 500 → pesan ramah Indonesia
-- [ ] Double tap submit prevention
 - [ ] App background/foreground token restore
+- [ ] Network offline message jelas
 
 ---
 
 ## Fase 7: Production Android
 
-> **Sumber:** Jawaban §6.4 (Play Console, branding, privacy policy); Constraints §10 (Android prioritas).
+> **Sumber:** Jawaban §6.4; Constraints §10; **`11-security-and-privacy.md`** §4, §9–10.
 
 ### 7.1 Build Configuration
-- [ ] `constants.dart` production URL HTTPS
+- [ ] `constants.dart` production URL **HTTPS only**
+- [ ] Cleartext HTTP dimatikan di release (`usesCleartextTraffic=false` atau setara)
 - [ ] App name, icon, splash screen MIRU branding
 - [ ] `android/app/build.gradle` — versionCode, versionName
 - [ ] ProGuard/R8 rules jika perlu
@@ -96,15 +112,20 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 
 ### 7.2 Play Store Preparation
 - [ ] Privacy policy URL (dari kebijakan data + hosting)
+- [ ] Data safety form jujur (data yang dikumpulkan)
 - [ ] Screenshot phone (& tablet jika relevan)
 - [ ] Deskripsi Bahasa Indonesia
 - [ ] Content rating questionnaire
 - [ ] Internal testing track upload
 - [ ] Akun Google Play Console dari klien *(Jawaban §6.4.1)*
 
-### 7.3 Security
+### 7.3 Security Release Checklist
+> Lihat `11-security-and-privacy.md` §10.
+
 - [ ] No sensitive data in logs (release)
-- [ ] Secure storage verified on Android
+- [ ] Secure storage verified on Android; logout bersih diuji
+- [ ] Tidak ada secret/API key tertanam di source
+- [ ] Checklist go-live keamanan mobile lolos
 - [ ] Certificate pinning *(evaluasi saja — opsional post-launch)*
 
 ---
@@ -132,12 +153,14 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 - [ ] Tetap tampilkan panduan pemilahan singkat di InfoSampah
 
 ### 8.4 Modul 5 / 9 — Harga terjadwal & notifikasi
-> **Sumber:** Jawaban §6.2.4 (pengumuman harga H-3); Jawaban §6.6.5 FCM; Proposal modul 9.
+> **Sumber:** Jawaban §6.2.4; Jawaban §6.6.5 FCM; Proposal modul 9; Security §8.
 
 - [ ] Banner/info harga akan berubah pada tanggal berlaku
 - [ ] Firebase Cloud Messaging setup
 - [ ] Handle push: status penjemputan, penarikan approved, pengumuman, harga baru
+- [ ] Payload push **tanpa** NIK / saldo lengkap / token
 - [ ] Wire layar notifikasi ke API list/mark-read (screen sudah ada)
+- [ ] Permission notifikasi diminta saat fitur push aktif
 
 ### 8.5 Modul 7 — Wilayah & peta sederhana
 > **Sumber:** Jawaban §6.2.12–13, §6.6.1; Constraints §5 (tanpa live tracking).
@@ -310,3 +333,11 @@ Seed: `python manage.py seed_data` di backend → akun demo nasabah.
 | **Play Store Beta** | Fase 7 internal testing |
 | **Go-Live Android** | Production API + app published |
 | **Pengembangan Lanjutan** | Fase 8 iteratif (FCM, edukasi, iOS, dll.) |
+
+## Indeks dokumen keamanan
+
+| Repo | Dokumen |
+|------|---------|
+| Backend (kanonik) | `miru-backend-api` → `.ai-steering/11-security-and-privacy.md` |
+| Web Admin | `web-admin` → `.ai-steering/11-security-and-privacy.md` |
+| Mobile | `.ai-steering/11-security-and-privacy.md` |

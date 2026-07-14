@@ -46,4 +46,6 @@
 | Dokumen | Isi |
 |---------|-----|
 | `10-integration-and-roles.md` | Role mobile & alur integrasi |
+| `11-security-and-privacy.md` | Keamanan & privasi mobile (lengkap) |
 | **miru-backend-api** — `.ai-steering/06-system-constraints.md` | Batasan sistem lengkap |
+| **miru-backend-api** — `.ai-steering/11-security-and-privacy.md` | Kanonik keamanan ekosistem |
