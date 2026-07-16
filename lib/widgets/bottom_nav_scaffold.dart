@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../config/constants.dart';
 import '../config/theme.dart';
 import '../providers/notification_provider.dart';
 import 'exit_dialog.dart';
@@ -25,7 +26,7 @@ class BottomNavScaffold extends StatelessWidget {
         if (didPop) return;
         final shouldExit = await showExitDialog(
           context,
-          message: 'Apakah Anda yakin ingin keluar dari aplikasi MIRU?',
+          message: 'Apakah Anda yakin ingin keluar dari aplikasi ${AppConstants.appName}?',
         );
         if (shouldExit && context.mounted) {
           SystemNavigator.pop();

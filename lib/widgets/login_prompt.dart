@@ -11,7 +11,7 @@ class LoginPrompt extends StatelessWidget {
     this.icon,
     this.title = 'Masuk untuk Melanjutkan',
     this.message =
-        'Silakan masuk atau daftar akun MIRU untuk mengakses fitur ini.',
+        'Silakan masuk atau daftar akun Miru G untuk mengakses fitur ini.',
     this.showBackButton = false,
   });
 

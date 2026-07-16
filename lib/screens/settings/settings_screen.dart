@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../../config/constants.dart';
 import '../../config/theme.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/exit_dialog.dart';
@@ -51,7 +52,7 @@ class SettingsScreen extends StatelessWidget {
                 icon: Icons.info_outline,
                 iconBgColor: const Color(0xFFF3E8FF),
                 iconColor: const Color(0xFF7C3AED),
-                label: 'Tentang MIRU',
+                label: 'Tentang ${AppConstants.appName}',
                 subtitle: 'Informasi aplikasi dan institusi',
                 onTap: () => context.push('/settings/tentang'),
               ),
@@ -69,7 +70,7 @@ class SettingsScreen extends StatelessWidget {
                 iconBgColor: const Color(0xFFFEF2F2),
                 iconColor: const Color(0xFFDC2626),
                 label: 'Keluar',
-                subtitle: 'Keluar dari akun MIRU',
+                subtitle: 'Keluar dari akun ${AppConstants.appName}',
                 onTap: () => _showLogoutConfirmation(context),
               ),
             ],
@@ -83,7 +84,7 @@ class SettingsScreen extends StatelessWidget {
     final confirmed = await showExitDialog(
       context,
       title: 'Konfirmasi Keluar',
-      message: 'Apakah Anda yakin ingin keluar dari akun MIRU?',
+      message: 'Apakah Anda yakin ingin keluar dari akun ${AppConstants.appName}?',
       icon: Container(
         width: 48,
         height: 48,

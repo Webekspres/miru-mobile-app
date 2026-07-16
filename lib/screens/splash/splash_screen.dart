@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../config/theme.dart';
+import '../../widgets/miru_logo.dart';
 import '../../widgets/shimmer_loading.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -31,30 +31,11 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // MIRU Logo
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                color: AppTheme.primaryColor,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Icon(
-                Icons.recycling_rounded,
-                color: Colors.white,
-                size: 44,
-              ),
+            const MiruLogo(
+              variant: MiruLogoVariant.fullBg,
+              height: 72,
             ),
             const SizedBox(height: 20),
-            Text(
-              'MIRU',
-              style: theme.textTheme.headlineLarge?.copyWith(
-                color: AppTheme.primaryColor,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 2,
-              ),
-            ),
-            const SizedBox(height: 4),
             Text(
               'Bank Sampah',
               style: theme.textTheme.titleMedium?.copyWith(

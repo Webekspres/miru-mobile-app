@@ -12,6 +12,7 @@ import '../../providers/home_provider.dart';
 import '../../providers/notification_provider.dart';
 import '../../providers/pengumuman_provider.dart';
 import '../../widgets/empty_state.dart';
+import '../../widgets/miru_logo.dart';
 import '../../widgets/error_view.dart';
 import '../../widgets/saldo_card.dart';
 import '../../widgets/shimmer_loading.dart';
@@ -148,18 +149,9 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Row(
             children: [
-              Container(
-                width: 48,
+              const MiruLogo(
+                variant: MiruLogoVariant.icon,
                 height: 48,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: const Icon(
-                  Icons.recycling_rounded,
-                  color: Colors.white,
-                  size: 26,
-                ),
               ),
               const SizedBox(width: 14),
               Column(

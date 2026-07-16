@@ -6,6 +6,6 @@ void main() {
   testWidgets('App shows splash screen', (WidgetTester tester) async {
     await tester.pumpWidget(const MiruApp());
 
-    expect(find.text('MIRU'), findsOneWidget);
+    expect(find.text('Miru G'), findsOneWidget);
   });
 }

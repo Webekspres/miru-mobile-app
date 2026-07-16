@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../config/constants.dart';
 import '../../config/theme.dart';
+import '../../widgets/miru_logo.dart';
 import '../../providers/settings_provider.dart';
 
 class TentangScreen extends StatefulWidget {
@@ -26,7 +28,7 @@ class _TentangScreenState extends State<TentangScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tentang MIRU'),
+        title: Text('Tentang ${AppConstants.appName}'),
       ),
       body: Consumer<SettingsProvider>(
         builder: (context, provider, _) {
@@ -39,18 +41,9 @@ class _TentangScreenState extends State<TentangScreen> {
               Center(
                 child: Column(
                   children: [
-                    Container(
-                      width: 80,
+                    const MiruLogo(
+                      variant: MiruLogoVariant.fullBg,
                       height: 80,
-                      decoration: BoxDecoration(
-                        color: AppTheme.primaryColor,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: const Icon(
-                        Icons.recycling_rounded,
-                        color: Colors.white,
-                        size: 44,
-                      ),
                     ),
                     const SizedBox(height: 16),
                     Text(
@@ -63,9 +56,10 @@ class _TentangScreenState extends State<TentangScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Miru-G',
+                      AppConstants.appName,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -126,7 +120,7 @@ class _TentangScreenState extends State<TentangScreen> {
                 iconBgColor: const Color(0xFFDCFCE7),
                 iconColor: AppTheme.primaryColor,
                 children: [
-                  'Aplikasi MIRU (Miru-G) adalah platform digital bank sampah '
+                  'Aplikasi ${AppConstants.appName} adalah platform digital bank sampah '
                       'yang dikelola oleh Pemerintah Distrik Mimika Baru, Kabupaten '
                       'Mimika, Provinsi Papua Tengah.',
                   'Aplikasi ini memungkinkan masyarakat untuk berpartisipasi dalam '

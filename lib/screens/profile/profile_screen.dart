@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../config/constants.dart';
 import '../../config/theme.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/auth_session.dart';
@@ -489,7 +490,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final confirmed = await showExitDialog(
       context,
       title: 'Konfirmasi Keluar',
-      message: 'Apakah Anda yakin ingin keluar dari akun MIRU?\n\n'
+      message: 'Apakah Anda yakin ingin keluar dari akun ${AppConstants.appName}?\n\n'
           'Anda dapat masuk kembali menggunakan username dan password.',
       icon: Container(
         width: 48,

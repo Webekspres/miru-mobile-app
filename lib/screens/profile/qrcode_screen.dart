@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../config/constants.dart';
 import '../../config/theme.dart';
 import '../../providers/auth_session.dart';
 import '../../providers/home_provider.dart';
@@ -85,7 +86,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
         appBar: AppBar(title: const Text('Kartu Digital')),
         body: const LoginPrompt(
           title: 'Kartu Digital',
-          message: 'Masuk untuk melihat dan membagikan kartu digital MIRU Anda.',
+          message: 'Masuk untuk melihat dan membagikan kartu digital ${AppConstants.appName} Anda.',
         ),
       );
     }

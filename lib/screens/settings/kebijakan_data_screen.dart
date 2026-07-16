@@ -76,7 +76,7 @@ class KebijakanDataScreen extends StatelessWidget {
             title: '2. Data yang Dikumpulkan',
             content:
                 'Kami mengumpulkan data pribadi berikut saat Anda mendaftar '
-                'dan menggunakan aplikasi MIRU:\n\n'
+                'dan menggunakan aplikasi Miru G:\n\n'
                 '• Nama lengkap\n'
                 '• Nomor handphone\n'
                 '• Alamat tempat tinggal\n'
@@ -92,11 +92,11 @@ class KebijakanDataScreen extends StatelessWidget {
             title: '3. Tujuan Penggunaan Data',
             content:
                 'Data pribadi Anda digunakan untuk:\n\n'
-                '• Membuat dan mengelola akun MIRU Anda\n'
+                '• Membuat dan mengelola akun Miru G Anda\n'
                 '• Memproses transaksi setoran, penarikan, dan penukaran poin\n'
                 '• Menghubungi Anda terkait jadwal penjemputan\n'
                 '• Memberikan informasi mengenai program bank sampah\n'
-                '• Meningkatkan kualitas layanan MIRU\n'
+                '• Meningkatkan kualitas layanan Miru G\n'
                 '• Memenuhi kewajiban pelaporan kepada pemerintah daerah',
           ),
           const SizedBox(height: 20),
@@ -156,7 +156,7 @@ class KebijakanDataScreen extends StatelessWidget {
             title: '8. Perubahan Kebijakan',
             content:
                 'Kebijakan ini dapat diperbarui dari waktu ke waktu. '
-                'Perubahan akan diumumkan melalui aplikasi MIRU. '
+                'Perubahan akan diumumkan melalui aplikasi Miru G. '
                 'Dengan terus menggunakan aplikasi setelah perubahan, '
                 'Anda menyetujui kebijakan yang telah diperbarui.',
           ),

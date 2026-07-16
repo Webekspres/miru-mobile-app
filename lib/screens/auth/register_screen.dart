@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../../config/constants.dart';
 import '../../config/theme.dart';
 import '../../models/api_exception.dart';
 import '../../providers/auth_provider.dart';
@@ -167,7 +168,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Bergabunglah dengan MIRU Bank Sampah',
+                'Bergabunglah dengan ${AppConstants.appName}',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),

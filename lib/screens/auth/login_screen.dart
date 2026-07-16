@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../../config/constants.dart';
 import '../../config/theme.dart';
+import '../../widgets/miru_logo.dart';
 import '../../models/api_exception.dart';
 import '../../providers/auth_provider.dart';
 
@@ -75,20 +77,9 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               const SizedBox(height: 60),
               // Logo
-              Center(
-                child: Container(
-                  width: 64,
-                  height: 64,
-                  decoration: BoxDecoration(
-                    color: AppTheme.primaryColor,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: const Icon(
-                    Icons.recycling_rounded,
-                    color: Colors.white,
-                    size: 36,
-                  ),
-                ),
+              const MiruLogo(
+                variant: MiruLogoVariant.full,
+                height: 56,
               ),
               const SizedBox(height: 24),
               Text(
@@ -98,7 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Masuk ke akun MIRU Anda',
+                'Masuk ke akun ${AppConstants.appName} Anda',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
