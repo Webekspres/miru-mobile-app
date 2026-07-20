@@ -5,6 +5,8 @@ enum MiruLogoVariant {
   iconBg,
   full,
   fullBg,
+  fullWhite,
+  original,
 }
 
 class MiruLogo extends StatelessWidget {
@@ -26,6 +28,8 @@ class MiruLogo extends StatelessWidget {
     MiruLogoVariant.iconBg: 'assets/images/logo_bg.png',
     MiruLogoVariant.full: 'assets/images/logo_with_text.png',
     MiruLogoVariant.fullBg: 'assets/images/logo_with_text_bg.png',
+    MiruLogoVariant.fullWhite: 'assets/images/logo_with_text_white.png',
+    MiruLogoVariant.original: 'assets/images/splash_original.png',
   };
 
   static const _aspectRatios = {
@@ -33,6 +37,8 @@ class MiruLogo extends StatelessWidget {
     MiruLogoVariant.iconBg: 139 / 142,
     MiruLogoVariant.full: 312 / 118,
     MiruLogoVariant.fullBg: 399 / 218,
+    MiruLogoVariant.fullWhite: 519 / 199,
+    MiruLogoVariant.original: 1080 / 1920,
   };
 
   @override

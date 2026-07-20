@@ -14,6 +14,8 @@ import '../screens/reward/tukar_poin_screen.dart';
 import '../screens/saldo/riwayat_screen.dart';
 import '../screens/saldo/tarik_saldo_screen.dart';
 import '../screens/setoran/ajukan_penjemputan_screen.dart';
+import '../screens/edukasi/edukasi_detail_screen.dart';
+import '../screens/edukasi/edukasi_list_screen.dart';
 import '../screens/setoran/info_sampah_screen.dart';
 import '../screens/setoran/penjemputan_screen.dart';
 import '../screens/splash/splash_screen.dart';
@@ -42,6 +44,14 @@ GoRouter createAppRouter(AuthSession authSession) {
       GoRoute(
         path: '/splash',
         builder: (context, state) => const SplashScreen(),
+      ),
+      // Preview route untuk development splash screen.
+      // Ubah `initialLocation` ke '/splash-preview' di atas
+      // untuk melihat splash screen tanpa auto-redirect.
+      GoRoute(
+        path: '/splash-preview',
+        builder: (context, state) =>
+            const SplashScreen(previewMode: true),
       ),
       GoRoute(
         path: '/login',
@@ -123,6 +133,19 @@ GoRouter createAppRouter(AuthSession authSession) {
       GoRoute(
         path: '/home/info-sampah',
         builder: (context, state) => const InfoSampahScreen(),
+      ),
+      GoRoute(
+        path: '/home/edukasi',
+        builder: (context, state) => const EdukasiListScreen(),
+        routes: [
+          GoRoute(
+            path: ':id',
+            builder: (context, state) {
+              final id = int.tryParse(state.pathParameters['id'] ?? '') ?? 0;
+              return EdukasiDetailScreen(edukasiId: id);
+            },
+          ),
+        ],
       ),
       GoRoute(
         path: '/home/reward',
