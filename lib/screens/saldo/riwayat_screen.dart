@@ -88,7 +88,7 @@ class _RiwayatScreenState extends State<RiwayatScreen>
       ),
       body: Consumer<SaldoProvider>(
         builder: (context, saldo, _) {
-          if (saldo.isLoading && saldo.items.isEmpty) {
+          if (saldo.isLoading) {
             return const SingleChildScrollView(
               physics: NeverScrollableScrollPhysics(),
               padding: EdgeInsets.fromLTRB(0, 60, 0, 24),

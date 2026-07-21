@@ -90,6 +90,8 @@ class _MiruAppState extends State<MiruApp> {
 
   void _onAuthChanged() {
     if (!_authSession.isLoggedIn) {
+      // Clear session-scoped caches only. Edukasi is a public endpoint —
+      // keep it so guest home still shows "Edukasi Sampah" after logout.
       _homeProvider.clearCache();
       _saldoProvider.clearCache();
       _profileProvider.clearCache();
@@ -97,7 +99,6 @@ class _MiruAppState extends State<MiruApp> {
       _pengaduanProvider.clearCache();
       _rewardProvider.clearCache();
       _pengumumanProvider.clearCache();
-      _edukasiProvider.clearCache();
       _notificationProvider.clearCache();
       _settingsProvider.clearCache();
     }

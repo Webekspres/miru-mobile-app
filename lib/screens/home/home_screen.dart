@@ -4,10 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../../config/constants.dart';
 import '../../config/theme.dart';
 import '../../models/deposit.dart';
-import '../../models/waste_category.dart';
 import '../../providers/auth_session.dart';
 import '../../providers/edukasi_provider.dart';
 import '../../providers/home_provider.dart';
@@ -15,8 +13,6 @@ import '../../providers/notification_provider.dart';
 import '../../providers/pengumuman_provider.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/miru_logo.dart';
-import '../../widgets/error_view.dart';
-import '../../widgets/saldo_card.dart';
 import '../../widgets/shimmer_loading.dart';
 import '../edukasi/edukasi_card.dart';
 import '../notifikasi/detail_notifikasi_screen.dart';
@@ -29,31 +25,46 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  static const _publicHeaderScrollExtent = 56.0;
+  static const _headerScrollExtent = 56.0;
 
-  final ScrollController _publicScrollController = ScrollController();
-  double _publicHeaderT = 0;
+  final ScrollController _scrollController = ScrollController();
+  double _headerT = 0;
+  bool _saldoVisible = true;
+  bool? _wasLoggedIn;
+  late final AuthSession _authSession;
 
   @override
   void initState() {
     super.initState();
-    _publicScrollController.addListener(_onPublicScroll);
+    _scrollController.addListener(_onHeaderScroll);
+    _authSession = context.read<AuthSession>();
+    _wasLoggedIn = _authSession.isLoggedIn;
+    _authSession.addListener(_onAuthChanged);
     _loadData();
   }
 
   @override
   void dispose() {
-    _publicScrollController.removeListener(_onPublicScroll);
-    _publicScrollController.dispose();
+    _authSession.removeListener(_onAuthChanged);
+    _scrollController.removeListener(_onHeaderScroll);
+    _scrollController.dispose();
     super.dispose();
   }
 
-  void _onPublicScroll() {
-    if (!_publicScrollController.hasClients) return;
+  void _onAuthChanged() {
+    if (!mounted) return;
+    final loggedIn = _authSession.isLoggedIn;
+    if (_wasLoggedIn == loggedIn) return;
+    _wasLoggedIn = loggedIn;
+    _loadData();
+  }
+
+  void _onHeaderScroll() {
+    if (!_scrollController.hasClients) return;
     final next =
-        (_publicScrollController.offset / _publicHeaderScrollExtent).clamp(0.0, 1.0);
-    if ((next - _publicHeaderT).abs() < 0.008) return;
-    setState(() => _publicHeaderT = next);
+        (_scrollController.offset / _headerScrollExtent).clamp(0.0, 1.0);
+    if ((next - _headerT).abs() < 0.008) return;
+    setState(() => _headerT = next);
   }
 
   void _loadData() {
@@ -80,157 +91,393 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  /// Public home screen shown when user is not logged in.
-  Widget _buildPublicHome() {
-    final t = _publicHeaderT;
+  /// Shared home shell for guest and logged-in users.
+  Widget _buildHomeShell(
+    BuildContext context, {
+    required bool isLoggedIn,
+    HomeProvider? home,
+  }) {
+    final t = _headerT;
     final headerBg = Color.lerp(AppTheme.primaryColor, Colors.white, t)!;
     final iconColor = Color.lerp(Colors.white, const Color(0xFF166534), t)!;
     final statusStyle = t > 0.5
         ? SystemUiOverlayStyle.dark.copyWith(statusBarColor: Colors.transparent)
         : SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent);
 
+    Widget scrollView = CustomScrollView(
+      controller: _scrollController,
+      physics: const AlwaysScrollableScrollPhysics(),
+      slivers: [
+        SliverAppBar(
+          pinned: true,
+          floating: false,
+          elevation: t > 0.8 ? 1 : 0,
+          scrolledUnderElevation: 0,
+          backgroundColor: headerBg,
+          surfaceTintColor: Colors.transparent,
+          titleSpacing: 16,
+          centerTitle: false,
+          title: SizedBox(
+            height: 36,
+            child: Stack(
+              alignment: Alignment.centerLeft,
+              children: [
+                Opacity(
+                  opacity: (1 - t).clamp(0.0, 1.0),
+                  child: const MiruLogo(
+                    variant: MiruLogoVariant.fullWhite,
+                    height: 36,
+                  ),
+                ),
+                Opacity(
+                  opacity: t.clamp(0.0, 1.0),
+                  child: const MiruLogo(
+                    variant: MiruLogoVariant.full,
+                    height: 36,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            IconTheme(
+              data: IconThemeData(color: iconColor),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildNotifBell(context),
+                  const SizedBox(width: 8),
+                ],
+              ),
+            ),
+          ],
+        ),
+        SliverToBoxAdapter(
+          child: _buildSaldoHeader(
+            context,
+            isLoggedIn: isLoggedIn,
+            home: home,
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: Container(
+            width: double.infinity,
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.sizeOf(context).height * 0.65,
+            ),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            ),
+            padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildQuickActions(context),
+                const SizedBox(height: 24),
+                _buildServiceHoursBanner(context),
+                const SizedBox(height: 8),
+                if (isLoggedIn) ...[
+                  _buildAnnouncementBanners(context),
+                  const SizedBox(height: 24),
+                ],
+                _buildPublicPriceInfo(context),
+                const SizedBox(height: 24),
+                if (isLoggedIn && home != null) ...[
+                  _buildRecentActivity(context, home),
+                  const SizedBox(height: 24),
+                ],
+                _buildEdukasiSection(context),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+
+    if (isLoggedIn && home != null) {
+      scrollView = RefreshIndicator(
+        onRefresh: () async {
+          await Future.wait([
+            home.refresh(),
+            context.read<EdukasiProvider>().refresh(),
+            context.read<PengumumanProvider>().refresh(),
+          ]);
+        },
+        color: AppTheme.primaryColor,
+        child: scrollView,
+      );
+    }
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: statusStyle,
       child: Scaffold(
         backgroundColor: AppTheme.primaryColor,
-        body: CustomScrollView(
-          controller: _publicScrollController,
-          physics: const AlwaysScrollableScrollPhysics(),
-          slivers: [
-            SliverAppBar(
-              pinned: true,
-              floating: false,
-              elevation: t > 0.8 ? 1 : 0,
-              scrolledUnderElevation: 0,
-              backgroundColor: headerBg,
-              surfaceTintColor: Colors.transparent,
-              titleSpacing: 16,
-              centerTitle: false,
-              title: SizedBox(
-                height: 36,
-                child: Stack(
-                  alignment: Alignment.centerLeft,
-                  children: [
-                    Opacity(
-                      opacity: (1 - t).clamp(0.0, 1.0),
-                      child: const MiruLogo(
-                        variant: MiruLogoVariant.fullWhite,
-                        height: 36,
-                      ),
-                    ),
-                    Opacity(
-                      opacity: t.clamp(0.0, 1.0),
-                      child: const MiruLogo(
-                        variant: MiruLogoVariant.full,
-                        height: 36,
-                      ),
-                    ),
-                  ],
+        body: scrollView,
+      ),
+    );
+  }
+
+  Widget _wrapSaldoHeaderContent(Widget child) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned(
+            right: -36,
+            top: -20,
+            child: IgnorePointer(
+              child: Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withValues(alpha: 0.10),
                 ),
               ),
-              actions: [
-                IconTheme(
-                  data: IconThemeData(color: iconColor),
-                  child: _buildNotifBell(context),
-                ),
-                const SizedBox(width: 8),
-              ],
             ),
-            SliverToBoxAdapter(child: _buildLoginPromptCard(context)),
-            SliverToBoxAdapter(
+          ),
+          Positioned(
+            right: 8,
+            bottom: -8,
+            child: IgnorePointer(
               child: Container(
-                width: double.infinity,
-                constraints: BoxConstraints(
-                  minHeight: MediaQuery.sizeOf(context).height * 0.65,
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withValues(alpha: 0.07),
                 ),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+              ),
+            ),
+          ),
+          child,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSaldoHeader(
+    BuildContext context, {
+    required bool isLoggedIn,
+    HomeProvider? home,
+  }) {
+    final theme = Theme.of(context);
+
+    if (!isLoggedIn) {
+      return _wrapSaldoHeaderContent(
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Saldo Anda',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: Colors.white.withValues(alpha: 0.9),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Rp •••',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Masuk untuk melihat saldo',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: Colors.white.withValues(alpha: 0.7),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            ElevatedButton(
+              onPressed: () => context.push('/login'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: AppTheme.primaryColor,
+                elevation: 0,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _buildQuickActions(context),
-                    const SizedBox(height: 24),
-                    _buildServiceHoursBanner(context),
-                    const SizedBox(height: 24),
-                    _buildPublicPriceInfo(context),
-                    const SizedBox(height: 24),
-                    _buildEdukasiSection(context),
-                  ],
+              ),
+              child: const Text(
+                'Masuk / Daftar',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
+      );
+    }
 
-  Widget _buildLoginPromptCard(BuildContext context) {
-    final theme = Theme.of(context);
+    if (home == null || home.isLoading) {
+      return _buildSaldoHeaderSkeleton(theme);
+    }
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+    if (home.hasError && home.user == null) {
+      return _buildSaldoHeaderError(theme, home);
+    }
+
+    final saldo = home.saldo;
+    final poin = home.poin;
+    final saldoText =
+        _saldoVisible ? _formatCurrency(saldo) : 'Rp •••';
+    final poinText = _saldoVisible
+        ? '${NumberFormat.decimalPattern('id_ID').format(poin)} poin'
+        : '••• poin';
+
+    return _wrapSaldoHeaderContent(
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Saldo Anda',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: Colors.white.withValues(alpha: 0.9),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                const Text(
-                  'Rp *** ***',
-                  style: TextStyle(
+          Text(
+            'Saldo Anda',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: Colors.white.withValues(alpha: 0.9),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              Flexible(
+                child: Text(
+                  saldoText,
+                  style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
                     letterSpacing: -0.5,
                   ),
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  'Masuk untuk melihat saldo',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: Colors.white.withValues(alpha: 0.7),
-                  ),
+              ),
+              IconButton(
+                tooltip: _saldoVisible ? 'Sembunyikan saldo' : 'Tampilkan saldo',
+                visualDensity: VisualDensity.compact,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                icon: Icon(
+                  _saldoVisible
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined,
+                  color: Colors.white.withValues(alpha: 0.95),
+                  size: 22,
                 ),
-              ],
-            ),
+                onPressed: () =>
+                    setState(() => _saldoVisible = !_saldoVisible),
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          ElevatedButton(
-            onPressed: () => context.push('/login'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: AppTheme.primaryColor,
-              elevation: 0,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              Icon(
+                Icons.stars_rounded,
+                size: 18,
+                color: Colors.white.withValues(alpha: 0.9),
               ),
-            ),
-            child: const Text(
-              'Masuk / Daftar',
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
+              const SizedBox(width: 6),
+              Text(
+                poinText,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  color: Colors.white.withValues(alpha: 0.95),
+                ),
               ),
-            ),
+            ],
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildSaldoHeaderSkeleton(ThemeData theme) {
+    return _wrapSaldoHeaderContent(
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Saldo Anda',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: Colors.white.withValues(alpha: 0.9),
+            ),
+          ),
+          const SizedBox(height: 10),
+          const SkeletonBlock(height: 26, width: 160),
+          const SizedBox(height: 12),
+          const SkeletonBlock(height: 16, width: 100),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSaldoHeaderError(ThemeData theme, HomeProvider home) {
+    return _wrapSaldoHeaderContent(
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Saldo Anda',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: Colors.white.withValues(alpha: 0.9),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Gagal memuat saldo',
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            home.error ?? 'Terjadi kesalahan',
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: Colors.white.withValues(alpha: 0.8),
+            ),
+          ),
+          const SizedBox(height: 10),
+          TextButton(
+            onPressed: home.loadData,
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.white,
+              backgroundColor: Colors.white.withValues(alpha: 0.18),
+              visualDensity: VisualDensity.compact,
+            ),
+            child: const Text('Coba lagi'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  static String _formatCurrency(double value) {
+    final hasFraction = value.truncateToDouble() != value;
+    final formatter = NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp',
+      decimalDigits: hasFraction ? 2 : 0,
+    );
+    return formatter.format(value);
   }
 
   Widget _buildPublicPriceInfo(BuildContext context) {
@@ -324,7 +571,7 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Edukasi Sampah',
+                  'Edukasi',
                   style: theme.textTheme.titleSmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -340,7 +587,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
             const SizedBox(height: 4),
-            if (edukasi.isLoading && preview.isEmpty)
+            if (edukasi.isLoading)
               const Column(
                 children: [
                   SkeletonCard(height: 96),
@@ -634,58 +881,17 @@ class _HomeScreenState extends State<HomeScreen> {
     final isLoggedIn = context.watch<AuthSession>().isLoggedIn;
 
     if (!isLoggedIn) {
-      return _buildPublicHome();
+      return _buildHomeShell(context, isLoggedIn: false);
     }
 
-    return Scaffold(
-      body: Consumer<HomeProvider>(
-        builder: (context, home, _) {
-          if (home.isLoading && home.user == null) {
-            return const HomeSkeleton();
-          }
-
-          if (home.hasError && home.user == null) {
-            return ErrorView(
-              title: 'Gagal memuat data',
-              message: home.error!,
-              onRetry: () => home.loadData(),
-            );
-          }
-
-          return RefreshIndicator(
-            onRefresh: home.refresh,
-            color: AppTheme.primaryColor,
-            child: CustomScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              slivers: [
-                _buildAppBar(context, home),
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                  sliver: SliverList(
-                    delegate: SliverChildListDelegate([
-                      const SizedBox(height: 16),
-                      _buildSaldoSection(context, home),
-                      const SizedBox(height: 16),
-
-                      // ── Announcement Banners ──
-                      _buildAnnouncementBanners(context),
-                      const SizedBox(height: 16),
-
-                      _buildServiceHoursBanner(context),
-                      _buildQuickActions(context),
-                      const SizedBox(height: 24),
-                      _buildPriceInfoSection(context, home),
-                      const SizedBox(height: 24),
-                      _buildRecentActivity(context, home),
-                      const SizedBox(height: 24),
-                    ]),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
+    return Consumer<HomeProvider>(
+      builder: (context, home, _) {
+        return _buildHomeShell(
+          context,
+          isLoggedIn: true,
+          home: home,
+        );
+      },
     );
   }
 
@@ -697,6 +903,25 @@ class _HomeScreenState extends State<HomeScreen> {
     return Consumer<PengumumanProvider>(
       builder: (context, pengumuman, _) {
         final items = pengumuman.announcements;
+
+        if (pengumuman.isLoading) {
+          final bannerWidth = MediaQuery.sizeOf(context).width * 0.82;
+          return SizedBox(
+            height: 160,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              itemCount: 2,
+              separatorBuilder: (_, _) => const SizedBox(width: 12),
+              itemBuilder: (_, _) => SizedBox(
+                width: bannerWidth,
+                child: const SkeletonCard(height: 160),
+              ),
+            ),
+          );
+        }
+
         if (items.isEmpty) return const SizedBox.shrink();
 
         return SizedBox(
@@ -713,46 +938,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         );
       },
-    );
-  }
-
-  Widget _buildAppBar(BuildContext context, HomeProvider home) {
-    return SliverAppBar(
-      floating: true,
-      pinned: false,
-      snap: true,
-      titleSpacing: 16,
-      title: Text(
-        AppConstants.appName,
-        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
-      ),
-      centerTitle: false,
-      actions: [
-        _buildNotifBell(context),
-        const SizedBox(width: 4),
-        CircleAvatar(
-          radius: 16,
-          backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.15),
-          child: Text(
-            (home.namaLengkap.isNotEmpty ? home.namaLengkap[0] : 'U').toUpperCase(),
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: AppTheme.primaryColor,
-                  fontWeight: FontWeight.w700,
-                ),
-          ),
-        ),
-        const SizedBox(width: 12),
-      ],
-    );
-  }
-
-  Widget _buildSaldoSection(BuildContext context, HomeProvider home) {
-    return SaldoCard(
-      saldo: home.saldo,
-      poin: home.poin,
-      isLoading: false,
     );
   }
 
@@ -909,46 +1094,10 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildPriceInfoSection(BuildContext context, HomeProvider home) {
-    final theme = Theme.of(context);
-    final categories = home.topCategories;
-
-    if (categories.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Info Harga Sampah',
-              style: theme.textTheme.titleSmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-            TextButton.icon(
-              onPressed: () => context.push('/home/info-sampah'),
-              icon: const Icon(Icons.open_in_new, size: 14),
-              label: const Text('Lihat semua'),
-              style: TextButton.styleFrom(
-                visualDensity: VisualDensity.compact,
-                foregroundColor: AppTheme.primaryColor,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        ...categories.map((cat) => _PriceInfoItem(category: cat)),
-      ],
-    );
-  }
-
   Widget _buildRecentActivity(BuildContext context, HomeProvider home) {
     final theme = Theme.of(context);
     final deposits = home.recentDeposits;
+    final isLoadingActivity = home.isLoading;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -974,7 +1123,42 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         const SizedBox(height: 8),
-        if (deposits.isEmpty)
+        if (isLoadingActivity)
+          const Column(
+            children: [
+              SkeletonCard(height: 56),
+              SizedBox(height: 8),
+              SkeletonCard(height: 56),
+              SizedBox(height: 8),
+              SkeletonCard(height: 56),
+            ],
+          )
+        else if (home.hasError && home.user == null)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF9FAFB),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: theme.colorScheme.outlineVariant),
+            ),
+            child: Column(
+              children: [
+                Text(
+                  'Gagal memuat aktivitas',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                TextButton(
+                  onPressed: home.loadData,
+                  child: const Text('Coba lagi'),
+                ),
+              ],
+            ),
+          )
+        else if (deposits.isEmpty)
           _buildEmptyActivity()
         else
           ...deposits.map((deposit) => _ActivityItemWidget(deposit: deposit)),
@@ -1233,61 +1417,6 @@ class _QuickAction {
   final Color color;
   final Color bgColor;
   final String route;
-}
-
-class _PriceInfoItem extends StatelessWidget {
-  const _PriceInfoItem({required this.category});
-
-  final WasteCategory category;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final formatter = NumberFormat.currency(
-      locale: 'id_ID',
-      symbol: 'Rp',
-      decimalDigits: 0,
-    );
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 6),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: theme.colorScheme.outlineVariant),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 32,
-            height: 32,
-            decoration: BoxDecoration(
-              color: Colors.green.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(Icons.eco_outlined, size: 18, color: AppTheme.primaryColor),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              category.nama,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-          Text(
-            '${formatter.format(category.hargaBeliPerKgAsDouble)}/kg',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: AppTheme.primaryColor,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 class _ActivityItemWidget extends StatelessWidget {

@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../../config/constants.dart';
 import '../../config/theme.dart';
 import '../../models/api_exception.dart';
 import '../../providers/auth_provider.dart';
@@ -146,21 +146,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: SafeArea(
+      child: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 24),
-              // Back button
-              Align(
-                alignment: Alignment.centerLeft,
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back_rounded),
-                  onPressed: () => context.go('/login'),
-                  tooltip: 'Kembali',
-                ),
-              ),
               Text(
                 'Daftar Akun Baru',
                 style: theme.textTheme.headlineMedium,
@@ -168,7 +160,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Bergabunglah dengan ${AppConstants.appName}',
+                'Ayo bergabung bersama kami! Membangun lingkungan hijau bersama.',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
@@ -308,9 +300,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       value: _setujuKebijakan,
                       onChanged: (value) =>
                           setState(() => _setujuKebijakan = value ?? false),
-                      title: Text(
-                        'Saya menyetujui kebijakan data pribadi',
-                        style: theme.textTheme.bodySmall,
+                      title: Text.rich(
+                        TextSpan(
+                          style: theme.textTheme.bodySmall,
+                          children: [
+                            const TextSpan(text: 'Saya menyetujui '),
+                            TextSpan(
+                              text: 'kebijakan data pribadi',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: AppTheme.primaryColor,
+                                decoration: TextDecoration.underline,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () => context.push('/settings/kebijakan-data'),
+                            ),
+                          ],
+                        ),
                       ),
                       controlAffinity: ListTileControlAffinity.leading,
                       contentPadding: EdgeInsets.zero,
@@ -363,6 +368,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ],
           ),
         ),
+      ),
       ),
     );
   }

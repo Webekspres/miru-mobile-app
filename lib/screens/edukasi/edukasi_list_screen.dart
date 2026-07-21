@@ -36,7 +36,7 @@ class _EdukasiListScreenState extends State<EdukasiListScreen> {
       ),
       body: Consumer<EdukasiProvider>(
         builder: (context, provider, _) {
-          if (provider.isLoading && provider.items.isEmpty) {
+          if (provider.isLoading) {
             return const SingleChildScrollView(
               physics: NeverScrollableScrollPhysics(),
               padding: EdgeInsets.fromLTRB(16, 12, 16, 24),

@@ -35,7 +35,7 @@
     "semantic_hash": ""
   },
   "ios/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage/Package.swift": {
-    "mtime": 1784546133.1681328,
+    "mtime": 1784597919.5933108,
     "ast_hash": "63bc00d19466662a75b7492ac07d5a97",
     "semantic_hash": ""
   },
@@ -95,8 +95,8 @@
     "semantic_hash": ""
   },
   "lib/app.dart": {
-    "mtime": 1784547045.224313,
-    "ast_hash": "44d551f4cf2aec405f103ad433828e47",
+    "mtime": 1784553084.300014,
+    "ast_hash": "235135dbcde3696a2dcdb3a8825f39e8",
     "semantic_hash": ""
   },
   "lib/config/constants.dart": {
@@ -105,7 +105,7 @@
     "semantic_hash": ""
   },
   "lib/config/routes.dart": {
-    "mtime": 1784547041.606989,
+    "mtime": 1784598249.4202344,
     "ast_hash": "41f4ec18d50054aff5b87552b4838c9b",
     "semantic_hash": ""
   },
@@ -120,8 +120,8 @@
     "semantic_hash": ""
   },
   "lib/screens/splash/splash_screen.dart": {
-    "mtime": 1784545019.744338,
-    "ast_hash": "d618b184ff0bf132665403006b5b1f71",
+    "mtime": 1784598254.592908,
+    "ast_hash": "bdad6f89dd2e6d7673f8f73dd1b79f68",
     "semantic_hash": ""
   },
   "lib/services/api_client.dart": {
@@ -355,18 +355,18 @@
     "semantic_hash": ""
   },
   "lib/screens/auth/login_screen.dart": {
-    "mtime": 1784194142.6753478,
-    "ast_hash": "9629fb5ebd62d31bd1d23520b7c1da6b",
+    "mtime": 1784595504.5020103,
+    "ast_hash": "d2eafe0e7191eada304873b4e8581742",
     "semantic_hash": ""
   },
   "lib/screens/auth/register_screen.dart": {
-    "mtime": 1784193898.4153502,
-    "ast_hash": "8e07252de01d7810c2c12fc2254e14f0",
+    "mtime": 1784548897.364427,
+    "ast_hash": "b586cc0075982103d5c1471882850eb4",
     "semantic_hash": ""
   },
   "lib/screens/home/home_screen.dart": {
-    "mtime": 1784547078.448141,
-    "ast_hash": "de4b533bc070a4e9c3bec7db0fb48205",
+    "mtime": 1784598533.3421032,
+    "ast_hash": "2120de508c3a04328e61a0afe9e8ad00",
     "semantic_hash": ""
   },
   "lib/screens/pengaduan/pengaduan_screen.dart": {
@@ -630,8 +630,8 @@
     "semantic_hash": ""
   },
   "lib/widgets/bottom_nav_scaffold.dart": {
-    "mtime": 1784193884.145156,
-    "ast_hash": "cd565e00c17082d421a9ab881ce652a7",
+    "mtime": 1784549794.9479845,
+    "ast_hash": "7156ffd9e7fc71d76e3f05e1d6ed6b0b",
     "semantic_hash": ""
   },
   "lib/widgets/exit_dialog.dart": {
@@ -645,13 +645,13 @@
     "semantic_hash": ""
   },
   "lib/widgets/miru_logo.dart": {
-    "mtime": 1784545994.952201,
-    "ast_hash": "862f6432c771b650e6698aa84662ae26",
+    "mtime": 1784552691.0095217,
+    "ast_hash": "6cb5d7f6b0d47cd521e9c9ff4370a39e",
     "semantic_hash": ""
   },
   "lib/widgets/shimmer_loading.dart": {
-    "mtime": 1783589809.6875308,
-    "ast_hash": "edf7c3eb58e05de5d3d430e1abec9995",
+    "mtime": 1784597094.819127,
+    "ast_hash": "d7eb0160e70a58ddbf82c632ac6c741b",
     "semantic_hash": ""
   },
   ".ai-steering/11-security-and-privacy.md": {
@@ -660,48 +660,13 @@
     "semantic_hash": ""
   },
   "android/app/src/main/res/drawable/splash_logo.png": {
-    "mtime": 1784192066.5053754,
-    "ast_hash": "ca747120130f9db03191b092f0860363",
+    "mtime": 1784597397.4519484,
+    "ast_hash": "e65cd3a58234e65707c8c6c10cb400a2",
     "semantic_hash": ""
   },
   "assets/images/logo.png": {
     "mtime": 1784192066.1695633,
     "ast_hash": "a41bac769975c677274c299f1ef525c0",
-    "semantic_hash": ""
-  },
-  "assets/images/logo_bg.png": {
-    "mtime": 1784192066.2014818,
-    "ast_hash": "a4d2f705feafc17281c9b2b328a20d69",
-    "semantic_hash": ""
-  },
-  "assets/images/logo_with_text.png": {
-    "mtime": 1784192066.217949,
-    "ast_hash": "6ccecc8b1f3f80ec4c845ff90dc3667c",
-    "semantic_hash": ""
-  },
-  "assets/images/logo_with_text_bg.png": {
-    "mtime": 1784192066.3446736,
-    "ast_hash": "8abb0159fc38029c29e2752f91e63a68",
-    "semantic_hash": ""
-  },
-  "assets/images/splash_logo.png": {
-    "mtime": 1784192066.3955657,
-    "ast_hash": "3362b3c2fa751fc008fed206e88c2c9e",
-    "semantic_hash": ""
-  },
-  "assets/images/government_with_miru.png": {
-    "mtime": 1784544526.298489,
-    "ast_hash": "815b90f325a0edeb1dc32e3801de476c",
-    "semantic_hash": ""
-  },
-  "assets/images/splash_original.png": {
-    "mtime": 1784543907.8842542,
-    "ast_hash": "e65cd3a58234e65707c8c6c10cb400a2",
-    "semantic_hash": ""
-  },
-  "assets/images/logo_with_text_white.png": {
-    "mtime": 1784545867.4161665,
-    "ast_hash": "a13dbc37a6bd0699bc3b2b77d0ddf4e6",
     "semantic_hash": ""
   },
   "lib/models/konten_edukasi.dart": {
@@ -732,6 +697,31 @@
   "assets/images/logo_white.png": {
     "mtime": 1784547051.578872,
     "ast_hash": "3f4f49da7e933637619e7308a36e365f",
+    "semantic_hash": ""
+  },
+  "assets/images/government.png": {
+    "mtime": 1784552523.9438622,
+    "ast_hash": "53fa2236bfb8dfc6f983671ec476225b",
+    "semantic_hash": ""
+  },
+  "assets/images/text.png": {
+    "mtime": 1784552065.7418962,
+    "ast_hash": "99dd3784465cb8869f7b0cc94f3682eb",
+    "semantic_hash": ""
+  },
+  "assets/images/text_white.png": {
+    "mtime": 1784552056.1637223,
+    "ast_hash": "9dc950c695c439709d1a826b33e43688",
+    "semantic_hash": ""
+  },
+  "android/app/src/main/res/drawable/splash_icon.png": {
+    "mtime": 1784192066.1695633,
+    "ast_hash": "a41bac769975c677274c299f1ef525c0",
+    "semantic_hash": ""
+  },
+  "assets/images/splash_logo.png": {
+    "mtime": 1784597397.4519484,
+    "ast_hash": "e65cd3a58234e65707c8c6c10cb400a2",
     "semantic_hash": ""
   }
 }

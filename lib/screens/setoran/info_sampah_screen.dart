@@ -133,7 +133,7 @@ class _InfoSampahScreenState extends State<InfoSampahScreen> {
       ),
       body: Consumer<HomeProvider>(
         builder: (context, home, _) {
-          if (home.isLoading && home.categories.isEmpty) {
+          if (home.isLoading) {
             return SingleChildScrollView(
               physics: const NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.all(16),

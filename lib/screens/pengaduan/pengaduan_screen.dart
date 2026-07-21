@@ -89,7 +89,7 @@ class _PengaduanScreenState extends State<PengaduanScreen>
       ),
       body: Consumer<PengaduanProvider>(
         builder: (context, pengaduan, _) {
-          if (pengaduan.isLoading && pengaduan.complaints.isEmpty) {
+          if (pengaduan.isLoading) {
             return const SingleChildScrollView(
               physics: NeverScrollableScrollPhysics(),
               padding: EdgeInsets.fromLTRB(0, 16, 0, 24),

@@ -83,7 +83,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       body: Consumer<ProfileProvider>(
         builder: (context, profile, _) {
-          if (profile.isLoading && profile.user == null) {
+          if (profile.isLoading) {
             return _buildSkeleton(context);
           }
 

@@ -55,24 +55,7 @@ class PengumumanProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> refresh() async {
-    _error = null;
-    notifyListeners();
-
-    try {
-      final data = await _apiClient.get<List<dynamic>>(
-        '/pengumuman/',
-        fromJson: (json) => json as List<dynamic>,
-      );
-      _announcements = Announcement.listFromJson(data);
-    } on DioException catch (e) {
-      _error = parseDioError(e);
-    } catch (e) {
-      _error = 'Terjadi kesalahan. Silakan coba lagi.';
-    }
-
-    notifyListeners();
-  }
+  Future<void> refresh() => loadPengumuman();
 
   // ──────────────────────────────────────────────
   // Clear cache (panggil saat logout)

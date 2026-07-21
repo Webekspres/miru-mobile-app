@@ -74,20 +74,8 @@ class NotificationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Refresh without loading indicator.
-  Future<void> refresh() async {
-    _error = null;
-    try {
-      final data = await _apiClient.get<List<dynamic>>(
-        '/notifications/',
-        fromJson: (json) => json as List<dynamic>,
-      );
-      _notifications = AppNotification.listFromJson(data);
-    } catch (_) {
-      // Silent refresh — keep existing data on error
-    }
-    notifyListeners();
-  }
+  /// Pull-to-refresh — shows skeleton via [isLoading].
+  Future<void> refresh() => loadNotifications();
 
   // ──────────────────────────────────────────────
   // Mark as Read

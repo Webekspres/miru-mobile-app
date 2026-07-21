@@ -70,7 +70,7 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
       ),
       body: Consumer<NotificationProvider>(
         builder: (context, notif, _) {
-          if (notif.isLoading && notif.notifications.isEmpty) {
+          if (notif.isLoading) {
             return const SingleChildScrollView(
               physics: NeverScrollableScrollPhysics(),
               padding: EdgeInsets.fromLTRB(16, 12, 16, 24),

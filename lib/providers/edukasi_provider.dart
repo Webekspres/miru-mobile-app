@@ -41,21 +41,7 @@ class EdukasiProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> refresh() async {
-    _error = null;
-    try {
-      final data = await _apiClient.get<List<dynamic>>(
-        '/edukasi/',
-        fromJson: (json) => json as List<dynamic>,
-      );
-      _items = KontenEdukasi.listFromJson(data);
-    } on DioException catch (e) {
-      _error = parseDioError(e);
-    } catch (_) {
-      _error = 'Terjadi kesalahan. Silakan coba lagi.';
-    }
-    notifyListeners();
-  }
+  Future<void> refresh() => loadEdukasi();
 
   KontenEdukasi? findById(int id) {
     for (final item in _items) {

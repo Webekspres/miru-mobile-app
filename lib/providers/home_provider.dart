@@ -24,7 +24,6 @@ class HomeProvider extends ChangeNotifier {
 
   User? _user;
   bool _isLoading = false;
-  bool _isRefreshing = false;
   String? _error;
   List<WasteCategory> _categories = [];
   List<Deposit> _recentDeposits = [];
@@ -38,7 +37,6 @@ class HomeProvider extends ChangeNotifier {
   int get poin => _user?.poin ?? 0;
   String get namaLengkap => _user?.namaLengkap ?? '';
   bool get isLoading => _isLoading;
-  bool get isRefreshing => _isRefreshing;
   String? get error => _error;
   bool get hasError => _error != null;
   List<WasteCategory> get categories => _categories;
@@ -56,7 +54,7 @@ class HomeProvider extends ChangeNotifier {
   // Load Dashboard Data
   // ──────────────────────────────────────────────
 
-  /// Initial load (shows LoadingIndicator).
+  /// Initial load and pull-to-refresh (shows skeleton while fetching).
   Future<void> loadData() async {
     _isLoading = true;
     _error = null;
@@ -68,17 +66,8 @@ class HomeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Pull-to-refresh (only shows refresh indicator).
-  Future<void> refresh() async {
-    _isRefreshing = true;
-    _error = null;
-    notifyListeners();
-
-    await _fetchAll();
-
-    _isRefreshing = false;
-    notifyListeners();
-  }
+  /// Pull-to-refresh — same loading flag as initial load so UI can show skeleton.
+  Future<void> refresh() => loadData();
 
   Future<void> _fetchAll() async {
     try {
@@ -170,7 +159,6 @@ class HomeProvider extends ChangeNotifier {
     _recentDeposits = [];
     _error = null;
     _isLoading = false;
-    _isRefreshing = false;
     notifyListeners();
   }
 }

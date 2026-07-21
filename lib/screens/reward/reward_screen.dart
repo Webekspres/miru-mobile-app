@@ -54,7 +54,7 @@ class _RewardScreenState extends State<RewardScreen> {
       ),
       body: Consumer2<HomeProvider, RewardProvider>(
         builder: (context, home, reward, _) {
-          if (reward.isLoading && reward.rewards.isEmpty) {
+          if (reward.isLoading) {
             return SingleChildScrollView(
               physics: const NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.all(16),

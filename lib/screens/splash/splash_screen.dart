@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../widgets/miru_logo.dart';
-import '../../widgets/shimmer_loading.dart';
-
 class SplashScreen extends StatefulWidget {
   /// Jika `true`, splash screen tidak akan auto-navigate.
   /// Berguna untuk development/preview agar layout bisa diedit
@@ -17,51 +14,43 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  static const _minDisplay = Duration(milliseconds: 2200);
+  static const _splashAsset = 'assets/images/splash_logo.png';
+
   @override
   void initState() {
     super.initState();
     if (!widget.previewMode) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-        // Always go to /home — let HomeScreen handle login prompt
-        context.go('/home');
-      });
+      _goHomeAfterDelay();
     }
+  }
+
+  Future<void> _goHomeAfterDelay() async {
+    await Future<void>.delayed(_minDisplay);
+    if (!mounted) return;
+    // Always go to /home — let HomeScreen handle login prompt
+    context.go('/home');
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final logoWidth =
+        (MediaQuery.sizeOf(context).shortestSide * 0.68).clamp(240.0, 420.0);
 
     return Scaffold(
-      body: Stack(
-        children: [
-          Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const MiruLogo(
-                  variant: MiruLogoVariant.original,
-                  height: 350,
-                ),
-                Text('Miru Bank Sampah', style: theme.textTheme.titleLarge?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),),
-                Text(
-                  'Memuat...',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: 48),
-                // Skeleton sebagai pengganti spinner
-                const SkeletonBlock(height: 14, width: 140),
-                const SizedBox(height: 12),
-                const SkeletonBlock(height: 10, width: 100),
-              ],
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Image.asset(
+              _splashAsset,
+              width: logoWidth,
+              fit: BoxFit.contain,
+              filterQuality: FilterQuality.high,
             ),
           ),
-        ],
+        ),
       ),
     );
   }
