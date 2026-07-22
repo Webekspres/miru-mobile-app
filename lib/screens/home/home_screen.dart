@@ -13,6 +13,7 @@ import '../../providers/notification_provider.dart';
 import '../../providers/pengumuman_provider.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/miru_logo.dart';
+import '../../widgets/bottom_nav_scaffold.dart';
 import '../../widgets/shimmer_loading.dart';
 import '../edukasi/edukasi_card.dart';
 import '../notifikasi/detail_notifikasi_screen.dart';
@@ -56,6 +57,10 @@ class _HomeScreenState extends State<HomeScreen> {
     final loggedIn = _authSession.isLoggedIn;
     if (_wasLoggedIn == loggedIn) return;
     _wasLoggedIn = loggedIn;
+    if (!loggedIn) {
+      context.read<NotificationProvider>().stopPolling();
+      context.read<NotificationProvider>().clearCache();
+    }
     _loadData();
   }
 
@@ -84,11 +89,10 @@ class _HomeScreenState extends State<HomeScreen> {
     if (pengumuman.announcements.isEmpty && !pengumuman.isLoading) {
       pengumuman.loadPengumuman();
     }
-    // Load notifications
+    // Notifikasi: load awal; polling dikelola di MiruApp
     final notif = context.read<NotificationProvider>();
-    if (notif.notifications.isEmpty && !notif.isLoading) {
-      notif.loadNotifications();
-    }
+    notif.loadNotifications();
+    notif.startPolling();
   }
 
   /// Shared home shell for guest and logged-in users.
@@ -169,7 +173,12 @@ class _HomeScreenState extends State<HomeScreen> {
               color: Colors.white,
               borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
             ),
-            padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
+            padding: EdgeInsets.fromLTRB(
+              16,
+              20,
+              16,
+              BottomNavScaffold.scrollBottomPadding(context),
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -691,9 +700,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _showNotifPopup(
       BuildContext context, NotificationProvider notif) {
+    // Ambil ulang agar notifikasi status penjemputan terbaru tampil.
+    notif.refreshSilent();
     final theme = Theme.of(context);
     final dateFormat = DateFormat('d MMM HH:mm', 'id_ID');
-    final latest = notif.latestNotifications;
 
     showModalBottomSheet(
       context: context,
@@ -701,175 +711,181 @@ class _HomeScreenState extends State<HomeScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Handle
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.outlineVariant,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Notifikasi',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  if (notif.unreadCount > 0)
-                    TextButton(
-                      onPressed: () {
-                        notif.markAllAsRead();
-                        Navigator.of(ctx).pop();
-                      },
-                      child: const Text(
-                        'Tandai sudah dibaca',
-                        style: TextStyle(fontSize: 12),
+        return ChangeNotifierProvider<NotificationProvider>.value(
+          value: notif,
+          child: Consumer<NotificationProvider>(
+            builder: (context, liveNotif, _) {
+              final latest = liveNotif.latestNotifications;
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.outlineVariant,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
                       ),
                     ),
-                ],
-              ),
-              const SizedBox(height: 8),
-
-              if (latest.isEmpty)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 32),
-                  child: Center(
-                    child: Text(
-                      'Tidak ada notifikasi baru',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ),
-                )
-              else
-                ...latest.map((item) => Padding(
-                      padding: const EdgeInsets.only(bottom: 6),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(12),
-                          onTap: () {
-                            Navigator.of(ctx).pop();
-                            if (!item.isRead) {
-                              notif.markAsRead(item.id);
-                            }
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    DetailNotifikasiScreen(
-                                        notification: item),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: !item.isRead
-                                  ? AppTheme.primaryColor
-                                      .withValues(alpha: 0.04)
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(12),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Notifikasi',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        if (liveNotif.unreadCount > 0)
+                          TextButton(
+                            onPressed: () {
+                              liveNotif.markAllAsRead();
+                              Navigator.of(ctx).pop();
+                            },
+                            child: const Text(
+                              'Tandai sudah dibaca',
+                              style: TextStyle(fontSize: 12),
                             ),
-                            child: Row(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                              children: [
-                                if (!item.isRead)
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.only(
-                                            top: 5, right: 8),
-                                    child: Container(
-                                      width: 6,
-                                      height: 6,
-                                      decoration: const BoxDecoration(
-                                        color: AppTheme.primaryColor,
-                                        shape: BoxShape.circle,
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    if (liveNotif.isLoading && latest.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 32),
+                        child: Center(child: CircularProgressIndicator()),
+                      )
+                    else if (latest.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 32),
+                        child: Center(
+                          child: Text(
+                            'Tidak ada notifikasi baru',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                      )
+                    else
+                      ...latest.map((item) => Padding(
+                            padding: const EdgeInsets.only(bottom: 6),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(12),
+                                onTap: () {
+                                  Navigator.of(ctx).pop();
+                                  if (!item.isRead) {
+                                    liveNotif.markAsRead(item.id);
+                                  }
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => DetailNotifikasiScreen(
+                                        notification: item,
                                       ),
                                     ),
+                                  );
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: !item.isRead
+                                        ? AppTheme.primaryColor
+                                            .withValues(alpha: 0.04)
+                                        : Colors.transparent,
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
-                                Expanded(
-                                  child: Column(
+                                  child: Row(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        item.judul,
-                                        style: theme.textTheme
-                                            .bodyMedium
-                                            ?.copyWith(
-                                          fontWeight:
-                                              FontWeight.w600,
+                                      if (!item.isRead)
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                            top: 5,
+                                            right: 8,
+                                          ),
+                                          child: Container(
+                                            width: 6,
+                                            height: 6,
+                                            decoration: const BoxDecoration(
+                                              color: AppTheme.primaryColor,
+                                              shape: BoxShape.circle,
+                                            ),
+                                          ),
                                         ),
-                                        maxLines: 1,
-                                        overflow:
-                                            TextOverflow.ellipsis,
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        item.deskripsi,
-                                        style: theme.textTheme
-                                            .bodySmall
-                                            ?.copyWith(
-                                          color: theme.colorScheme
-                                              .onSurfaceVariant,
-                                        ),
-                                        maxLines: 1,
-                                        overflow:
-                                            TextOverflow.ellipsis,
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        dateFormat
-                                            .format(item.createdAt),
-                                        style: theme.textTheme
-                                            .labelSmall
-                                            ?.copyWith(
-                                          color: theme.colorScheme
-                                              .onSurfaceVariant
-                                              .withValues(alpha: 0.7),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              item.judul,
+                                              style: theme
+                                                  .textTheme.bodyMedium
+                                                  ?.copyWith(
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            const SizedBox(height: 2),
+                                            Text(
+                                              item.deskripsi,
+                                              style: theme
+                                                  .textTheme.bodySmall
+                                                  ?.copyWith(
+                                                color: theme.colorScheme
+                                                    .onSurfaceVariant,
+                                              ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              dateFormat
+                                                  .format(item.createdAt),
+                                              style: theme
+                                                  .textTheme.labelSmall
+                                                  ?.copyWith(
+                                                color: theme.colorScheme
+                                                    .onSurfaceVariant
+                                                    .withValues(alpha: 0.7),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-                              ],
+                              ),
                             ),
-                          ),
+                          )),
+                    if (latest.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton(
+                          onPressed: () {
+                            Navigator.of(ctx).pop();
+                            context.push('/notifikasi');
+                          },
+                          child: const Text('Lihat Semua Notifikasi'),
                         ),
                       ),
-                    )),
-
-              if (latest.isNotEmpty) ...[
-                const SizedBox(height: 8),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.of(ctx).pop();
-                      context.push('/notifikasi');
-                    },
-                    child: const Text('Lihat Semua Notifikasi'),
-                  ),
+                    ],
+                  ],
                 ),
-              ],
-            ],
+              );
+            },
           ),
         );
       },
@@ -1004,31 +1020,27 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildQuickActions(BuildContext context) {
     final actions = [
       _QuickAction(
-        icon: Icons.local_shipping_outlined,
+        icon: Icons.local_shipping_rounded,
         label: 'Jemput\nSampah',
         color: const Color(0xFF16A34A),
-        bgColor: const Color(0xFFDCFCE7),
         route: '/home/penjemputan',
       ),
       _QuickAction(
-        icon: Icons.account_balance_outlined,
+        icon: Icons.account_balance_rounded,
         label: 'Tarik\nSaldo',
         color: const Color(0xFF2563EB),
-        bgColor: const Color(0xFFDBEAFE),
         route: '/home/tarik-saldo',
       ),
       _QuickAction(
-        icon: Icons.card_giftcard_outlined,
+        icon: Icons.card_giftcard_rounded,
         label: 'Tukar\nPoin',
         color: const Color(0xFFD97706),
-        bgColor: const Color(0xFFFEF3C7),
         route: '/home/reward',
       ),
       _QuickAction(
-        icon: Icons.recycling_outlined,
+        icon: Icons.recycling_rounded,
         label: 'Info\nSampah',
         color: const Color(0xFF7C3AED),
-        bgColor: const Color(0xFFEDE9FE),
         route: '/home/info-sampah',
       ),
     ];
@@ -1065,15 +1077,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: action.bgColor,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Icon(action.icon, color: action.color, size: 22),
-                      ),
+                      Icon(action.icon, color: action.color, size: 32),
                       const SizedBox(height: 8),
                       Text(
                         action.label,
@@ -1408,14 +1412,12 @@ class _QuickAction {
     required this.icon,
     required this.label,
     required this.color,
-    required this.bgColor,
     required this.route,
   });
 
   final IconData icon;
   final String label;
   final Color color;
-  final Color bgColor;
   final String route;
 }
 

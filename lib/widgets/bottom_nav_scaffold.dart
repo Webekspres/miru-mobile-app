@@ -18,7 +18,16 @@ class BottomNavScaffold extends StatelessWidget {
 
   static const double _barHeight = 64;
   static const double _fabSize = 58;
-  static const double _fabOverlap = 22;
+  /// ~1/4 FAB di atas tepi bar; ~3/4 overlap dengan bar.
+  static const double _fabProtrude = _fabSize * 0.25;
+
+  /// Padding bawah untuk scroll di tab utama (body di bawah nav via [extendBody]).
+  static double scrollBottomPadding(BuildContext context) {
+    return MediaQuery.paddingOf(context).bottom +
+        _barHeight +
+        _fabProtrude +
+        6;
+  }
 
   void _onTabSelected(int branchIndex) {
     navigationShell.goBranch(
@@ -31,6 +40,7 @@ class BottomNavScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     final isOnHomeTab = navigationShell.currentIndex == 0;
     final currentIndex = navigationShell.currentIndex;
+    final bottomInset = MediaQuery.paddingOf(context).bottom;
 
     return PopScope(
       canPop: !isOnHomeTab,
@@ -46,81 +56,88 @@ class BottomNavScaffold extends StatelessWidget {
         }
       },
       child: Scaffold(
+        // Body digambar di bawah nav (FAB mengambang). Clearance lewat
+        // [scrollBottomPadding] di tiap tab — jangan Padding di sini (jadi strip abu).
+        extendBody: true,
         body: navigationShell,
         bottomNavigationBar: Consumer<NotificationProvider>(
           builder: (context, notifProvider, _) {
             final unreadCount = notifProvider.unreadCount;
 
-            return Material(
-              color: Colors.white,
-              elevation: 8,
-              shadowColor: Colors.black26,
-              child: SafeArea(
-                top: false,
-                child: SizedBox(
-                  height: _barHeight + _fabOverlap,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    alignment: Alignment.bottomCenter,
-                    children: [
-                      Positioned(
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        height: _barHeight,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: _NavItem(
-                                icon: Icons.home_outlined,
-                                selectedIcon: Icons.home_rounded,
-                                label: 'Beranda',
-                                selected: currentIndex == 0,
-                                onTap: () => _onTabSelected(0),
+            return SizedBox(
+              height: _barHeight + _fabProtrude + bottomInset,
+              child: Stack(
+                clipBehavior: Clip.none,
+                alignment: Alignment.bottomCenter,
+                children: [
+                  // Bar putih — tinggi normal, tanpa ikut tinggi FAB.
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: Material(
+                      color: Colors.white,
+                      elevation: 8,
+                      shadowColor: Colors.black26,
+                      child: Padding(
+                        padding: EdgeInsets.only(bottom: bottomInset),
+                        child: SizedBox(
+                          height: _barHeight,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: _NavItem(
+                                  icon: Icons.home_outlined,
+                                  selectedIcon: Icons.home_rounded,
+                                  label: 'Beranda',
+                                  selected: currentIndex == 0,
+                                  onTap: () => _onTabSelected(0),
+                                ),
                               ),
-                            ),
-                            Expanded(
-                              child: _NavItem(
-                                icon: Icons.receipt_long_outlined,
-                                selectedIcon: Icons.receipt_long_rounded,
-                                label: 'Riwayat',
-                                selected: currentIndex == 1,
-                                onTap: () => _onTabSelected(1),
+                              Expanded(
+                                child: _NavItem(
+                                  icon: Icons.receipt_long_outlined,
+                                  selectedIcon: Icons.receipt_long_rounded,
+                                  label: 'Riwayat',
+                                  selected: currentIndex == 1,
+                                  onTap: () => _onTabSelected(1),
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: _fabSize + 8),
-                            Expanded(
-                              child: _NavItem(
-                                icon: Icons.notifications_outlined,
-                                selectedIcon: Icons.notifications_rounded,
-                                label: 'Notifikasi',
-                                selected: currentIndex == 2,
-                                badgeCount: unreadCount,
-                                onTap: () => _onTabSelected(2),
+                              const SizedBox(width: _fabSize + 8),
+                              Expanded(
+                                child: _NavItem(
+                                  icon: Icons.notifications_outlined,
+                                  selectedIcon: Icons.notifications_rounded,
+                                  label: 'Notifikasi',
+                                  selected: currentIndex == 2,
+                                  badgeCount: unreadCount,
+                                  onTap: () => _onTabSelected(2),
+                                ),
                               ),
-                            ),
-                            Expanded(
-                              child: _NavItem(
-                                icon: Icons.person_outline,
-                                selectedIcon: Icons.person_rounded,
-                                label: 'Profil',
-                                selected: currentIndex == 3,
-                                onTap: () => _onTabSelected(3),
+                              Expanded(
+                                child: _NavItem(
+                                  icon: Icons.person_outline,
+                                  selectedIcon: Icons.person_rounded,
+                                  label: 'Profil',
+                                  selected: currentIndex == 3,
+                                  onTap: () => _onTabSelected(3),
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                      Positioned(
-                        top: 0,
-                        child: _JemputCenterButton(
-                          size: _fabSize,
-                          onTap: () => context.push('/home/penjemputan'),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                  // FAB mengambang: tepi atas bar di ~3/4 tinggi tombol.
+                  Positioned(
+                    bottom: bottomInset + (_barHeight - _fabSize * 0.75),
+                    child: _JemputCenterButton(
+                      size: _fabSize,
+                      onTap: () => context.push('/home/penjemputan'),
+                    ),
+                  ),
+                ],
               ),
             );
           },

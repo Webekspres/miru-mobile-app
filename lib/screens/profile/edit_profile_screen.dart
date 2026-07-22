@@ -19,6 +19,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _namaController;
   late TextEditingController _noHpController;
   late TextEditingController _alamatController;
+  late TextEditingController _rtController;
+  late TextEditingController _rwController;
 
   @override
   void initState() {
@@ -26,6 +28,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _namaController = TextEditingController(text: widget.initialUser.namaLengkap);
     _noHpController = TextEditingController(text: widget.initialUser.noHp);
     _alamatController = TextEditingController(text: widget.initialUser.alamat);
+    _rtController = TextEditingController(text: widget.initialUser.rt);
+    _rwController = TextEditingController(text: widget.initialUser.rw);
   }
 
   @override
@@ -33,6 +37,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _namaController.dispose();
     _noHpController.dispose();
     _alamatController.dispose();
+    _rtController.dispose();
+    _rwController.dispose();
     super.dispose();
   }
 
@@ -44,6 +50,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       namaLengkap: _namaController.text.trim(),
       noHp: _noHpController.text.trim(),
       alamat: _alamatController.text.trim(),
+      rt: _rtController.text.trim(),
+      rw: _rwController.text.trim(),
     );
 
     if (!mounted) return;
@@ -179,6 +187,36 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 validator: (v) =>
                     v == null || v.trim().isEmpty ? 'Alamat tidak boleh kosong' : null,
+              ),
+              const SizedBox(height: 20),
+
+              // ── RT (opsional) ──
+              _buildLabel(theme, 'RT (opsional)'),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: _rtController,
+                decoration: InputDecoration(
+                  hintText: 'Contoh: 001',
+                  prefixIcon: const Icon(Icons.signpost_outlined, size: 20),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // ── RW (opsional) ──
+              _buildLabel(theme, 'RW (opsional)'),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: _rwController,
+                decoration: InputDecoration(
+                  hintText: 'Contoh: 002',
+                  prefixIcon: const Icon(Icons.signpost_outlined, size: 20),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
               ),
               const SizedBox(height: 20),
 

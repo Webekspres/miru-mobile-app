@@ -26,8 +26,16 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _goHomeAfterDelay() async {
+    // Cold start: native Android splash menutupi Flutter sampai frame pertama
+    // ter-rasterize. Jika timer dihitung dari initState, delay habis di balik
+    // native splash → user langsung melihat /home (hot restart tidak kena ini).
+    await WidgetsBinding.instance.waitUntilFirstFrameRasterized;
+    if (!mounted) return;
+
+    await precacheImage(const AssetImage(_splashAsset), context);
     await Future<void>.delayed(_minDisplay);
     if (!mounted) return;
+
     // Always go to /home — let HomeScreen handle login prompt
     context.go('/home');
   }
@@ -48,6 +56,7 @@ class _SplashScreenState extends State<SplashScreen> {
               width: logoWidth,
               fit: BoxFit.contain,
               filterQuality: FilterQuality.high,
+              gaplessPlayback: true,
             ),
           ),
         ),

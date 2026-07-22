@@ -28,7 +28,7 @@ class MiruApp extends StatefulWidget {
   State<MiruApp> createState() => _MiruAppState();
 }
 
-class _MiruAppState extends State<MiruApp> {
+class _MiruAppState extends State<MiruApp> with WidgetsBindingObserver {
   late final StorageService _storageService;
   late final AuthSession _authSession;
   late final AuthProvider _authProvider;
@@ -49,6 +49,7 @@ class _MiruAppState extends State<MiruApp> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _storageService = StorageService();
     _authSession = AuthSession(_storageService);
     _apiClient = ApiClient(
@@ -78,14 +79,27 @@ class _MiruAppState extends State<MiruApp> {
     _router = createAppRouter(_authSession);
     _authSession.refresh();
 
-    // Hapus semua cache provider saat logout
+    // Hapus semua cache provider saat logout / mulai poll saat login
     _authSession.addListener(_onAuthChanged);
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _authSession.removeListener(_onAuthChanged);
+    _notificationProvider.stopPolling();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && _authSession.isLoggedIn) {
+      _notificationProvider.refreshSilent();
+      _notificationProvider.startPolling();
+    } else if (state == AppLifecycleState.paused) {
+      // Hemat baterai saat app di background
+      _notificationProvider.stopPolling();
+    }
   }
 
   void _onAuthChanged() {
@@ -101,7 +115,12 @@ class _MiruAppState extends State<MiruApp> {
       _pengumumanProvider.clearCache();
       _notificationProvider.clearCache();
       _settingsProvider.clearCache();
+      return;
     }
+
+    // Login / session restore → mulai poll notifikasi
+    _notificationProvider.loadNotifications();
+    _notificationProvider.startPolling();
   }
 
   @override

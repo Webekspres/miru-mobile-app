@@ -92,7 +92,7 @@ class ProfileProvider extends ChangeNotifier {
   // Update Profile
   // ──────────────────────────────────────────────
 
-  /// Updates profile fields: nama_lengkap, no_hp, alamat.
+  /// Updates profile fields: nama_lengkap, no_hp, alamat, rt, rw.
   ///
   /// Other fields like saldo, poin, role are NOT sent to the API.
   /// Returns `true` on success, `false` on error.
@@ -100,6 +100,8 @@ class ProfileProvider extends ChangeNotifier {
     required String namaLengkap,
     required String noHp,
     required String alamat,
+    String rt = '',
+    String rw = '',
   }) async {
     if (_user == null) return false;
 
@@ -108,13 +110,17 @@ class ProfileProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      final body = <String, dynamic>{
+        'nama_lengkap': namaLengkap,
+        'no_hp': noHp,
+        'alamat': alamat,
+      };
+      if (rt.isNotEmpty) body['rt'] = rt;
+      if (rw.isNotEmpty) body['rw'] = rw;
+
       final updatedData = await _apiClient.patch<Map<String, dynamic>>(
         '/users/${_user!.id}/',
-        data: {
-          'nama_lengkap': namaLengkap,
-          'no_hp': noHp,
-          'alamat': alamat,
-        },
+        data: body,
         fromJson: (json) => Map<String, dynamic>.from(json as Map),
       );
 

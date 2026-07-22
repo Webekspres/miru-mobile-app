@@ -103,6 +103,8 @@ class AuthProvider extends ChangeNotifier {
     required String noHp,
     required String alamat,
     String? nik,
+    String rt = '',
+    String rw = '',
     bool setujuKebijakanData = true,
   }) async {
     _isLoading = true;
@@ -116,6 +118,8 @@ class AuthProvider extends ChangeNotifier {
         namaLengkap: namaLengkap,
         noHp: noHp,
         alamat: alamat,
+        rt: rt,
+        rw: rw,
         setujuKebijakanData: setujuKebijakanData,
       );
 
@@ -167,6 +171,74 @@ class AuthProvider extends ChangeNotifier {
     } catch (_) {
       await _clearSession();
       return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // ──────────────────────────────────────────────
+  // Forgot Password
+  // ──────────────────────────────────────────────
+
+  /// Request a password reset token.
+  /// Returns the reset token on success, or null if username not found
+  /// (server returns a safe generic message either way).
+  Future<String?> forgotPassword({
+    required String username,
+  }) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final data = await authService.forgotPassword(
+        username: username,
+      );
+
+      final resetToken = data['reset_token'] as String?;
+      return resetToken;
+    } on ApiException {
+      rethrow;
+    } on DioException catch (e) {
+      _error = parseDioError(e);
+      rethrow;
+    } catch (e) {
+      _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // ──────────────────────────────────────────────
+  // Reset Password
+  // ──────────────────────────────────────────────
+
+  /// Reset password using a reset token.
+  /// Throws [ApiException] if token is invalid, expired, or password too short.
+  Future<void> resetPassword({
+    required String token,
+    required String newPassword,
+  }) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await authService.resetPassword(
+        token: token,
+        newPassword: newPassword,
+      );
+    } on ApiException {
+      rethrow;
+    } on DioException catch (e) {
+      _error = parseDioError(e);
+      rethrow;
+    } catch (e) {
+      _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      rethrow;
     } finally {
       _isLoading = false;
       notifyListeners();

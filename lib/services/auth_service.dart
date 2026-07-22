@@ -53,18 +53,24 @@ class AuthService {
     required String namaLengkap,
     required String noHp,
     required String alamat,
+    String rt = '',
+    String rw = '',
     bool setujuKebijakanData = true,
   }) async {
+    final data = <String, dynamic>{
+      'username': username,
+      'password': password,
+      'nama_lengkap': namaLengkap,
+      'no_hp': noHp,
+      'alamat': alamat,
+      'setuju_kebijakan_data': setujuKebijakanData,
+    };
+    if (rt.isNotEmpty) data['rt'] = rt;
+    if (rw.isNotEmpty) data['rw'] = rw;
+
     return apiClient.post<JsonMap>(
       '/users/',
-      data: {
-        'username': username,
-        'password': password,
-        'nama_lengkap': namaLengkap,
-        'no_hp': noHp,
-        'alamat': alamat,
-        'setuju_kebijakan_data': setujuKebijakanData,
-      },
+      data: data,
       fromJson: _asJsonMap,
     );
   }
@@ -72,6 +78,36 @@ class AuthService {
   Future<JsonMap> getMe() {
     return apiClient.get<JsonMap>(
       '/auth/me/',
+      fromJson: _asJsonMap,
+    );
+  }
+
+  /// Request a password reset token.
+  /// POST /auth/forgot-password/
+  Future<JsonMap> forgotPassword({
+    required String username,
+  }) async {
+    return apiClient.post<JsonMap>(
+      '/auth/forgot-password/',
+      data: {
+        'username': username,
+      },
+      fromJson: _asJsonMap,
+    );
+  }
+
+  /// Reset password using a reset token.
+  /// POST /auth/reset-password/
+  Future<JsonMap> resetPassword({
+    required String token,
+    required String newPassword,
+  }) async {
+    return apiClient.post<JsonMap>(
+      '/auth/reset-password/',
+      data: {
+        'token': token,
+        'new_password': newPassword,
+      },
       fromJson: _asJsonMap,
     );
   }

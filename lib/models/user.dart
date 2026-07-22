@@ -12,6 +12,10 @@ class User {
     this.nik = '',
     this.noHp = '',
     this.alamat = '',
+    this.rt = '',
+    this.rw = '',
+    this.kelurahanId,
+    this.kelurahanNama = '',
     this.dateJoined,
     this.qr,
   });
@@ -23,6 +27,14 @@ class User {
   final String nik;
   final String noHp;
   final String alamat;
+  final String rt;
+  final String rw;
+
+  /// ID wilayah layanan (FK ke WilayahLayanan) — nullable.
+  final int? kelurahanId;
+
+  /// Nama kelurahan (read-only dari API).
+  final String kelurahanNama;
 
   /// Raw saldo string from API, e.g. `"125000.00"`.
   final String saldo;
@@ -44,6 +56,10 @@ class User {
       nik: json['nik'] as String? ?? '',
       noHp: json['no_hp'] as String? ?? '',
       alamat: json['alamat'] as String? ?? '',
+      rt: json['rt'] as String? ?? '',
+      rw: json['rw'] as String? ?? '',
+      kelurahanId: json['kelurahan'] as int?,
+      kelurahanNama: json['kelurahan_nama'] as String? ?? '',
       saldo: json['saldo']?.toString() ?? '0.00',
       poin: json['poin'] as int? ?? 0,
       isActive: json['is_active'] as bool? ?? true,
@@ -62,6 +78,9 @@ class User {
         'nik': nik,
         'no_hp': noHp,
         'alamat': alamat,
+        'rt': rt,
+        'rw': rw,
+        if (kelurahanId != null) 'kelurahan': kelurahanId,
         'saldo': saldo,
         'poin': poin,
         'is_active': isActive,

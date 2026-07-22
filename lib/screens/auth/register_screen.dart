@@ -23,6 +23,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _noHpController = TextEditingController();
   final _alamatController = TextEditingController();
   final _nikController = TextEditingController();
+  final _rtController = TextEditingController();
+  final _rwController = TextEditingController();
 
   bool _obscurePassword = true;
   bool _setujuKebijakan = false;
@@ -35,6 +37,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String? _fieldErrorNoHp;
   String? _fieldErrorAlamat;
   String? _fieldErrorNik;
+  String? _fieldErrorRt;
+  String? _fieldErrorRw;
 
   @override
   void dispose() {
@@ -44,6 +48,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _noHpController.dispose();
     _alamatController.dispose();
     _nikController.dispose();
+    _rtController.dispose();
+    _rwController.dispose();
     super.dispose();
   }
 
@@ -55,6 +61,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _fieldErrorNoHp = null;
       _fieldErrorAlamat = null;
       _fieldErrorNik = null;
+      _fieldErrorRt = null;
+      _fieldErrorRw = null;
     });
   }
 
@@ -66,8 +74,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _fieldErrorPassword = _extractError(errors['password']);
       _fieldErrorNoHp = _extractError(errors['no_hp']);
       _fieldErrorAlamat = _extractError(errors['alamat']);
-      _fieldErrorNik = _extractError(errors['nik']);
-    });
+    _fieldErrorNik = _extractError(errors['nik']);
+    _fieldErrorRt = _extractError(errors['rt']);
+    _fieldErrorRw = _extractError(errors['rw']);
+  });
   }
 
   String? _extractError(dynamic error) {
@@ -94,6 +104,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
             namaLengkap: _namaController.text.trim(),
             noHp: _noHpController.text.trim(),
             alamat: _alamatController.text.trim(),
+            rt: _rtController.text.trim(),
+            rw: _rwController.text.trim(),
             nik: _nikController.text.trim().isEmpty
                 ? null
                 : _nikController.text.trim(),
@@ -281,6 +293,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         }
                         return null;
                       },
+                    ),
+                    const SizedBox(height: 14),
+                    // RT (opsional)
+                    TextFormField(
+                      controller: _rtController,
+                      decoration: InputDecoration(
+                        labelText: 'RT (opsional)',
+                        prefixIcon: const Icon(Icons.signpost_outlined),
+                        errorText: _fieldErrorRt,
+                        helperText: 'Contoh: 001',
+                      ),
+                      textInputAction: TextInputAction.next,
+                      keyboardType: TextInputType.text,
+                    ),
+                    const SizedBox(height: 14),
+                    // RW (opsional)
+                    TextFormField(
+                      controller: _rwController,
+                      decoration: InputDecoration(
+                        labelText: 'RW (opsional)',
+                        prefixIcon: const Icon(Icons.signpost_outlined),
+                        errorText: _fieldErrorRw,
+                        helperText: 'Contoh: 002',
+                      ),
+                      textInputAction: TextInputAction.next,
+                      keyboardType: TextInputType.text,
                     ),
                     const SizedBox(height: 14),
                     // NIK (opsional)

@@ -42,7 +42,8 @@ class _PenjemputanScreenState extends State<PenjemputanScreen>
     final penjemputan = context.read<PenjemputanProvider>();
     final home = context.read<HomeProvider>();
     final userId = home.user?.id;
-    if (userId != null && penjemputan.pickups.isEmpty && !penjemputan.isLoading) {
+    // Selalu reload agar status (disetujui/dijadwalkan/dll) tidak stale dari cache.
+    if (userId != null && !penjemputan.isLoading) {
       penjemputan.loadPickups(userId: userId);
     }
   }
@@ -238,6 +239,29 @@ class _PickupCard extends StatelessWidget {
               ),
             ],
           ),
+
+          if (pickup.petugasNama != null &&
+              pickup.petugasNama!.trim().isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(
+                  Icons.badge_outlined,
+                  size: 16,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    'Petugas: ${pickup.petugasNama}',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     );

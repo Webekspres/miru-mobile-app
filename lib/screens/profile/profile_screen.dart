@@ -11,6 +11,7 @@ import '../../providers/profile_provider.dart';
 import '../../widgets/exit_dialog.dart';
 import '../../widgets/error_view.dart';
 import '../../widgets/login_prompt.dart';
+import '../../widgets/bottom_nav_scaffold.dart';
 import '../../widgets/shimmer_loading.dart';
 import 'edit_profile_screen.dart';
 
@@ -108,7 +109,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             color: AppTheme.primaryColor,
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.fromLTRB(
+                16,
+                16,
+                16,
+                BottomNavScaffold.scrollBottomPadding(context),
+              ),
               child: Column(
                 children: [
                   // ── Avatar & Nama ──
@@ -321,6 +327,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 value: user.alamat,
               ),
               _divider(theme),
+              if (user.rt.isNotEmpty || user.rw.isNotEmpty) ...[
+                _StaticField(
+                  icon: Icons.signpost_outlined,
+                  label: 'RT / RW',
+                  value: [
+                    if (user.rt.isNotEmpty) 'RT ${user.rt}',
+                    if (user.rw.isNotEmpty) 'RW ${user.rw}',
+                  ].join(' / '),
+                ),
+                _divider(theme),
+              ],
+              if (user.kelurahanNama.isNotEmpty) ...[
+                _StaticField(
+                  icon: Icons.location_city_outlined,
+                  label: 'Kelurahan',
+                  value: user.kelurahanNama,
+                ),
+                _divider(theme),
+              ],
               _StaticField(
                 icon: Icons.badge_outlined,
                 label: 'NIK',

@@ -1,8 +1,10 @@
 import 'package:go_router/go_router.dart';
 
 import '../providers/auth_session.dart';
+import '../screens/auth/forgot_password_screen.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/auth/register_screen.dart';
+import '../screens/auth/reset_password_screen.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/notifikasi/notifikasi_screen.dart';
 import '../screens/pengaduan/pengaduan_form_screen.dart';
@@ -32,8 +34,12 @@ GoRouter createAppRouter(AuthSession authSession) {
       final location = state.matchedLocation;
       final isLoggedIn = authSession.isLoggedIn;
 
-      // Hanya redirect jika sudah login mencoba akses login/register
-      if (isLoggedIn && (location == '/login' || location == '/register')) {
+      // Redirect jika sudah login mencoba akses halaman auth
+      if (isLoggedIn &&
+          (location == '/login' ||
+              location == '/register' ||
+              location == '/forgot-password' ||
+              location == '/reset-password')) {
         return '/home';
       }
 
@@ -60,6 +66,16 @@ GoRouter createAppRouter(AuthSession authSession) {
       GoRoute(
         path: '/register',
         builder: (context, state) => const RegisterScreen(),
+      ),
+      GoRoute(
+        path: '/forgot-password',
+        builder: (context, state) => const ForgotPasswordScreen(),
+      ),
+      GoRoute(
+        path: '/reset-password',
+        builder: (context, state) => ResetPasswordScreen(
+          initialToken: state.extra as String?,
+        ),
       ),
 
       // ── Main app shell with bottom nav ──

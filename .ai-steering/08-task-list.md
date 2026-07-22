@@ -1,10 +1,11 @@
 # 08 — Task List: Mobile App Development Roadmap
 
 > **Dokumen ini** adalah roadmap **mirumobileapp** (Android prioritas).
-> Urutan: **yang belum selesai di atas**, arsip MVP yang sudah selesai di bawah.
+> **Urutan:** item **belum selesai di atas**; item **sudah selesai di bawah** (arsip).
 >
 > Item pengembangan lanjutan hanya dari dokumen persyaratan (Proposal, Jawaban,
-> Modules, Business Rules, Constraints).
+> Modules, Business Rules, Constraints), dalam cakupan modul mobile — bukan spekulasi fitur.
+> MVP sudah selesai; Fase 6–8 adalah lingkup kerja aktif.
 >
 > **Referensi (repo ini):**
 > - `04-api-integration.md`, `07-modules-and-features.md`, `10-integration-and-roles.md`
@@ -12,7 +13,7 @@
 > - `11-security-and-privacy.md` — **pedoman keamanan & privasi mobile**
 >
 > **Referensi backend:**
-> - `miru-backend-api` → `.ai-steering/08-task-list.md`, `04-api-contracts`, `07-modules`,
+> - `backend/` → `.ai-steering/08-task-list.md`, `04-api-contracts`, `07-modules`,
 >   **`11-security-and-privacy.md` (kanonik)**
 
 ---
@@ -21,98 +22,201 @@
 
 | Fase | Nama | Tujuan | Backend Min. | Status |
 |------|------|--------|--------------|--------|
-| 0–5 | Scaffold → Settings | Auth, MVP screens, UX, pengumuman | Fase 1–5 ✅ | ✅ Selesai |
+| 0–5 | Scaffold → Settings | Auth, layar nasabah, UX, pengumuman | Fase 1–5 ✅ | ✅ Selesai (arsip MVP) |
 | 6 | Kualitas & UAT | Widget/unit test + checklist UAT | Fase 6 | 🔲 Aktif |
 | 7 | Production Android | APK/AAB, Play Store | Fase 7 | 🔲 Aktif |
-| 8 | Pengembangan Lanjutan | FCM, edukasi, lupa password, iOS, dll. | Fase 8 | 🔲 Post-MVP |
-| — | Out of Scope | Larangan sistem | — | ⛔ |
+| 8 | Pengembangan Lanjutan | Fitur persyaratan dalam modul mobile | Fase 8 (fitur API ✅) | 🔲 **Aktif** |
+| — | Out of Scope | Larangan sistem / di luar 17 modul | — | ⛔ |
+
+> **Status proyek:** MVP mobile selesai. Kerja aktif = **Fase 8 lanjutan** + **Fase 6 UAT** + **Fase 7 Play Store**.
+> Hanya item dari dokumen persyaratan; **tidak menambah modul** di luar cakupan nasabah di bawah.
 
 ### Cakupan Modul — Mobile (Nasabah)
 
 Dari 17 modul sistem, **sebagian** di mobile; sisanya staff-only di web-admin.
 
-| No | Modul | Screen | Status MVP | Lanjutan |
-|----|-------|--------|------------|----------|
+| No | Modul | Screen | Status MVP | Lanjutan (sisa) |
+|----|-------|--------|------------|-----------------|
 | 2 | Autentikasi | Login, Register, Splash | ✅ | Lupa password; verifikasi HP/email (opsional) |
-| 3 | Profil & QR | Profile, QRCode | ✅ | RT/RW–kelurahan; share QR |
-| 4 | Info & Edukasi | InfoSampah | ✅ (kategori/harga) | Artikel edukasi dari API |
-| 5 | Katalog Harga | (InfoSampah / Home) | ✅ | Banner harga H-3 |
-| 7 | Penjemputan | List + Ajukan | ✅ | Wilayah/kuota; Maps sederhana |
-| 9 | Saldo & Riwayat | Riwayat, Home | ✅ | Notifikasi status |
-| 10 | Tarik Saldo | TarikSaldo | ✅ | Bukti PDF; metode metadata |
+| 3 | Profil & QR | Profile, QRCode | ✅ | Field RT/RW–kelurahan; share QR ✅ |
+| 4 | Info & Edukasi | InfoSampah + Edukasi | ✅ | List/detail artikel ✅; panduan singkat tetap di InfoSampah ✅ |
+| 5 | Katalog Harga | InfoSampah / Home | ✅ | Banner harga H-3 |
+| 7 | Penjemputan | List + Ajukan | ✅ | Pesan error wilayah/kuota; Maps pin (opsional) |
+| 9 | Saldo & Riwayat | Riwayat, Home, Notifikasi | ✅ | In-app + polling ✅; FCM push (belum) |
+| 10 | Tarik Saldo | TarikSaldo | ✅ | Bukti PDF; metode pencairan metadata |
 | 11 | Poin & Reward | Reward, Tukar | ✅ | Info masa berlaku poin |
 | 14 | Pengaduan | List + Form | ✅ | — |
 | 15 | Dashboard | Home | ✅ | — |
-| 17 | Settings | Settings, Pengumuman, Kebijakan | ✅ | FCM settings |
+| 17 | Settings | Settings, Kebijakan | ✅ | Preferensi notifikasi FCM |
 
 Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 
 ---
 
+## Urutan kerja disarankan (Mobile)
+
+1. **8.1 Lupa password** — API forgot/reset sudah ✅.
+2. **8.2 Field RT/RW–kelurahan** di profil/registrasi — field backend sudah ✅.
+3. **8.4 Banner harga H-3** — API harga terjadwal sudah ✅ (setelah web admin bisa set tanggal).
+4. **8.6 Bukti PDF + metode pencairan + info poin expire** — API sudah ✅.
+5. **8.5 Pesan error wilayah/kuota** — validasi backend sudah ✅.
+6. **8.4 FCM push** — trigger backend sudah ✅; setup Firebase di app.
+7. **Fase 6 UAT** beriringan; **Fase 7 Play Store** saat API production HTTPS siap.
+8. iOS & opsional — belakangan (Constraints: Android prioritas).
+
+---
+
 # BAGIAN A — BELUM SELESAI (prioritas atas)
+
+> Hanya item `[ ]`. Detail cukup untuk dikerjakan; tetap dalam modul nasabah.
+
+---
+
+## Fase 8: Pengembangan Lanjutan
+
+> Bergantung Backend Fase 8. API fitur bisnis hampir semua ✅.
+> Edukasi list/detail, share QR, notifikasi in-app + polling — sudah ✅ (BAGIAN B).
+
+### 8.1 Modul 2 — Autentikasi lanjutan
+
+> **Sumber:** Proposal §4 modul 2.
+> **API:** `ForgotPasswordView` + `ResetPasswordView` — siap.
+
+- [x] **Lupa password flow**
+  - Layar: minta email/HP → kirim permintaan reset → layar masukkan token + password baru
+  - Integrasi envelope error (token expired, user tidak ditemukan — pesan generik aman)
+  - Link dari LoginScreen; password min 6 (selaras backend)
+  - Setelah sukses → kembali ke login dengan pesan sukses BI
+- [ ] **(Opsional) Verifikasi nomor HP/email** — hanya jika disepakati klien
+  - Jangan kerjakan default; tunggu keputusan klien + endpoint final
+
+### 8.2 Modul 3 — Profil & kartu digital
+
+> **Sumber:** Proposal modul 3.
+> **API:** field kelurahan / RT / RW pada user — siap.
+> Share / screenshot QR sudah ✅.
+
+- [x] **Field RT / RW dan kelurahan** di profil edit + registrasi (opsional)
+  - Tampil di ProfileScreen; kirim PATCH `/api/auth/me/` atau endpoint profil yang dipakai
+  - Validasi/pesan error dari envelope jika wilayah tidak valid
+  - Jangan wajibkan jika backend mengizinkan kosong
+
+### 8.4 Modul 5 / 9 — Harga terjadwal & FCM push
+
+> **Sumber:** Jawaban §6.2.4; Jawaban §6.6.5 FCM; Proposal modul 9; Security §8.
+> Notifikasi in-app (list/detail/mark-read), polling ~8s, badge unread — sudah ✅.
+
+- [ ] **Banner / info harga akan berubah** pada tanggal berlaku
+  - Sumber: pengumuman harga atau field harga terjadwal dari API kategori/pengumuman
+  - Tampil di Home dan/atau InfoSampah; hilang setelah tanggal berlaku lewat
+- [ ] **Firebase Cloud Messaging setup**
+  - `firebase_messaging` (+ config Android); register device token ke `POST /api/device-tokens/`
+  - Unregister token saat logout
+- [ ] **Handle push OS:** status penjemputan, penarikan approved/ditolak, pengumuman, harga baru
+  - Tap notifikasi → buka layar relevan (detail jemput / notifikasi / home)
+- [ ] **Payload push tanpa** NIK / saldo lengkap / token JWT (andal server; jangan log payload sensitif)
+- [ ] **Permission notifikasi OS** diminta saat FCM diaktifkan (Android 13+ `POST_NOTIFICATIONS`)
+
+### 8.5 Modul 7 — Wilayah & peta sederhana
+
+> **Sumber:** Jawaban §6.2.12–13, §6.6.1; Constraints §5.
+> Reload status list + nama petugas setelah dijadwalkan — sudah ✅.
+
+- [ ] **Validasi / pesan error wilayah & kuota 2×/minggu** dari envelope backend
+  - Saat ajukan penjemputan gagal: tampilkan `message` server (BI), bukan generic “terjadi kesalahan”
+  - Kasus: wilayah tidak terdaftar; kuota wilayah penuh
+- [ ] **Pilih/lihat lokasi sederhana** (static map atau pin alamat) — **bukan** GPS live armada
+  - Opsional; butuh Backend 8.7 koordinat + key Maps ter-restrict
+  - Cukup tampil pin/static image di detail jemput jika koordinat ada
+
+### 8.6 Modul 10 / 11 — Bukti & masa berlaku poin
+
+> **Sumber:** Jawaban §6.2.10; §6.3.6; Business Rules §A.4.
+> **API:** PDF download role-gated; `PoinInfoView`; metadata metode pencairan — siap.
+
+- [ ] **Tampilkan info masa berlaku / sisa poin**
+  - Di Home dan/atau RewardScreen; panggil endpoint info poin
+  - Jelaskan poin hangus setelah 1 tahun (teks BI singkat)
+- [ ] **Unduh atau share bukti transaksi / tanda terima** (PDF atau gambar)
+  - Dari detail setoran / penarikan di Riwayat; hit download role-gated (nasabah milik sendiri)
+  - Share via `share_plus` atau simpan file lokal
+- [ ] **UI metode pencairan** (tunai / transfer bank / e-wallet metadata) di TarikSaldo
+  - Field sesuai serializer backend; **tanpa** payment gateway
+  - Konfirmasi sebelum submit; SLA 1–2 hari kerja tetap ditampilkan
+
+### 8.7 iOS & peningkatan opsional
+
+> **Sumber:** Constraints §10 / Jawaban §6.4 (iOS menyusul). **Bukan blocker Android.**
+
+- [ ] iOS build configuration + App Store Connect / TestFlight
+- [ ] Adapt UI safe area / Cupertino jika perlu
+- [ ] Offline cache last-loaded saldo *(future — tidak blocker)*
+- [ ] Biometric unlock *(opsional — bukan persyaratan wajib)*
+- [ ] In-app rating prompt *(opsional store policy)*
 
 ---
 
 ## Fase 6: Kualitas & Testing (UAT Ready)
 
-> **Sumber:** Kriteria UAT roadmap; checklist integrasi E2E;
-> **`11-security-and-privacy.md`** §2, §7, §10.
+> **Sumber:** Checklist UAT; `11-security-and-privacy.md` §2, §7, §10.
+> Guard nasabah, secure storage, consent, QR non-JWT, smoke `widget_test` — sudah ✅.
 
-### 6.0 Keamanan Client (sebelum / beriringan UAT)
-> Detail: `11-security-and-privacy.md`.
+### 6.0 Keamanan Client — sisa
 
-- [x] Guard login hanya `nasabah`; tolak staff
-- [x] Token di `flutter_secure_storage`; logout clear credential
-- [x] Consent `setuju_kebijakan_data` di registrasi
-- [x] QR payload JSON `{ id, nama_lengkap, no_hp }` — **bukan JWT**
-- [ ] Verifikasi tidak ada log token/password/NIK di path release
-- [ ] Double tap submit prevention pada tarik saldo / tukar poin / ajukan jemput
-- [ ] Token expired mid-session → refresh atau logout ramah
-- [ ] Jangan kurangi saldo/poin lokal sebelum server confirm
+- [ ] **Verifikasi tidak ada log** token / password / NIK di path **release**
+- [ ] **Double tap submit prevention** pada tarik saldo / tukar poin / ajukan jemput
+- [ ] **Token expired mid-session** → refresh otomatis atau logout ramah (pesan BI)
+- [ ] **Jangan kurangi saldo/poin lokal** sebelum server confirm (anti optimistic balance)
 
-### 6.1 Automated Tests
-- [ ] `test/models/user_test.dart` — fromJson saldo string
-- [ ] `test/services/api_envelope_test.dart` — parse success/error
+### 6.1 Automated Tests — sisa
+
+- [ ] `test/models/user_test.dart` — `fromJson` saldo/poin string & number
+- [ ] `test/services/api_envelope_test.dart` — parse success/error envelope
 - [ ] `test/providers/auth_provider_test.dart` — mock dio; reject non-nasabah
-- [ ] Widget test LoginScreen — form validation
-- [ ] Widget test TarikSaldoScreen — min Rp50.000
-- [x] `test/widget_test.dart` — splash/MIRU smoke *(minimal)*
+- [ ] Widget test LoginScreen — validasi form kosong / password pendek
+- [ ] Widget test TarikSaldoScreen — min Rp50.000 ditolak di UI
 
 ### 6.2 Manual / UAT Checklist
+
 - [ ] Registrasi akun baru → login → home
-- [ ] Login demo `nasabah001` / `nasabah123` (setelah seed backend)
+- [ ] Login demo `nasabah001` / `nasabah123` (setelah `seed_data` backend)
 - [ ] Login akun staff ditolak dengan pesan benar
-- [ ] Ajukan penjemputan → status update dari web-admin
+- [ ] Ajukan penjemputan → status update dari web-admin terlihat setelah refresh/buka ulang
 - [ ] Tarik saldo → approve admin → saldo berkurang di home
 - [ ] Tukar poin → approve admin → poin berkurang
-- [ ] Ajukan pengaduan → admin tindak lanjut → ditutup
-- [ ] QR discan petugas → setoran → saldo naik setelah refresh
+- [ ] Ajukan pengaduan → admin tindak lanjut → status ditutup
+- [ ] QR discan petugas → setoran → saldo naik setelah pull-to-refresh
+- [ ] Baca list + detail artikel edukasi dari Home
+- [ ] Notifikasi: badge unread, mark-read, mark-all
 - [ ] Test Android emulator (`10.0.2.2:8000`)
 - [ ] Test device fisik via LAN IP
 
 ### 6.3 Edge Cases
-- [ ] Server 500 → pesan ramah Indonesia
-- [ ] App background/foreground token restore
-- [ ] Network offline message jelas
+
+- [ ] Server 500 → pesan ramah Bahasa Indonesia
+- [ ] App background/foreground → token restore / session tetap valid
+- [ ] Network offline → pesan jelas, tidak crash
 
 ---
 
 ## Fase 7: Production Android
 
-> **Sumber:** Jawaban §6.4; Constraints §10; **`11-security-and-privacy.md`** §4, §9–10.
+> **Sumber:** Jawaban §6.4; Constraints §10; `11-security-and-privacy.md` §4, §9–10.
 
 ### 7.1 Build Configuration
-- [ ] `constants.dart` production URL **HTTPS only**
+
+- [ ] `constants.dart` / dart-define production URL **HTTPS only**
 - [ ] Cleartext HTTP dimatikan di release (`usesCleartextTraffic=false` atau setara)
 - [ ] App name, icon, splash screen MIRU branding
-- [ ] `android/app/build.gradle` — versionCode, versionName
-- [ ] ProGuard/R8 rules jika perlu
+- [ ] `android/app/build.gradle` — `versionCode`, `versionName`
+- [ ] ProGuard/R8 rules jika perlu (keep model JSON / secure storage)
 - [ ] `flutter build apk --release`
 - [ ] `flutter build appbundle` — Play Store
 
 ### 7.2 Play Store Preparation
-- [ ] Privacy policy URL (dari kebijakan data + hosting)
-- [ ] Data safety form jujur (data yang dikumpulkan)
+
+- [ ] Privacy policy URL publik (koordinasi Backend ` /api/privacy-policy/` + hosting HTTPS)
+- [ ] Data safety form jujur (data yang dikumpulkan: akun, transaksi, device token FCM jika aktif)
 - [ ] Screenshot phone (& tablet jika relevan)
 - [ ] Deskripsi Bahasa Indonesia
 - [ ] Content rating questionnaire
@@ -120,6 +224,7 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 - [ ] Akun Google Play Console dari klien *(Jawaban §6.4.1)*
 
 ### 7.3 Security Release Checklist
+
 > Lihat `11-security-and-privacy.md` §10.
 
 - [ ] No sensitive data in logs (release)
@@ -130,62 +235,9 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 
 ---
 
-## Fase 8: Pengembangan Lanjutan (pasca-MVP)
+## Out of Scope / larangan
 
-> Bergantung Backend Fase 8. Hanya item dari dokumen persyaratan.
-
-### 8.1 Modul 2 — Autentikasi lanjutan
-> **Sumber:** Proposal §4 modul 2 (lupa password, verifikasi nomor/email).
-
-- [ ] Lupa password flow (butuh endpoint backend)
-- [ ] (Opsional) verifikasi nomor HP/email — hanya jika disepakati klien
-
-### 8.2 Modul 3 — Profil & kartu digital
-> **Sumber:** Proposal modul 3 (alamat, RT/RW, kelurahan, QR digital).
-
-- [ ] Field RT/RW dan kelurahan di profil / registrasi
-- [ ] Share / screenshot QR code intent
-
-### 8.3 Modul 4 — Artikel edukasi
-> **Sumber:** Proposal modul 4 (artikel edukasi); Modules Web/Mobile.
-
-- [ ] Tampil list + detail artikel edukasi dari API (selain kategori/harga)
-- [ ] Tetap tampilkan panduan pemilahan singkat di InfoSampah
-
-### 8.4 Modul 5 / 9 — Harga terjadwal & notifikasi
-> **Sumber:** Jawaban §6.2.4; Jawaban §6.6.5 FCM; Proposal modul 9; Security §8.
-
-- [ ] Banner/info harga akan berubah pada tanggal berlaku
-- [ ] Firebase Cloud Messaging setup
-- [ ] Handle push: status penjemputan, penarikan approved, pengumuman, harga baru
-- [ ] Payload push **tanpa** NIK / saldo lengkap / token
-- [ ] Wire layar notifikasi ke API list/mark-read (screen sudah ada)
-- [ ] Permission notifikasi diminta saat fitur push aktif
-
-### 8.5 Modul 7 — Wilayah & peta sederhana
-> **Sumber:** Jawaban §6.2.12–13, §6.6.1; Constraints §5 (tanpa live tracking).
-
-- [ ] Validasi / pesan error wilayah & kuota 2×/minggu dari envelope backend
-- [ ] Pilih/lihat lokasi sederhana (static map atau pin alamat) — **bukan** GPS live armada
-
-### 8.6 Modul 10 / 11 — Bukti & masa berlaku poin
-> **Sumber:** Jawaban §6.2.10 (poin 1 tahun); §6.3.6 bukti; Business Rules §A.4.
-
-- [ ] Tampilkan info masa berlaku / sisa poin (setelah backend expire task)
-- [ ] Unduh atau share bukti transaksi / tanda terima (PDF atau gambar)
-- [ ] UI metode pencairan (tunai / transfer metadata) — **tanpa** payment gateway
-
-### 8.7 iOS & peningkatan opsional
-> **Sumber:** Constraints §10 / Jawaban §6.4 (iOS menyusul); Constraints offline “tidak wajib MVP”.
-
-- [ ] iOS build configuration + App Store Connect / TestFlight
-- [ ] Adapt UI safe area / Cupertino jika perlu
-- [ ] Offline cache last-loaded saldo *(future — tidak blocker)*
-- [ ] Biometric unlock *(opsional — bukan persyaratan wajib)*
-- [ ] In-app rating prompt *(opsional store policy)*
-
-### 8.8 Out of Scope / larangan
-> **Sumber:** `06-system-constraints.md`; Proposal §5.
+> **Sumber:** `06-system-constraints.md`; Proposal §5. Jangan dikerjakan tanpa addendum.
 
 - [ ] ❌ Login petugas/admin/koordinator
 - [ ] ❌ Input setoran sampah (hanya petugas di web admin)
@@ -193,10 +245,42 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 - [ ] ❌ GPS live tracking penjemputan
 - [ ] ❌ Scan KTP / face recognition / Dukcapil NIK validation
 - [ ] ❌ Integrasi hardware timbangan/barcode
+- [ ] ❌ Modul staff-only (1, 6, 8, 12, 13, 16) di mobile
 
 ---
 
-# BAGIAN B — ARSIP MVP (Selesai) — urutan bawah
+# BAGIAN B — SELESAI (arsip) — urutan bawah
+
+---
+
+## Fase 8 (sebagian) — sudah selesai ✅
+
+### Modul 3 — Share QR ✅
+- [x] Share / screenshot QR code intent (`share_plus` di `qrcode_screen.dart`)
+
+### Modul 4 — Artikel edukasi ✅
+- [x] Model `KontenEdukasi` + `EdukasiProvider` + list/detail screen
+- [x] Preview edukasi di Home + route `/home/edukasi` & detail
+- [x] Panduan pemilahan singkat tetap di `InfoSampahScreen`
+
+### Modul 7 — Status penjemputan ✅
+- [x] List penjemputan reload status dari API saat buka layar
+- [x] Tampilkan nama petugas setelah dijadwalkan
+
+### Modul 9 — Notifikasi in-app ✅
+- [x] Wire layar notifikasi ke API list/mark-read (list, detail, tandai dibaca, mark-all)
+- [x] Polling silent in-app (~8s) + refresh saat resume / buka lonceng
+- [x] Popup lonceng: unread saja; badge unread di AppBar + bottom nav
+
+---
+
+## Fase 6 (sebagian) — sudah selesai ✅
+
+- [x] Guard login hanya `nasabah`; tolak staff
+- [x] Token di `flutter_secure_storage`; logout clear credential
+- [x] Consent `setuju_kebijakan_data` di registrasi
+- [x] QR payload JSON `{ id, nama_lengkap, no_hp }` — **bukan JWT**
+- [x] `test/widget_test.dart` — splash/MIRU smoke (minimal)
 
 ---
 
@@ -210,18 +294,11 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 
 ## Fase 1: Foundation ✅
 
-### 1.1–1.3 Dependencies, structure, theme ✅
-- [x] `provider`, `dio`, `go_router`, `flutter_secure_storage`, `qr_flutter`, `intl`, dll.
+- [x] Dependencies: `provider`, `dio`, `go_router`, `flutter_secure_storage`, `qr_flutter`, `intl`, dll.
 - [x] Folder `config/`, `models/`, `services/`, `providers/`, `screens/`, `widgets/`
 - [x] Theme Material 3 primary `#16a34a`; routes + auth redirect
-
-### 1.4 API Client ✅
 - [x] Dio + EnvelopeInterceptor + AuthInterceptor + refresh 401
-- [x] `auth_service`, `storage_service`, `api_envelope`
-
-### 1.5–1.6 Models & Shared Widgets ✅
-- [x] User, WasteCategory, Deposit, Pickup, Withdrawal, Reward, Complaint, ActivityItem, dll.
-- [x] LoadingIndicator, ErrorView, EmptyState, SaldoCard, StatusBadge, AppScaffold
+- [x] Models & shared widgets (Loading, Error, Empty, SaldoCard, StatusBadge, AppScaffold)
 
 ---
 
@@ -229,36 +306,21 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 
 - [x] AuthProvider — guard `role == nasabah`; reject staff
 - [x] Splash → me / login
-- [x] LoginScreen + RegisterScreen (consent `setuju_kebijakan_data`, password min 6)
+- [x] LoginScreen + RegisterScreen (consent, password min 6)
 - [x] go_router redirect unauthenticated
 
 ---
 
 ## Fase 3: MVP Screens ✅
 
-### 3.1 Home ✅
-- [x] Saldo, poin, quick actions, aktivitas, pull-to-refresh, banner jam layanan
-
-### 3.2 Profil & QR ✅
-- [x] Profile + edit; QR JSON `{ id, nama_lengkap, no_hp }`
-
-### 3.3 Info Sampah ✅
-- [x] List kategori/harga/panduan singkat; catatan min 1 kg
-
-### 3.4 Penjemputan ✅
-- [x] Tabs aktif/riwayat; ajukan min 5 kg, H+1; status badge
-
-### 3.5 Riwayat ✅
-- [x] Tabs semua/setoran/penarikan/poin; detail bottom sheet
-
-### 3.6 Tarik Saldo ✅
-- [x] Min Rp50.000; konfirmasi; SLA 1–2 hari; tanpa gateway
-
-### 3.7 Reward ✅
-- [x] Katalog; tukar; disable jika poin/stok kurang
-
-### 3.8 Pengaduan ✅
-- [x] Form jenis + keluhan; tabs; tindak lanjut read-only
+- [x] Home — saldo, poin, quick actions, aktivitas, pull-to-refresh, banner jam layanan
+- [x] Profile + edit; QR JSON
+- [x] InfoSampah — kategori/harga/panduan singkat; min 1 kg
+- [x] Penjemputan — tabs; ajukan min 5 kg, H+1; status badge
+- [x] Riwayat — tabs; detail bottom sheet
+- [x] TarikSaldo — min Rp50.000; tanpa gateway
+- [x] Reward — katalog; tukar; disable jika poin/stok kurang
+- [x] Pengaduan — form jenis + keluhan; tindak lanjut read-only
 
 ---
 
@@ -285,12 +347,13 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 |---------|----------------|
 | Fase 1–5 ✅ | Fase 0–5 MVP |
 | Fase 7 HTTPS | Fase 7 Play Store |
-| Fase 8.1 edukasi | Fase 8.3 |
-| Fase 8.2 harga H-3 | Fase 8.4 banner |
-| Fase 8.3 wilayah | Fase 8.5 |
-| Fase 8.4 lupa password / PDF | Fase 8.1 / 8.6 |
-| Fase 8.5 poin expire | Fase 8.6 |
-| Fase 8.6 FCM trigger | Fase 8.4 push |
+| Fase 8.1 edukasi ✅ | List/detail edukasi ✅ |
+| Fase 8.2 harga H-3 ✅ | Banner harga 8.4 |
+| Fase 8.3 wilayah ✅ | Pesan error kuota 8.5; field RT/RW 8.2 |
+| Fase 8.4 lupa password / PDF ✅ | Flow 8.1 / bukti 8.6 |
+| Fase 8.5 poin expire ✅ | Info poin 8.6 |
+| Fase 8.6 FCM trigger ✅ | Setup FCM client 8.4 |
+| Fase 8.7 Maps (belum) | Pin lokasi opsional 8.5 |
 
 ---
 
@@ -307,7 +370,9 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 | 7 | Ajukan pengaduan | Admin tindak lanjut | ✅ |
 | 8 | Lihat pengumuman | Admin publish | ✅ |
 | 9 | Refresh riwayat | — | ✅ |
-| 10 | Baca artikel edukasi | Admin kelola konten | Backend Fase 8 |
+| 10 | Baca artikel edukasi | Admin kelola konten (web 🔲) | API ✅ / mobile ✅ |
+| 11 | Lupa password | — | API ✅ / mobile ✅ |
+| 12 | Banner harga H-3 | Set tanggal berlaku (web 🔲) | API ✅ / mobile 🔲 |
 
 ---
 
@@ -332,12 +397,12 @@ Seed: `python manage.py seed_data` di backend → akun demo nasabah.
 | **UAT Ready** | Fase 6 checklist lulus + backend + web admin |
 | **Play Store Beta** | Fase 7 internal testing |
 | **Go-Live Android** | Production API + app published |
-| **Pengembangan Lanjutan** | Fase 8 iteratif (FCM, edukasi, iOS, dll.) |
+| **Pengembangan Lanjutan** | Fase 8 aktif — hanya item persyaratan dalam modul mobile |
 
 ## Indeks dokumen keamanan
 
 | Repo | Dokumen |
 |------|---------|
-| Backend (kanonik) | `miru-backend-api` → `.ai-steering/11-security-and-privacy.md` |
-| Web Admin | `web-admin` → `.ai-steering/11-security-and-privacy.md` |
+| Backend (kanonik) | `backend/.ai-steering/11-security-and-privacy.md` |
+| Web Admin | `web-admin/.ai-steering/11-security-and-privacy.md` |
 | Mobile | `.ai-steering/11-security-and-privacy.md` |

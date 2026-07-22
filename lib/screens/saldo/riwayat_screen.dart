@@ -9,6 +9,7 @@ import '../../providers/home_provider.dart';
 import '../../providers/saldo_provider.dart';
 import '../../widgets/error_view.dart';
 import '../../widgets/login_prompt.dart';
+import '../../widgets/bottom_nav_scaffold.dart';
 import '../../widgets/shimmer_loading.dart';
 
 class RiwayatScreen extends StatefulWidget {
@@ -89,10 +90,15 @@ class _RiwayatScreenState extends State<RiwayatScreen>
       body: Consumer<SaldoProvider>(
         builder: (context, saldo, _) {
           if (saldo.isLoading) {
-            return const SingleChildScrollView(
-              physics: NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.fromLTRB(0, 60, 0, 24),
-              child: ListSkeleton(itemCount: 6),
+            return SingleChildScrollView(
+              physics: const NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.fromLTRB(
+                0,
+                60,
+                0,
+                BottomNavScaffold.scrollBottomPadding(context),
+              ),
+              child: const ListSkeleton(itemCount: 6),
             );
           }
 
@@ -154,7 +160,12 @@ class _RiwayatScreenState extends State<RiwayatScreen>
             onRefresh: saldo.refresh,
             color: AppTheme.primaryColor,
             child: ListView.builder(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+              padding: EdgeInsets.fromLTRB(
+                16,
+                12,
+                16,
+                BottomNavScaffold.scrollBottomPadding(context),
+              ),
               itemCount: saldo.filteredItems.length,
               itemBuilder: (context, index) {
                 final item = saldo.filteredItems[index];

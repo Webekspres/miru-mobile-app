@@ -8,6 +8,7 @@ import '../../providers/auth_session.dart';
 import '../../providers/notification_provider.dart';
 import '../../widgets/error_view.dart';
 import '../../widgets/login_prompt.dart';
+import '../../widgets/bottom_nav_scaffold.dart';
 import '../../widgets/shimmer_loading.dart';
 import 'detail_notifikasi_screen.dart';
 
@@ -27,7 +28,7 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
 
   void _loadData() {
     final notif = context.read<NotificationProvider>();
-    if (!notif.isLoading && notif.notifications.isEmpty) {
+    if (!notif.isLoading) {
       notif.loadNotifications();
     }
   }
@@ -71,10 +72,15 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
       body: Consumer<NotificationProvider>(
         builder: (context, notif, _) {
           if (notif.isLoading) {
-            return const SingleChildScrollView(
-              physics: NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.fromLTRB(16, 12, 16, 24),
-              child: ListSkeleton(itemCount: 6),
+            return SingleChildScrollView(
+              physics: const NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.fromLTRB(
+                16,
+                12,
+                16,
+                BottomNavScaffold.scrollBottomPadding(context),
+              ),
+              child: const ListSkeleton(itemCount: 6),
             );
           }
 
@@ -136,7 +142,12 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
             onRefresh: () => notif.refresh(),
             color: AppTheme.primaryColor,
             child: ListView.builder(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+              padding: EdgeInsets.fromLTRB(
+                16,
+                12,
+                16,
+                BottomNavScaffold.scrollBottomPadding(context),
+              ),
               itemCount: notif.notifications.length,
               itemBuilder: (context, index) {
                 final item = notif.notifications[index];
