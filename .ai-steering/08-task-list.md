@@ -28,8 +28,10 @@
 | 8 | Pengembangan Lanjutan | Fitur persyaratan dalam modul mobile | Fase 8 (fitur API ✅) | 🔲 **Aktif** |
 | — | Out of Scope | Larangan sistem / di luar 17 modul | — | ⛔ |
 
-> **Status proyek:** MVP mobile selesai. Kerja aktif = **Fase 8 lanjutan** + **Fase 6 UAT** + **Fase 7 Play Store**.
-> Hanya item dari dokumen persyaratan; **tidak menambah modul** di luar cakupan nasabah di bawah.
+> **Status proyek:** MVP mobile selesai.
+> **Kerja aktif #1:** **Audit Temuan** (`temuan.md`) — section di puncak BAGIAN A.
+> Setelah itu: sisa Fase 8 + Fase 6 UAT + Fase 7 Play Store.
+> Hanya item dari dokumen persyaratan + temuan audit; **tidak menambah modul** di luar cakupan nasabah di bawah.
 
 ### Cakupan Modul — Mobile (Nasabah)
 
@@ -37,17 +39,17 @@ Dari 17 modul sistem, **sebagian** di mobile; sisanya staff-only di web-admin.
 
 | No | Modul | Screen | Status MVP | Lanjutan (sisa) |
 |----|-------|--------|------------|-----------------|
-| 2 | Autentikasi | Login, Register, Splash | ✅ | Lupa password; verifikasi HP/email (opsional) |
-| 3 | Profil & QR | Profile, QRCode | ✅ | Field RT/RW–kelurahan; share QR ✅ |
-| 4 | Info & Edukasi | InfoSampah + Edukasi | ✅ | List/detail artikel ✅; panduan singkat tetap di InfoSampah ✅ |
+| 2 | Autentikasi | Login, Register, Splash | ✅ | Temuan: OTP WA, register singkat, pesan error |
+| 3 | Profil & QR | Profile, QRCode | ✅ | Redesain kartu digital + QR di Home (temuan) |
+| 4 | Info & Edukasi | InfoSampah + Edukasi | ✅ | Render Markdown (temuan) |
 | 5 | Katalog Harga | InfoSampah / Home | ✅ | Banner harga H-3 |
-| 7 | Penjemputan | List + Ajukan | ✅ | Pesan error wilayah/kuota; Maps pin (opsional) |
-| 9 | Saldo & Riwayat | Riwayat, Home, Notifikasi | ✅ | In-app + polling ✅; FCM push (belum) |
-| 10 | Tarik Saldo | TarikSaldo | ✅ | Bukti PDF; metode pencairan metadata |
-| 11 | Poin & Reward | Reward, Tukar | ✅ | Info masa berlaku poin |
-| 14 | Pengaduan | List + Form | ✅ | — |
-| 15 | Dashboard | Home | ✅ | — |
-| 17 | Settings | Settings, Kebijakan | ✅ | Preferensi notifikasi FCM |
+| 7 | Penjemputan | List + Ajukan | ✅ | Form UX, maps, validasi jadwal (temuan) |
+| 9 | Saldo & Riwayat | Riwayat, Home, Notifikasi | ✅ | Link riwayat; detail lengkap; cache (temuan) |
+| 10 | Tarik Saldo | TarikSaldo | ✅ | Keyboard UX; error field; notif sukses (temuan) |
+| 11 | Poin & Reward | Reward, Tukar | ✅ | UI polish; copy konfirmasi (temuan) |
+| 14 | Pengaduan | List + Form | ✅ | Jenis “Lainnya” (temuan) |
+| 15 | Dashboard | Home | ✅ | QR cepat + brightness (temuan) |
+| 17 | Settings | Settings, Kebijakan | ✅ | Pindah info ke profil; hapus settings (temuan) |
 
 Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 
@@ -55,14 +57,10 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 
 ## Urutan kerja disarankan (Mobile)
 
-1. **8.1 Lupa password** — API forgot/reset sudah ✅.
-2. **8.2 Field RT/RW–kelurahan** di profil/registrasi — field backend sudah ✅.
-3. **8.4 Banner harga H-3** — API harga terjadwal sudah ✅ (setelah web admin bisa set tanggal).
-4. **8.6 Bukti PDF + metode pencairan + info poin expire** — API sudah ✅.
-5. **8.5 Pesan error wilayah/kuota** — validasi backend sudah ✅.
-6. **8.4 FCM push** — trigger backend sudah ✅; setup Firebase di app.
-7. **Fase 6 UAT** beriringan; **Fase 7 Play Store** saat API production HTTPS siap.
-8. iOS & opsional — belakangan (Constraints: Android prioritas).
+1. **⛔ PRIORITAS UTAMA — Audit Temuan** (`temuan.md`) — kerjakan dulu.
+2. Sisa Fase 8 yang belum tertutup temuan (FCM, PDF, poin expire) setelah temuan kritis.
+3. Fase 6 UAT beriringan; Fase 7 Play Store saat API production HTTPS siap.
+4. iOS & opsional — belakangan.
 
 ---
 
@@ -72,7 +70,120 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 
 ---
 
+## 🔥 Audit Temuan — PRIORITAS UTAMA (kerjakan dulu)
+
+> **Sumber:** `temuan.md` (root monorepo).
+> **Aturan:** Section ini mengalahkan Fase 8/6/7 di bawah sampai ditutup.
+> Koordinasi API: `backend/.ai-steering/08-task-list.md` § Audit Temuan.
+> Copy UI: Bahasa Indonesia ramah, tidak “slop”, tidak jargon Inggris di toast nasabah.
+
+### M0. Navigasi & cache (umum)
+
+- [ ] **Bottom nav di halaman nested**
+  - Opsi A (disarankan): sembunyikan bottom nav di route dalam (bukan tab root), **atau**
+  - Opsi B: bottom nav tetap, tapi perilaku tab benar (lihat poin berikut)
+- [ ] **Tap ulang item bottom nav** selalu ke **root tab**, bukan sisa stack detail
+  - Contoh: dari `/notif/detail` → pindah ke `/home` via bottom nav → tap Notif lagi → **`/notif` list**, bukan `/notif/detail`
+  - Sama: dari `/notif/detail` tap tab Notif → pop ke `/notif`
+  - Terapkan pola yang sama untuk semua tab (home, riwayat, dll.)
+- [ ] **Perbaiki cache / state provider** yang hilang mendadak
+  - Data tidak “kosong total” tanpa alasan; pull-to-refresh cukup; jangan wajib restart server/app
+  - Audit `HomeProvider` / SWR-like caching / invalidation setelah mutate
+- [ ] **Logout = clear semua cache + kembali state seperti cold start beranda**
+  - Hapus token, user, list cached, badge; jangan sisakan data nasabah sebelumnya
+
+### M1. Modul 2 — Auth, register, reset password
+
+- [ ] **Disable tombol Login** jika username/password kosong
+- [ ] **Pesan error login spesifik BI** (bukan “Terjadi kesalahan. Silakan coba lagi”)
+  - Password salah / username tidak terdaftar — sesuai envelope backend T2
+- [ ] **Alur lupa password → OTP WhatsApp** (setelah backend T2 siap)
+  1. Username → konfirmasi/cek nomor HP
+  2. Pesan: cek notifikasi WhatsApp (OTP)
+  3. Input OTP → halaman password baru (2 field + validasi realtime sama & policy)
+  4. Sukses → LoginScreen
+- [ ] **Registrasi disingkat**
+  - Step 1: nama lengkap, username unik, password
+  - Step 2: nomor HP + OTP WA → auto login / masuk Home
+- [ ] **Gate transaksi tanpa alamat**
+  - Belum isi alamat (+ maps patokan + dropdown wilayah API) → blok jemput/tarik/tukar dengan dialog arahkan ke lengkapi profil
+- [ ] **Auto-fill alamat di form jemput** dari profil; tetap bisa diganti jika lokasi berbeda
+- [ ] Jika `phone_verified=false` setelah login (akun dibuat admin) → arahkan layar verifikasi OTP
+
+### M2. Modul 3 / 15 — Profil, kartu digital, QR di Home
+
+- [ ] **ProfileScreen ringkas:** foto, nama, entry kartu digital — jangan dump semua field di atas
+  - Edit data lewat icon pensil (sudah ada) / halaman edit
+- [ ] **Kartu digital redesign**
+  - Hilangkan teks “MIRU Bank Sampah” di atas QR
+  - QR di tengah + icon MIRU di tengah QR
+  - Di bawah QR: **card template** depan/belakang (flip)
+  - Isi belakang: nama, id, RT/RW, alamat, tanggal bergabung (bukan list teks polos di bawah QR)
+- [ ] **Home: tombol/ikon QR** di kanan area saldo & poin
+  - Tap → modal QR; saat modal terbuka naikkan kecerahan layar ke maksimum; restore saat tutup
+
+### M3. Modul 7 — Form penjemputan
+
+- [ ] **Jangan dump semua jenis sampah** sekaligus di form awal — UI terlalu penuh
+- [ ] **Input pilih jenis sampah** (picker/chips) secara eksplisit
+- [ ] **Estimasi nilai:** saat berat diisi, tampilkan perkiraan Rp (harga × kg) live
+- [ ] **Titik penjemputan maps** + minta izin lokasi (static/pin — bukan live tracking armada)
+  - Koordinasi backend field lat/lng T3
+- [ ] **Validasi jadwal realtime:** tolak tanggal/jam lewat; minimal ~1 jam dari sekarang; pesan BI
+- [ ] **Perbaiki bug error saat pilih tanggal** (repro + fix date picker / timezone WIT)
+- [ ] **Setelah submit sukses:** popup konfirmasi besar (bukan snack/modal kecil) — “Penjemputan diajukan …”
+- [ ] **Di luar jam operasional:** peringatan BI bahwa jemput diproses pada jam kerja (baca jam dari API institusi)
+- [ ] Setelah jemput selesai / setor terkait: **refresh saldo & poin** di Home (jangan stale)
+
+### M4. Modul 11 — Tukar poin UI
+
+- [ ] Rapikan UI Reward/Tukar — kurangi kesan “slop” (hierarki jelas, spacing konsisten)
+- [ ] **Hapus tulisan “1 poin = 1000”** (atau setara yang menyesatkan)
+- [ ] Halaman detail tukar (contoh alat kebersihan): konten **vertikal center**
+- [ ] Modal konfirmasi: tombol **Batal** rata tengah horizontal dengan aksi primer
+- [ ] Ganti blok warning ikon: teks naratif —
+  “Anda akan menukar … poin dengan [nama reward]. Poin dipotong setelah admin menyetujui. Diproses 1–2 hari kerja.”
+- [ ] Quantity / multi-reward: **jangan kerjakan** sampai backend T4 + keputusan produk; dokumentasikan keterbatasan di UI jika perlu
+
+### M5. Modul 10 — Tarik saldo
+
+- [ ] Tombol **Batal** di modal konfirmasi rata tengah horizontal
+- [ ] Setelah nominal terisi: **jangan** terus memunculkan keyboard tanpa kontrol
+  - Dismiss: tap luar / back; tutup modal **jangan** auto-fokus keyboard lagi
+- [ ] Submit sukses → notif/dialog BI: penarikan diproses, pencairan 1–2 hari kerja
+- [ ] Submit gagal → tampilkan **field error** dari envelope (bug blocker temuan: “satu atau lebih field tidak valid” tanpa detail) — **lanjutkan UAT setelah ini beres**
+
+### M6. Modul 9 — Riwayat & aktivitas Home
+
+- [ ] Link **“Semua”** di widget aktivitas Home → tab **`/riwayat`** bottom nav (bukan nested di bawah `/home/...`)
+- [ ] **3 aktivitas terbaru** campur: penjemputan **dan** penukaran poin **dan** penarikan (bukan hanya jemput)
+- [ ] **Detail riwayat setoran lengkap:** jenis sampah, berat, petugas, tanggal jemput, tanggal/jam proses — selaras API T6
+
+### M7. Modul 4 — Edukasi Markdown
+
+- [ ] Render isi artikel Markdown rapi di mobile (heading, list, bold, link aman)
+  - Jangan tampilkan raw `**` / `#` ke user
+
+### M8. Modul 14 — Pengaduan
+
+- [ ] Tambah pilihan jenis **Lainnya** di form (setelah backend choice ada)
+
+### M9. Modul 5 — Banner harga H-3
+
+- [ ] Banner “harga akan berubah pada tanggal …” di Home/InfoSampah setelah web set `tanggal_berlaku`
+  - Hilang setelah tanggal lewat
+
+### M10. Modul 17 — Settings mobile
+
+- [ ] **Pertimbangkan hapus tab/halaman Settings** terpisah
+  - Pindahkan blok informasi / kebijakan / tentang ke **bawah ProfileScreen**
+  - Edit profil tetap lewat icon pensil
+- [ ] Preferensi notifikasi FCM (jika FCM dikerjakan) taruh di profil atau tetap minimal di satu tempat jelas
+
+---
+
 ## Fase 8: Pengembangan Lanjutan
+  *(item overlap temuan dikerjakan lewat section Audit Temuan; sisa FCM/PDF/poin expire setelahnya)*
 
 > Bergantung Backend Fase 8. API fitur bisnis hampir semua ✅.
 > Edukasi list/detail, share QR, notifikasi in-app + polling — sudah ✅ (BAGIAN B).
