@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -10,7 +11,6 @@ import '../../widgets/error_view.dart';
 import '../../widgets/login_prompt.dart';
 import '../../widgets/bottom_nav_scaffold.dart';
 import '../../widgets/shimmer_loading.dart';
-import 'detail_notifikasi_screen.dart';
 
 class NotifikasiScreen extends StatefulWidget {
   const NotifikasiScreen({super.key});
@@ -159,12 +159,7 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
                     if (isUnread) {
                       notif.markAsRead(item.id);
                     }
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            DetailNotifikasiScreen(notification: item),
-                      ),
-                    );
+                    context.push('/notifikasi/detail', extra: item);
                   },
                 );
               },

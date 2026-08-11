@@ -8,6 +8,8 @@ import '../../models/waste_category.dart';
 import '../../providers/auth_session.dart';
 import '../../providers/home_provider.dart';
 import '../../providers/penjemputan_provider.dart';
+import '../../providers/profile_provider.dart';
+import '../../widgets/complete_profile_dialog.dart';
 import '../../widgets/login_prompt.dart';
 import '../../widgets/shimmer_loading.dart';
 
@@ -36,8 +38,14 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
   @override
   void initState() {
     super.initState();
-    _prefillAlamat();
     _loadCategories();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      if (!context.read<AuthSession>().isLoggedIn) return;
+      final allowed = await guardTransactionRequiresAddress(context);
+      if (!mounted || !allowed) return;
+      await _prefillAlamat();
+    });
   }
 
   @override
@@ -47,11 +55,22 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
     super.dispose();
   }
 
-  void _prefillAlamat() {
-    final home = context.read<HomeProvider>();
-    final user = home.user;
-    if (user != null && user.alamat.isNotEmpty) {
-      _alamatController.text = user.alamat;
+  Future<void> _prefillAlamat() async {
+    var user = context.read<ProfileProvider>().user;
+    if (user == null || !user.hasCompleteAddress) {
+      user = context.read<HomeProvider>().user;
+    }
+    if (user == null) {
+      await context.read<HomeProvider>().loadData();
+      if (!mounted) return;
+      user = context.read<ProfileProvider>().user ??
+          context.read<HomeProvider>().user;
+    }
+    if (user == null) return;
+
+    final text = user.formattedPickupAddress;
+    if (text.isNotEmpty && _alamatController.text.trim().isEmpty) {
+      _alamatController.text = text;
     }
   }
 

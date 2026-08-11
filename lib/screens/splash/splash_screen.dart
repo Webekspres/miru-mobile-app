@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+
+import '../../providers/auth_provider.dart';
 
 class SplashScreen extends StatefulWidget {
   /// Jika `true`, splash screen tidak akan auto-navigate.
@@ -21,23 +24,32 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     if (!widget.previewMode) {
-      _goHomeAfterDelay();
+      _bootstrap();
     }
   }
 
-  Future<void> _goHomeAfterDelay() async {
+  Future<void> _bootstrap() async {
     // Cold start: native Android splash menutupi Flutter sampai frame pertama
     // ter-rasterize. Jika timer dihitung dari initState, delay habis di balik
     // native splash → user langsung melihat /home (hot restart tidak kena ini).
     await WidgetsBinding.instance.waitUntilFirstFrameRasterized;
     if (!mounted) return;
 
+    final authFuture = context.read<AuthProvider>().checkAuthStatus();
     await precacheImage(const AssetImage(_splashAsset), context);
-    await Future<void>.delayed(_minDisplay);
+    await Future.wait([
+      authFuture,
+      Future<void>.delayed(_minDisplay),
+    ]);
     if (!mounted) return;
 
-    // Always go to /home — let HomeScreen handle login prompt
-    context.go('/home');
+    final auth = context.read<AuthProvider>();
+    if (auth.isLoggedIn && auth.needsPhoneVerification) {
+      context.go('/verify-phone');
+    } else {
+      // Always go to /home — let HomeScreen handle login prompt
+      context.go('/home');
+    }
   }
 
   @override

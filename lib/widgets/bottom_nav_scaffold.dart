@@ -30,9 +30,11 @@ class BottomNavScaffold extends StatelessWidget {
   }
 
   void _onTabSelected(int branchIndex) {
+    // Always reset to the branch root so nested stacks (e.g. detail)
+    // are not restored when switching tabs or re-tapping the active tab.
     navigationShell.goBranch(
       branchIndex,
-      initialLocation: branchIndex == navigationShell.currentIndex,
+      initialLocation: true,
     );
   }
 

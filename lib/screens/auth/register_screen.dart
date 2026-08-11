@@ -113,13 +113,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
           );
 
       if (!mounted) return;
-      context.go('/home');
-    } on ApiException catch (e) {
-      if (!mounted) return;
-      if (e.fieldErrors != null && e.fieldErrors!.isNotEmpty) {
-        _applyFieldErrors(e.fieldErrors);
+      final auth = context.read<AuthProvider>();
+      if (auth.needsPhoneVerification) {
+        context.go('/verify-phone');
       } else {
-        _showError(e.message);
+        context.go('/home');
       }
     } on DioException catch (e) {
       if (!mounted) return;

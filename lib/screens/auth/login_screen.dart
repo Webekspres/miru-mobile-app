@@ -21,9 +21,27 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _obscurePassword = true;
   bool _isSubmitting = false;
+  bool _canSubmit = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _usernameController.addListener(_syncCanSubmit);
+    _passwordController.addListener(_syncCanSubmit);
+  }
+
+  void _syncCanSubmit() {
+    final can = _usernameController.text.trim().isNotEmpty &&
+        _passwordController.text.isNotEmpty;
+    if (can != _canSubmit) {
+      setState(() => _canSubmit = can);
+    }
+  }
 
   @override
   void dispose() {
+    _usernameController.removeListener(_syncCanSubmit);
+    _passwordController.removeListener(_syncCanSubmit);
     _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -41,7 +59,12 @@ class _LoginScreenState extends State<LoginScreen> {
           );
 
       if (!mounted) return;
-      context.go('/home');
+      final auth = context.read<AuthProvider>();
+      if (auth.needsPhoneVerification) {
+        context.go('/verify-phone');
+      } else {
+        context.go('/home');
+      }
     } on ApiException catch (e) {
       if (!mounted) return;
       _showError(e.message);
@@ -141,7 +164,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(
                         height: 48,
                         child: ElevatedButton(
-                          onPressed: _isSubmitting ? null : _handleLogin,
+                          onPressed: (_isSubmitting || !_canSubmit)
+                              ? null
+                              : _handleLogin,
                           child: _isSubmitting
                               ? const SizedBox(
                                   width: 20,

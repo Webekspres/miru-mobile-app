@@ -7,6 +7,7 @@ import '../../models/reward.dart';
 import '../../providers/auth_session.dart';
 import '../../providers/home_provider.dart';
 import '../../providers/reward_provider.dart';
+import '../../widgets/complete_profile_dialog.dart';
 import '../../widgets/login_prompt.dart';
 
 class TukarPoinScreen extends StatelessWidget {
@@ -65,6 +66,15 @@ class _TukarPoinBody extends StatefulWidget {
 
 class _TukarPoinBodyState extends State<_TukarPoinBody> {
   bool _isProcessing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      guardTransactionRequiresAddress(context);
+    });
+  }
 
   Future<void> _confirmRedemption() async {
     final confirmed = await showDialog<bool>(

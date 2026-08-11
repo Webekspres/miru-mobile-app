@@ -50,9 +50,15 @@ class PenjemputanProvider extends ChangeNotifier {
 
   Future<void> loadPickups({required int userId}) async {
     _currentUserId = userId;
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
+    final showLoading = _pickups.isEmpty;
+    if (showLoading) {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+    } else if (_error != null) {
+      _error = null;
+      notifyListeners();
+    }
 
     try {
       final data = await _apiClient.get<List<dynamic>>(
@@ -65,12 +71,17 @@ class PenjemputanProvider extends ChangeNotifier {
       );
 
       _pickups = Pickup.listFromJson(data);
+      _error = null;
     } on DioException catch (e) {
-      _error = parseDioError(e);
+      if (_pickups.isEmpty) {
+        _error = parseDioError(e);
+      }
     } catch (_) {
-      _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      if (_pickups.isEmpty) {
+        _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      }
     } finally {
-      _isLoading = false;
+      if (_isLoading) _isLoading = false;
       notifyListeners();
     }
   }

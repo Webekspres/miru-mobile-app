@@ -92,8 +92,9 @@ class NotificationProvider extends ChangeNotifier {
     }
   }
 
-  /// Pull-to-refresh — shows skeleton via [isLoading].
-  Future<void> refresh() => loadNotifications();
+  /// Pull-to-refresh — keep previous list visible when cached data exists.
+  Future<void> refresh() =>
+      loadNotifications(silent: _notifications.isNotEmpty);
 
   /// Silent refresh untuk polling / resume app.
   Future<void> refreshSilent() => loadNotifications(silent: true);

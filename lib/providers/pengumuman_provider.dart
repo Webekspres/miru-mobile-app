@@ -34,10 +34,16 @@ class PengumumanProvider extends ChangeNotifier {
   // Load Pengumuman
   // ──────────────────────────────────────────────
 
-  Future<void> loadPengumuman() async {
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
+  Future<void> loadPengumuman({bool silent = false}) async {
+    final showLoading = !silent && _announcements.isEmpty;
+    if (showLoading) {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+    } else if (_error != null) {
+      _error = null;
+      notifyListeners();
+    }
 
     try {
       final data = await _apiClient.get<List<dynamic>>(
@@ -45,17 +51,25 @@ class PengumumanProvider extends ChangeNotifier {
         fromJson: (json) => json as List<dynamic>,
       );
       _announcements = Announcement.listFromJson(data);
+      _error = null;
     } on DioException catch (e) {
-      _error = parseDioError(e);
+      if (_announcements.isEmpty) {
+        _error = parseDioError(e);
+      }
     } catch (e) {
-      _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      if (_announcements.isEmpty) {
+        _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      }
     }
 
-    _isLoading = false;
+    if (_isLoading) {
+      _isLoading = false;
+    }
     notifyListeners();
   }
 
-  Future<void> refresh() => loadPengumuman();
+  Future<void> refresh() =>
+      loadPengumuman(silent: _announcements.isNotEmpty);
 
   // ──────────────────────────────────────────────
   // Clear cache (panggil saat logout)

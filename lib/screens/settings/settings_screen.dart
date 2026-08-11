@@ -102,6 +102,7 @@ class SettingsScreen extends StatelessWidget {
 
     if (confirmed && context.mounted) {
       await context.read<AuthProvider>().logout();
+      if (context.mounted) context.go('/home');
     }
   }
 }

@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Android 12+ system splash: uses launcher icon in a circle by default.
-         Keep a white background so the handoff to Flutter SplashScreen
-         (full splash_logo.png) feels continuous. -->
+    <!-- Android 12+: system splash memakai icon lingkaran (bukan logo penuh).
+         Logo penuh ditampilkan di Flutter SplashScreen setelah frame pertama. -->
     <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
         <item name="android:windowSplashScreenBackground">@android:color/white</item>
-        <!-- Android 12 masks the icon in a circle — use simple mark, not full emblem. -->
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_icon</item>
         <item name="android:windowSplashScreenIconBackgroundColor">@android:color/white</item>
     </style>

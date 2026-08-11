@@ -16,7 +16,6 @@ import '../../widgets/miru_logo.dart';
 import '../../widgets/bottom_nav_scaffold.dart';
 import '../../widgets/shimmer_loading.dart';
 import '../edukasi/edukasi_card.dart';
-import '../notifikasi/detail_notifikasi_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -337,7 +336,7 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
 
-    if (home == null || home.isLoading) {
+    if (home == null || (home.isLoading && home.user == null)) {
       return _buildSaldoHeaderSkeleton(theme);
     }
 
@@ -785,12 +784,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   if (!item.isRead) {
                                     liveNotif.markAsRead(item.id);
                                   }
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) => DetailNotifikasiScreen(
-                                        notification: item,
-                                      ),
-                                    ),
+                                  context.push(
+                                    '/notifikasi/detail',
+                                    extra: item,
                                   );
                                 },
                                 child: Container(
@@ -1101,7 +1097,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildRecentActivity(BuildContext context, HomeProvider home) {
     final theme = Theme.of(context);
     final deposits = home.recentDeposits;
-    final isLoadingActivity = home.isLoading;
+    final isLoadingActivity = home.isLoading && home.user == null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1237,7 +1233,6 @@ class _AnnouncementBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final dateFormat = DateFormat('d MMM', 'id_ID');
     final colors = [
       const LinearGradient(
@@ -1272,52 +1267,7 @@ class _AnnouncementBanner extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: () {
-          // Navigate to settings/pengumuman or show detail
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => Scaffold(
-                appBar: AppBar(title: const Text('Pengumuman')),
-                body: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item.judul,
-                        style: theme.textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        dateFormat.format(item.tanggal),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                              color: theme.colorScheme.outlineVariant),
-                        ),
-                        child: Text(
-                          item.isi.isNotEmpty ? item.isi : 'Tidak ada konten.',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            height: 1.7,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          );
+          context.push('/pengumuman/detail', extra: item);
         },
         child: Container(
           width: 280,

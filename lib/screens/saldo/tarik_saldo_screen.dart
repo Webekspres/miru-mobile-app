@@ -7,6 +7,7 @@ import '../../config/theme.dart';
 import '../../providers/auth_session.dart';
 import '../../providers/home_provider.dart';
 import '../../providers/saldo_provider.dart';
+import '../../widgets/complete_profile_dialog.dart';
 import '../../widgets/login_prompt.dart';
 
 class TarikSaldoScreen extends StatefulWidget {
@@ -38,6 +39,11 @@ class _TarikSaldoScreenState extends State<TarikSaldoScreen> {
   void initState() {
     super.initState();
     _nominalController.addListener(_onNominalChanged);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (!context.read<AuthSession>().isLoggedIn) return;
+      guardTransactionRequiresAddress(context);
+    });
   }
 
   @override

@@ -1,14 +1,19 @@
 import 'package:go_router/go_router.dart';
 
 import '../providers/auth_session.dart';
+import '../models/notification.dart';
+import '../models/user.dart';
 import '../screens/auth/forgot_password_screen.dart';
 import '../screens/auth/login_screen.dart';
+import '../screens/auth/phone_verify_screen.dart';
 import '../screens/auth/register_screen.dart';
 import '../screens/auth/reset_password_screen.dart';
 import '../screens/home/home_screen.dart';
+import '../screens/notifikasi/detail_notifikasi_screen.dart';
 import '../screens/notifikasi/notifikasi_screen.dart';
 import '../screens/pengaduan/pengaduan_form_screen.dart';
 import '../screens/pengaduan/pengaduan_screen.dart';
+import '../screens/profile/edit_profile_screen.dart';
 import '../screens/profile/profile_screen.dart';
 import '../screens/profile/qrcode_screen.dart';
 import '../screens/reward/reward_screen.dart';
@@ -22,9 +27,11 @@ import '../screens/setoran/info_sampah_screen.dart';
 import '../screens/setoran/penjemputan_screen.dart';
 import '../screens/splash/splash_screen.dart';
 import '../screens/settings/kebijakan_data_screen.dart';
+import '../screens/settings/pengumuman_screen.dart';
 import '../screens/settings/settings_screen.dart';
 import '../screens/settings/tentang_screen.dart';
 import '../widgets/bottom_nav_scaffold.dart';
+import '../models/announcement.dart';
 
 GoRouter createAppRouter(AuthSession authSession) {
   return GoRouter(
@@ -33,6 +40,22 @@ GoRouter createAppRouter(AuthSession authSession) {
     redirect: (context, state) {
       final location = state.matchedLocation;
       final isLoggedIn = authSession.isLoggedIn;
+      final needsPhone = authSession.needsPhoneVerification;
+
+      // Gate OTP: login / session restore dengan phone_verified=false
+      // (kecuali splash — biarkan selesai bootstrap dulu)
+      if (isLoggedIn &&
+          needsPhone &&
+          location != '/splash' &&
+          location != '/splash-preview') {
+        if (location != '/verify-phone') return '/verify-phone';
+        return null;
+      }
+
+      // Sudah verifikasi → jangan tinggal di layar OTP
+      if (isLoggedIn && location == '/verify-phone') {
+        return '/home';
+      }
 
       // Redirect jika sudah login mencoba akses halaman auth
       if (isLoggedIn &&
@@ -76,6 +99,10 @@ GoRouter createAppRouter(AuthSession authSession) {
         builder: (context, state) => ResetPasswordScreen(
           initialToken: state.extra as String?,
         ),
+      ),
+      GoRoute(
+        path: '/verify-phone',
+        builder: (context, state) => const PhoneVerifyScreen(),
       ),
 
       // ── Main app shell with bottom nav ──
@@ -132,6 +159,36 @@ GoRouter createAppRouter(AuthSession authSession) {
       // ── Detail Screens (standalone, no bottom nav) ──
       // Halaman-halaman ini tidak memiliki bottom nav
       // agar pengalaman navigasi lebih intuitif.
+      GoRoute(
+        path: '/notifikasi/detail',
+        redirect: (context, state) {
+          if (state.extra is! AppNotification) return '/notifikasi';
+          return null;
+        },
+        builder: (context, state) => DetailNotifikasiScreen(
+          notification: state.extra! as AppNotification,
+        ),
+      ),
+      GoRoute(
+        path: '/profile/edit',
+        redirect: (context, state) {
+          if (state.extra is! User) return '/profile';
+          return null;
+        },
+        builder: (context, state) => EditProfileScreen(
+          initialUser: state.extra! as User,
+        ),
+      ),
+      GoRoute(
+        path: '/pengumuman/detail',
+        redirect: (context, state) {
+          if (state.extra is! Announcement) return '/home';
+          return null;
+        },
+        builder: (context, state) => PengumumanDetailScreen(
+          item: state.extra! as Announcement,
+        ),
+      ),
       GoRoute(
         path: '/home/tarik-saldo',
         builder: (context, state) => const TarikSaldoScreen(),

@@ -20,10 +20,16 @@ class EdukasiProvider extends ChangeNotifier {
   String? get error => _error;
   bool get hasError => _error != null;
 
-  Future<void> loadEdukasi() async {
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
+  Future<void> loadEdukasi({bool silent = false}) async {
+    final showLoading = !silent && _items.isEmpty;
+    if (showLoading) {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+    } else if (_error != null) {
+      _error = null;
+      notifyListeners();
+    }
 
     try {
       final data = await _apiClient.get<List<dynamic>>(
@@ -31,17 +37,24 @@ class EdukasiProvider extends ChangeNotifier {
         fromJson: (json) => json as List<dynamic>,
       );
       _items = KontenEdukasi.listFromJson(data);
+      _error = null;
     } on DioException catch (e) {
-      _error = parseDioError(e);
+      if (_items.isEmpty) {
+        _error = parseDioError(e);
+      }
     } catch (_) {
-      _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      if (_items.isEmpty) {
+        _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      }
     }
 
-    _isLoading = false;
+    if (_isLoading) {
+      _isLoading = false;
+    }
     notifyListeners();
   }
 
-  Future<void> refresh() => loadEdukasi();
+  Future<void> refresh() => loadEdukasi(silent: _items.isNotEmpty);
 
   KontenEdukasi? findById(int id) {
     for (final item in _items) {

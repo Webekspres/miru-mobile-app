@@ -29,8 +29,8 @@
 | — | Out of Scope | Larangan sistem / di luar 17 modul | — | ⛔ |
 
 > **Status proyek:** MVP mobile selesai.
-> **Kerja aktif #1:** **Audit Temuan** (`temuan.md`) — section di puncak BAGIAN A.
-> Setelah itu: sisa Fase 8 + Fase 6 UAT + Fase 7 Play Store.
+> **Kerja aktif #1:** sisa **Audit Temuan** mobile (OTP WA, register singkat, form jemput, QR, dll.).
+> M0 + sebagian M1/M2 sudah ✅ (arsip BAGIAN B). Lanjut sisa temuan + Fase 8/6/7.
 > Hanya item dari dokumen persyaratan + temuan audit; **tidak menambah modul** di luar cakupan nasabah di bawah.
 
 ### Cakupan Modul — Mobile (Nasabah)
@@ -39,12 +39,12 @@ Dari 17 modul sistem, **sebagian** di mobile; sisanya staff-only di web-admin.
 
 | No | Modul | Screen | Status MVP | Lanjutan (sisa) |
 |----|-------|--------|------------|-----------------|
-| 2 | Autentikasi | Login, Register, Splash | ✅ | Temuan: OTP WA, register singkat, pesan error |
+| 2 | Autentikasi | Login, Register, Splash | ✅ | Temuan sisa: OTP WA lupa password, register singkat |
 | 3 | Profil & QR | Profile, QRCode | ✅ | Redesain kartu digital + QR di Home (temuan) |
 | 4 | Info & Edukasi | InfoSampah + Edukasi | ✅ | Render Markdown (temuan) |
 | 5 | Katalog Harga | InfoSampah / Home | ✅ | Banner harga H-3 |
 | 7 | Penjemputan | List + Ajukan | ✅ | Form UX, maps, validasi jadwal (temuan) |
-| 9 | Saldo & Riwayat | Riwayat, Home, Notifikasi | ✅ | Link riwayat; detail lengkap; cache (temuan) |
+| 9 | Saldo & Riwayat | Riwayat, Home, Notifikasi | ✅ | Link riwayat; detail lengkap (cache ✅) |
 | 10 | Tarik Saldo | TarikSaldo | ✅ | Keyboard UX; error field; notif sukses (temuan) |
 | 11 | Poin & Reward | Reward, Tukar | ✅ | UI polish; copy konfirmasi (temuan) |
 | 14 | Pengaduan | List + Form | ✅ | Jenis “Lainnya” (temuan) |
@@ -57,8 +57,8 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 
 ## Urutan kerja disarankan (Mobile)
 
-1. **⛔ PRIORITAS UTAMA — Audit Temuan** (`temuan.md`) — kerjakan dulu.
-2. Sisa Fase 8 yang belum tertutup temuan (FCM, PDF, poin expire) setelah temuan kritis.
+1. **⛔ Sisa Audit Temuan** mobile (M1–M10 yang masih `[ ]`) — kerjakan dulu.
+2. Sisa Fase 8 yang belum tertutup temuan (FCM, PDF, poin expire).
 3. Fase 6 UAT beriringan; Fase 7 Play Store saat API production HTTPS siap.
 4. iOS & opsional — belakangan.
 
@@ -70,33 +70,16 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 
 ---
 
-## 🔥 Audit Temuan — PRIORITAS UTAMA (kerjakan dulu)
+## 🔥 Audit Temuan — sisa (prioritas utama)
 
 > **Sumber:** `temuan.md` (root monorepo).
+> **Selesai (arsip BAGIAN B):** M0 penuh; sebagian M1 (login, gate alamat, OTP gate); ProfileScreen ringkas.
 > **Aturan:** Section ini mengalahkan Fase 8/6/7 di bawah sampai ditutup.
-> Koordinasi API: `backend/.ai-steering/08-task-list.md` § Audit Temuan.
+> Koordinasi API: `backend/.ai-steering/08-task-list.md` § Audit Temuan (backend sudah ✅).
 > Copy UI: Bahasa Indonesia ramah, tidak “slop”, tidak jargon Inggris di toast nasabah.
-
-### M0. Navigasi & cache (umum)
-
-- [ ] **Bottom nav di halaman nested**
-  - Opsi A (disarankan): sembunyikan bottom nav di route dalam (bukan tab root), **atau**
-  - Opsi B: bottom nav tetap, tapi perilaku tab benar (lihat poin berikut)
-- [ ] **Tap ulang item bottom nav** selalu ke **root tab**, bukan sisa stack detail
-  - Contoh: dari `/notif/detail` → pindah ke `/home` via bottom nav → tap Notif lagi → **`/notif` list**, bukan `/notif/detail`
-  - Sama: dari `/notif/detail` tap tab Notif → pop ke `/notif`
-  - Terapkan pola yang sama untuk semua tab (home, riwayat, dll.)
-- [ ] **Perbaiki cache / state provider** yang hilang mendadak
-  - Data tidak “kosong total” tanpa alasan; pull-to-refresh cukup; jangan wajib restart server/app
-  - Audit `HomeProvider` / SWR-like caching / invalidation setelah mutate
-- [ ] **Logout = clear semua cache + kembali state seperti cold start beranda**
-  - Hapus token, user, list cached, badge; jangan sisakan data nasabah sebelumnya
 
 ### M1. Modul 2 — Auth, register, reset password
 
-- [ ] **Disable tombol Login** jika username/password kosong
-- [ ] **Pesan error login spesifik BI** (bukan “Terjadi kesalahan. Silakan coba lagi”)
-  - Password salah / username tidak terdaftar — sesuai envelope backend T2
 - [ ] **Alur lupa password → OTP WhatsApp** (setelah backend T2 siap)
   1. Username → konfirmasi/cek nomor HP
   2. Pesan: cek notifikasi WhatsApp (OTP)
@@ -105,15 +88,9 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 - [ ] **Registrasi disingkat**
   - Step 1: nama lengkap, username unik, password
   - Step 2: nomor HP + OTP WA → auto login / masuk Home
-- [ ] **Gate transaksi tanpa alamat**
-  - Belum isi alamat (+ maps patokan + dropdown wilayah API) → blok jemput/tarik/tukar dengan dialog arahkan ke lengkapi profil
-- [ ] **Auto-fill alamat di form jemput** dari profil; tetap bisa diganti jika lokasi berbeda
-- [ ] Jika `phone_verified=false` setelah login (akun dibuat admin) → arahkan layar verifikasi OTP
 
 ### M2. Modul 3 / 15 — Profil, kartu digital, QR di Home
 
-- [ ] **ProfileScreen ringkas:** foto, nama, entry kartu digital — jangan dump semua field di atas
-  - Edit data lewat icon pensil (sudah ada) / halaman edit
 - [ ] **Kartu digital redesign**
   - Hilangkan teks “MIRU Bank Sampah” di atas QR
   - QR di tengah + icon MIRU di tengah QR
@@ -121,6 +98,7 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
   - Isi belakang: nama, id, RT/RW, alamat, tanggal bergabung (bukan list teks polos di bawah QR)
 - [ ] **Home: tombol/ikon QR** di kanan area saldo & poin
   - Tap → modal QR; saat modal terbuka naikkan kecerahan layar ke maksimum; restore saat tutup
+
 
 ### M3. Modul 7 — Form penjemputan
 
@@ -193,24 +171,9 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 > **Sumber:** Proposal §4 modul 2.
 > **API:** `ForgotPasswordView` + `ResetPasswordView` — siap.
 
-- [x] **Lupa password flow**
-  - Layar: minta email/HP → kirim permintaan reset → layar masukkan token + password baru
-  - Integrasi envelope error (token expired, user tidak ditemukan — pesan generik aman)
-  - Link dari LoginScreen; password min 6 (selaras backend)
-  - Setelah sukses → kembali ke login dengan pesan sukses BI
 - [ ] **(Opsional) Verifikasi nomor HP/email** — hanya jika disepakati klien
   - Jangan kerjakan default; tunggu keputusan klien + endpoint final
 
-### 8.2 Modul 3 — Profil & kartu digital
-
-> **Sumber:** Proposal modul 3.
-> **API:** field kelurahan / RT / RW pada user — siap.
-> Share / screenshot QR sudah ✅.
-
-- [x] **Field RT / RW dan kelurahan** di profil edit + registrasi (opsional)
-  - Tampil di ProfileScreen; kirim PATCH `/api/auth/me/` atau endpoint profil yang dipakai
-  - Validasi/pesan error dari envelope jika wilayah tidak valid
-  - Jangan wajibkan jika backend mengizinkan kosong
 
 ### 8.4 Modul 5 / 9 — Harga terjadwal & FCM push
 
@@ -363,6 +326,56 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 # BAGIAN B — SELESAI (arsip) — urutan bawah
 
 ---
+
+
+## Audit Temuan — selesai ✅
+
+### M0. Navigasi & cache (umum)
+
+- [x] **Bottom nav di halaman nested**
+  - Opsi A (disarankan): sembunyikan bottom nav di route dalam (bukan tab root), **atau**
+  - Opsi B: bottom nav tetap, tapi perilaku tab benar (lihat poin berikut)
+- [x] **Tap ulang item bottom nav** selalu ke **root tab**, bukan sisa stack detail
+  - Contoh: dari `/notif/detail` → pindah ke `/home` via bottom nav → tap Notif lagi → **`/notif` list**, bukan `/notif/detail`
+  - Sama: dari `/notif/detail` tap tab Notif → pop ke `/notif`
+  - Terapkan pola yang sama untuk semua tab (home, riwayat, dll.)
+- [x] **Perbaiki cache / state provider** yang hilang mendadak
+  - Data tidak “kosong total” tanpa alasan; pull-to-refresh cukup; jangan wajib restart server/app
+  - Audit `HomeProvider` / SWR-like caching / invalidation setelah mutate
+- [x] **Logout = clear semua cache + kembali state seperti cold start beranda**
+  - Hapus token, user, list cached, badge; jangan sisakan data nasabah sebelumnya
+
+### M1. Modul 2 — Auth, register, reset password
+- [x] **Disable tombol Login** jika username/password kosong
+- [x] **Pesan error login spesifik BI** (bukan “Terjadi kesalahan. Silakan coba lagi”)
+  - Password salah / username tidak terdaftar — sesuai envelope backend T2
+- [x] **Gate transaksi tanpa alamat**
+  - Belum isi alamat (+ maps patokan + dropdown wilayah API) → blok jemput/tarik/tukar dengan dialog arahkan ke lengkapi profil
+- [x] **Auto-fill alamat di form jemput** dari profil; tetap bisa diganti jika lokasi berbeda
+- [x] Jika `phone_verified=false` setelah login (akun dibuat admin) → arahkan layar verifikasi OTP
+
+### M2. Modul 3 / 15 — Profil, kartu digital, QR di Home
+- [x] **ProfileScreen ringkas:** foto, nama, entry kartu digital — jangan dump semua field di atas
+  - Edit data lewat icon pensil (sudah ada) / halaman edit
+### Dari Fase 8: Pengembangan Lanjutan
+
+### 8.1 Modul 2 — Autentikasi lanjutan
+- [x] **Lupa password flow**
+  - Layar: minta email/HP → kirim permintaan reset → layar masukkan token + password baru
+  - Integrasi envelope error (token expired, user tidak ditemukan — pesan generik aman)
+  - Link dari LoginScreen; password min 6 (selaras backend)
+  - Setelah sukses → kembali ke login dengan pesan sukses BI
+### 8.2 Modul 3 — Profil & kartu digital
+
+> **Sumber:** Proposal modul 3.
+> **API:** field kelurahan / RT / RW pada user — siap.
+> Share / screenshot QR sudah ✅.
+
+- [x] **Field RT / RW dan kelurahan** di profil edit + registrasi (opsional)
+  - Tampil di ProfileScreen; kirim PATCH `/api/auth/me/` atau endpoint profil yang dipakai
+  - Validasi/pesan error dari envelope jika wilayah tidak valid
+  - Jangan wajibkan jika backend mengizinkan kosong
+
 
 ## Fase 8 (sebagian) — sudah selesai ✅
 

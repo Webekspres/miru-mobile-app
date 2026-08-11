@@ -37,6 +37,10 @@ class AuthProvider extends ChangeNotifier {
   String? get error => _error;
   bool get hasError => _error != null;
 
+  /// Akun belum verifikasi nomor HP (OTP WhatsApp).
+  bool get needsPhoneVerification =>
+      _user != null && !_user!.phoneVerified;
+
   double get saldo => _user?.saldoAsDouble ?? 0.0;
   int get poin => _user?.poin ?? 0;
 
@@ -77,14 +81,17 @@ class AuthProvider extends ChangeNotifier {
 
       _user = user;
       authSession.setLoggedIn(true);
-    } on ApiException {
+      authSession.setNeedsPhoneVerification(!user.phoneVerified);
+    } on ApiException catch (e) {
+      _error = e.message;
       rethrow;
     } on DioException catch (e) {
-      _error = parseDioError(e);
-      rethrow;
+      final apiError = apiExceptionFromDio(e);
+      _error = apiError.message;
+      throw apiError;
     } catch (e) {
       _error = 'Terjadi kesalahan. Silakan coba lagi.';
-      rethrow;
+      throw ApiException(_error!);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -167,10 +174,88 @@ class AuthProvider extends ChangeNotifier {
 
       _user = user;
       authSession.setLoggedIn(true);
+      authSession.setNeedsPhoneVerification(!user.phoneVerified);
       return true;
     } catch (_) {
       await _clearSession();
       return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // ──────────────────────────────────────────────
+  // Phone OTP verification
+  // ──────────────────────────────────────────────
+
+  /// Request OTP WhatsApp untuk verifikasi nomor HP.
+  Future<Map<String, dynamic>> requestPhoneOtp({String? noHp}) async {
+    final user = _user;
+    if (user == null) {
+      throw const ApiException('Anda harus masuk terlebih dahulu.');
+    }
+    final phone = (noHp ?? user.noHp).trim();
+    if (phone.isEmpty) {
+      throw const ApiException('Nomor HP belum diisi. Hubungi admin MIRU.');
+    }
+
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      return await authService.requestPhoneOtp(
+        noHp: phone,
+        username: user.username,
+      );
+    } on ApiException {
+      rethrow;
+    } on DioException catch (e) {
+      _error = parseDioError(e);
+      rethrow;
+    } catch (e) {
+      _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Verifikasi OTP; set `phone_verified=true` dan lepas gate OTP.
+  Future<void> verifyPhoneOtp({
+    required String otp,
+    String? noHp,
+  }) async {
+    final user = _user;
+    if (user == null) {
+      throw const ApiException('Anda harus masuk terlebih dahulu.');
+    }
+
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await authService.verifyPhoneOtp(
+        otp: otp.trim(),
+        username: user.username,
+        noHp: noHp ?? user.noHp,
+      );
+
+      // Refresh profil agar state lokal sinkron dengan server
+      final userData = await authService.getMe();
+      _user = User.fromJson(userData);
+      authSession.setNeedsPhoneVerification(!_user!.phoneVerified);
+    } on ApiException {
+      rethrow;
+    } on DioException catch (e) {
+      _error = parseDioError(e);
+      rethrow;
+    } catch (e) {
+      _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      rethrow;
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -250,9 +335,11 @@ class AuthProvider extends ChangeNotifier {
   // ──────────────────────────────────────────────
 
   Future<void> logout() async {
+    // Clears tokens + AuthSession → MiruApp clears all session-scoped provider caches.
     await authService.logout();
     _user = null;
     _error = null;
+    _isLoading = false;
     notifyListeners();
   }
 
@@ -274,7 +361,6 @@ class AuthProvider extends ChangeNotifier {
   Future<void> _clearSession() async {
     _user = null;
     _error = null;
-    authSession.setLoggedIn(false);
     await authService.logout();
   }
 }

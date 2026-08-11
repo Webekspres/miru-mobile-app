@@ -68,9 +68,15 @@ class ProfileProvider extends ChangeNotifier {
   // ──────────────────────────────────────────────
 
   Future<void> loadProfile() async {
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
+    final showLoading = _user == null;
+    if (showLoading) {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+    } else if (_error != null) {
+      _error = null;
+      notifyListeners();
+    }
 
     try {
       final userData = await _apiClient.get<Map<String, dynamic>>(
@@ -78,12 +84,17 @@ class ProfileProvider extends ChangeNotifier {
         fromJson: (json) => Map<String, dynamic>.from(json as Map),
       );
       _user = User.fromJson(userData);
+      _error = null;
     } on DioException catch (e) {
-      _error = parseDioError(e);
+      if (_user == null) {
+        _error = parseDioError(e);
+      }
     } catch (_) {
-      _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      if (_user == null) {
+        _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      }
     } finally {
-      _isLoading = false;
+      if (_isLoading) _isLoading = false;
       notifyListeners();
     }
   }

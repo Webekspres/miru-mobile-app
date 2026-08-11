@@ -13,6 +13,9 @@ import '../services/api_client.dart';
 /// - User profile (saldo, poin) from `/api/auth/me/`
 /// - Waste categories from `/api/waste-categories/`
 /// - Recent deposits from `/api/deposits/?nasabah={id}&page_size=3`
+///
+/// Uses SWR-like caching: previous data stays visible while refreshing;
+/// skeleton/`isLoading` only on cold load (no cached user yet).
 class HomeProvider extends ChangeNotifier {
   HomeProvider({required this._apiClient});
 
@@ -27,6 +30,7 @@ class HomeProvider extends ChangeNotifier {
   String? _error;
   List<WasteCategory> _categories = [];
   List<Deposit> _recentDeposits = [];
+  int _fetchGeneration = 0;
 
   // ──────────────────────────────────────────────
   // Getters
@@ -39,6 +43,7 @@ class HomeProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
   bool get hasError => _error != null;
+  bool get hasData => _user != null;
   List<WasteCategory> get categories => _categories;
   List<Deposit> get recentDeposits => _recentDeposits;
 
@@ -54,22 +59,26 @@ class HomeProvider extends ChangeNotifier {
   // Load Dashboard Data
   // ──────────────────────────────────────────────
 
-  /// Initial load and pull-to-refresh (shows skeleton while fetching).
-  Future<void> loadData() async {
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
+  /// Initial load — shows skeleton only when there is no cached user yet.
+  Future<void> loadData() => _fetchDashboard(showLoading: !_hasCachedUser);
 
-    await _fetchAll();
+  /// Pull-to-refresh / post-mutate — keeps previous data visible.
+  Future<void> refresh() => _fetchDashboard(showLoading: false);
 
-    _isLoading = false;
-    notifyListeners();
-  }
+  bool get _hasCachedUser => _user != null;
 
-  /// Pull-to-refresh — same loading flag as initial load so UI can show skeleton.
-  Future<void> refresh() => loadData();
+  Future<void> _fetchDashboard({required bool showLoading}) async {
+    final gen = ++_fetchGeneration;
 
-  Future<void> _fetchAll() async {
+    if (showLoading) {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+    } else if (_error != null) {
+      _error = null;
+      notifyListeners();
+    }
+
     try {
       final results = await Future.wait([
         _apiClient.get<Map<String, dynamic>>(
@@ -82,26 +91,41 @@ class HomeProvider extends ChangeNotifier {
         ),
       ]);
 
+      if (gen != _fetchGeneration) return;
+
       // Parse user
       final userData = results[0] as Map<String, dynamic>;
       _user = User.fromJson(userData);
 
-      // Parse waste categories (top 4)
+      // Parse waste categories
       final catData = results[1] as List<dynamic>;
       _categories = WasteCategory.listFromJson(catData);
 
       // Fetch recent deposits (only if user is loaded)
       if (_user != null) {
-        await _fetchRecentDeposits();
+        await _fetchRecentDeposits(gen);
       }
+      _error = null;
     } on DioException catch (e) {
-      _error = parseDioError(e);
-    } catch (e) {
-      _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      if (gen != _fetchGeneration) return;
+      // Keep previous data on refresh failure; only surface error on cold load.
+      if (!_hasCachedUser) {
+        _error = parseDioError(e);
+      }
+    } catch (_) {
+      if (gen != _fetchGeneration) return;
+      if (!_hasCachedUser) {
+        _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      }
+    } finally {
+      if (gen == _fetchGeneration) {
+        _isLoading = false;
+        notifyListeners();
+      }
     }
   }
 
-  Future<void> _fetchRecentDeposits() async {
+  Future<void> _fetchRecentDeposits(int gen) async {
     try {
       final data = await _apiClient.get<List<dynamic>>(
         '/deposits/',
@@ -113,12 +137,10 @@ class HomeProvider extends ChangeNotifier {
         fromJson: (json) => json as List<dynamic>,
       );
 
+      if (gen != _fetchGeneration) return;
       _recentDeposits = Deposit.listFromJson(data);
     } catch (_) {
-      // Deposits fetch is non-critical; keep previous data or empty
-      if (_recentDeposits.isEmpty) {
-        _recentDeposits = [];
-      }
+      // Deposits fetch is non-critical; keep previous data
     }
   }
 
@@ -129,24 +151,39 @@ class HomeProvider extends ChangeNotifier {
   /// Fetches ONLY waste categories (public endpoint).
   /// No auth required — used by InfoSampahScreen for unauthenticated users.
   Future<void> loadCategoriesOnly() async {
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
+    final gen = ++_fetchGeneration;
+    final showLoading = _categories.isEmpty;
+
+    if (showLoading) {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+    }
 
     try {
       final catData = await _apiClient.get<List<dynamic>>(
         '/waste-categories/',
         fromJson: (json) => json as List<dynamic>,
       );
+      if (gen != _fetchGeneration) return;
       _categories = WasteCategory.listFromJson(catData);
+      _error = null;
     } on DioException catch (e) {
-      _error = parseDioError(e);
-    } catch (e) {
-      _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      if (gen != _fetchGeneration) return;
+      if (_categories.isEmpty) {
+        _error = parseDioError(e);
+      }
+    } catch (_) {
+      if (gen != _fetchGeneration) return;
+      if (_categories.isEmpty) {
+        _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      }
+    } finally {
+      if (gen == _fetchGeneration) {
+        _isLoading = false;
+        notifyListeners();
+      }
     }
-
-    _isLoading = false;
-    notifyListeners();
   }
 
   // ──────────────────────────────────────────────
@@ -154,6 +191,7 @@ class HomeProvider extends ChangeNotifier {
   // ──────────────────────────────────────────────
 
   void clearCache() {
+    _fetchGeneration++;
     _user = null;
     _categories = [];
     _recentDeposits = [];

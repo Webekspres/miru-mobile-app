@@ -57,20 +57,29 @@ class SaldoProvider extends ChangeNotifier {
 
   Future<void> loadActivity({required int userId}) async {
     _currentUserId = userId;
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
+    final showLoading = _items.isEmpty;
+    if (showLoading) {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+    } else if (_error != null) {
+      _error = null;
+      notifyListeners();
+    }
 
     try {
       // Try unified activity endpoint first
       await _fetchFromActivity();
+      _error = null;
     } on DioException {
       // Fallback: fetch from individual endpoints
       await _fetchFromIndividualEndpoints();
     } catch (_) {
-      _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      if (_items.isEmpty) {
+        _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      }
     } finally {
-      _isLoading = false;
+      if (_isLoading) _isLoading = false;
       notifyListeners();
     }
   }
@@ -89,7 +98,8 @@ class SaldoProvider extends ChangeNotifier {
   }
 
   Future<void> _fetchFromIndividualEndpoints() async {
-    _items = [];
+    // Build into a temp list so soft-refresh does not blank the UI mid-fetch.
+    final next = <ActivityItem>[];
 
     try {
       // Fetch deposits
@@ -103,7 +113,7 @@ class SaldoProvider extends ChangeNotifier {
         fromJson: (json) => json as List<dynamic>,
       );
       for (final d in depositData) {
-        _items.add(ActivityItem(
+        next.add(ActivityItem(
           id: d['id'] as int,
           type: ActivityType.setoran,
           status: d['status'] as String? ?? 'selesai',
@@ -129,7 +139,7 @@ class SaldoProvider extends ChangeNotifier {
         fromJson: (json) => json as List<dynamic>,
       );
       for (final w in wdData) {
-        _items.add(ActivityItem(
+        next.add(ActivityItem(
           id: w['id'] as int,
           type: ActivityType.penarikan,
           status: w['status'] as String? ?? 'menunggu',
@@ -154,7 +164,7 @@ class SaldoProvider extends ChangeNotifier {
         fromJson: (json) => json as List<dynamic>,
       );
       for (final r in rrData) {
-        _items.add(ActivityItem(
+        next.add(ActivityItem(
           id: r['id'] as int,
           type: ActivityType.penukaranPoin,
           status: r['status'] as String? ?? 'menunggu',
@@ -167,8 +177,11 @@ class SaldoProvider extends ChangeNotifier {
       // Non-critical
     }
 
-    // Sort by date descending
-    _items.sort((a, b) => b.tanggal.compareTo(a.tanggal));
+    // Sort by date descending; only replace if we got something, else keep cache.
+    next.sort((a, b) => b.tanggal.compareTo(a.tanggal));
+    if (next.isNotEmpty || _items.isEmpty) {
+      _items = next;
+    }
   }
 
   /// Pull-to-refresh.

@@ -112,9 +112,48 @@ class AuthService {
     );
   }
 
+  /// Request OTP WhatsApp for phone verification.
+  /// POST /auth/phone/request-otp/
+  Future<JsonMap> requestPhoneOtp({
+    required String noHp,
+    String? username,
+  }) async {
+    final data = <String, dynamic>{'no_hp': noHp};
+    if (username != null && username.isNotEmpty) {
+      data['username'] = username;
+    }
+    return apiClient.post<JsonMap>(
+      '/auth/phone/request-otp/',
+      data: data,
+      fromJson: _asJsonMap,
+    );
+  }
+
+  /// Verify phone OTP.
+  /// POST /auth/phone/verify-otp/
+  Future<JsonMap> verifyPhoneOtp({
+    required String otp,
+    String? username,
+    String? noHp,
+  }) async {
+    final data = <String, dynamic>{'otp': otp};
+    if (username != null && username.isNotEmpty) {
+      data['username'] = username;
+    }
+    if (noHp != null && noHp.isNotEmpty) {
+      data['no_hp'] = noHp;
+    }
+    return apiClient.post<JsonMap>(
+      '/auth/phone/verify-otp/',
+      data: data,
+      fromJson: _asJsonMap,
+    );
+  }
+
   Future<void> logout() async {
     await storageService.clearTokens();
-    authSession.setLoggedIn(false);
+    // Always notify so MiruApp clears provider caches even if flag was already false.
+    authSession.clearSession();
   }
 
   static JsonMap _asJsonMap(dynamic json) {

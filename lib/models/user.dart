@@ -9,6 +9,7 @@ class User {
     required this.saldo,
     required this.poin,
     required this.isActive,
+    this.phoneVerified = true,
     this.nik = '',
     this.noHp = '',
     this.alamat = '',
@@ -40,12 +41,37 @@ class User {
   final String saldo;
   final int poin;
   final bool isActive;
+
+  /// False untuk akun admin-created / nomor belum diverifikasi OTP.
+  final bool phoneVerified;
   final DateTime? dateJoined;
   final UserQr? qr;
 
   double get saldoAsDouble => parseDecimal(saldo);
 
   bool get isNasabah => role == 'nasabah';
+
+  /// Alamat profil wajib untuk transaksi (jemput / tarik / tukar).
+  /// Maps patokan belum ada di model API — hanya [alamat].
+  bool get hasCompleteAddress => alamat.trim().isNotEmpty;
+
+  /// Teks alamat untuk prefill form penjemputan (boleh diubah user).
+  String get formattedPickupAddress {
+    final parts = <String>[];
+    final trimmed = alamat.trim();
+    if (trimmed.isNotEmpty) parts.add(trimmed);
+
+    final rtRw = [
+      if (rt.trim().isNotEmpty) 'RT ${rt.trim()}',
+      if (rw.trim().isNotEmpty) 'RW ${rw.trim()}',
+    ].join(' ');
+    if (rtRw.isNotEmpty) parts.add(rtRw);
+
+    final kelurahan = kelurahanNama.trim();
+    if (kelurahan.isNotEmpty) parts.add(kelurahan);
+
+    return parts.join(', ');
+  }
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
@@ -63,6 +89,7 @@ class User {
       saldo: json['saldo']?.toString() ?? '0.00',
       poin: json['poin'] as int? ?? 0,
       isActive: json['is_active'] as bool? ?? true,
+      phoneVerified: json['phone_verified'] as bool? ?? true,
       dateJoined: parseOptionalDateTime(json['date_joined']),
       qr: json['qr'] != null
           ? UserQr.fromJson(Map<String, dynamic>.from(json['qr'] as Map))
@@ -84,9 +111,35 @@ class User {
         'saldo': saldo,
         'poin': poin,
         'is_active': isActive,
+        'phone_verified': phoneVerified,
         if (dateJoined != null) 'date_joined': dateJoined!.toIso8601String(),
         if (qr != null) 'qr': qr!.toJson(),
       };
+
+  User copyWith({
+    bool? phoneVerified,
+    String? noHp,
+  }) {
+    return User(
+      id: id,
+      username: username,
+      role: role,
+      namaLengkap: namaLengkap,
+      nik: nik,
+      noHp: noHp ?? this.noHp,
+      alamat: alamat,
+      rt: rt,
+      rw: rw,
+      kelurahanId: kelurahanId,
+      kelurahanNama: kelurahanNama,
+      saldo: saldo,
+      poin: poin,
+      isActive: isActive,
+      phoneVerified: phoneVerified ?? this.phoneVerified,
+      dateJoined: dateJoined,
+      qr: qr,
+    );
+  }
 
   static List<User> listFromJson(dynamic json) {
     if (json is! List) return const [];

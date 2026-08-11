@@ -104,8 +104,9 @@ class _MiruAppState extends State<MiruApp> with WidgetsBindingObserver {
 
   void _onAuthChanged() {
     if (!_authSession.isLoggedIn) {
-      // Clear session-scoped caches only. Edukasi is a public endpoint —
-      // keep it so guest home still shows "Edukasi Sampah" after logout.
+      // Clear all session-scoped caches so logout never leaves previous nasabah data.
+      // Edukasi is public — keep it so guest home still shows "Edukasi Sampah".
+      _notificationProvider.stopPolling();
       _homeProvider.clearCache();
       _saldoProvider.clearCache();
       _profileProvider.clearCache();
