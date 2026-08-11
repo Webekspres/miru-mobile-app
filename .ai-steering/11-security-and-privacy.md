@@ -141,7 +141,7 @@ WhatsApp notifikasi adalah **backend/gateway** — bukan diimplementasi sebagai 
 | Tidak embed secret di source | Selalu |
 | Privacy policy URL di Play Console | 7 |
 | Data safety form jujur (data dikumpulkan) | 7 |
-| Internal testing track sebelum production | 7 |
+| Internal testing track sebelum production | 7 — prosedur: `12-play-internal-testing.md` |
 | Certificate pinning | Evaluasi post-MVP |
 
 ---

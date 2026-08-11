@@ -35,7 +35,7 @@
     "semantic_hash": ""
   },
   "ios/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage/Package.swift": {
-    "mtime": 1786416653.358343,
+    "mtime": 1786434942.884561,
     "ast_hash": "63bc00d19466662a75b7492ac07d5a97",
     "semantic_hash": ""
   },
@@ -185,8 +185,8 @@
     "semantic_hash": ""
   },
   ".ai-steering/08-task-list.md": {
-    "mtime": 1786431412.0048013,
-    "ast_hash": "200c679f35114e28dba9707913820dba",
+    "mtime": 1786437746.2865553,
+    "ast_hash": "03ba93c6b5c4045dbceaa165d021c150",
     "semantic_hash": ""
   },
   ".ai-steering/09-data-dictionary.md": {
@@ -200,8 +200,8 @@
     "semantic_hash": ""
   },
   ".claude.md": {
-    "mtime": 1783393749.019353,
-    "ast_hash": "aa1b022fd245aafc91fcf040b85d2c38",
+    "mtime": 1786437743.1720338,
+    "ast_hash": "28bef85ab6d67ec5a4f731c4a8351e07",
     "semantic_hash": ""
   },
   "AGENTS.md": {
@@ -210,8 +210,8 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1783502172.5231497,
-    "ast_hash": "a84f0ca81ef5ccc3fa78a1ccc8459a77",
+    "mtime": 1786437736.478854,
+    "ast_hash": "d2bc00529fa612639767dbf15f6f930c",
     "semantic_hash": ""
   },
   "RTK.md": {
@@ -655,8 +655,8 @@
     "semantic_hash": ""
   },
   ".ai-steering/11-security-and-privacy.md": {
-    "mtime": 1783998152.656903,
-    "ast_hash": "cf56abe300284a4fe6493429719a2f7d",
+    "mtime": 1786437736.5849187,
+    "ast_hash": "33f43ed1716aabbc73a3662d677eae95",
     "semantic_hash": ""
   },
   "android/app/src/main/res/drawable/splash_logo.png": {
@@ -752,6 +752,11 @@
   "lib/widgets/complete_profile_dialog.dart": {
     "mtime": 1786431345.5080378,
     "ast_hash": "777d4f1c06522556ee77ec8a7ca17cc2",
+    "semantic_hash": ""
+  },
+  ".ai-steering/12-play-internal-testing.md": {
+    "mtime": 1786437716.160681,
+    "ast_hash": "b3141c59e17e3ff8fe1cd2ed35f01f52",
     "semantic_hash": ""
   }
 }

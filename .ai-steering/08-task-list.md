@@ -275,7 +275,8 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 
 ## Fase 7: Production Android
 
-> **Sumber:** Jawaban §6.4; Constraints §10; `11-security-and-privacy.md` §4, §9–10.
+> **Sumber:** Jawaban §6.4; Constraints §10; `11-security-and-privacy.md` §4, §9–10.  
+> **Distribusi UAT stakeholder:** Play Console Internal testing — lihat `12-play-internal-testing.md`.
 
 ### 7.1 Build Configuration
 
@@ -289,6 +290,8 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 
 ### 7.2 Play Store Preparation
 
+> Prosedur lengkap: `12-play-internal-testing.md` (setup Console, build AAB, invite, update, rencana GH Actions).
+
 - [ ] Privacy policy URL publik (koordinasi Backend ` /api/privacy-policy/` + hosting HTTPS)
 - [ ] Data safety form jujur (data yang dikumpulkan: akun, transaksi, device token FCM jika aktif)
 - [ ] Screenshot phone (& tablet jika relevan)
@@ -296,6 +299,8 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 - [ ] Content rating questionnaire
 - [ ] Internal testing track upload
 - [ ] Akun Google Play Console dari klien *(Jawaban §6.4.1)*
+- [ ] Email list + invite link stakeholder UAT
+- [ ] *(Opsional)* GitHub Actions upload ke track internal — setelah keystore + service account siap
 
 ### 7.3 Security Release Checklist
 
@@ -506,6 +511,7 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 |--------|--------------|
 | Android Emulator | `http://10.0.2.2:8000` |
 | Device fisik (LAN) | `http://<IP-PC>:8000` |
+| Play Internal testing (UAT) | `https://…` staging — lihat `12-play-internal-testing.md` |
 | Production | `https://…` (domain final klien / Webekspres) |
 
 Seed: `python manage.py seed_data` di backend → akun demo nasabah.
@@ -519,7 +525,7 @@ Seed: `python manage.py seed_data` di backend → akun demo nasabah.
 | **Auth Ready** | Fase 0–2 |
 | **MVP Nasabah** | Fase 3–5 |
 | **UAT Ready** | Fase 6 checklist lulus + backend + web admin |
-| **Play Store Beta** | Fase 7 internal testing |
+| **Play Store Beta** | Fase 7 internal testing — prosedurnya di `12-play-internal-testing.md` |
 | **Go-Live Android** | Production API + app published |
 | **Pengembangan Lanjutan** | Fase 8 aktif — hanya item persyaratan dalam modul mobile |
 

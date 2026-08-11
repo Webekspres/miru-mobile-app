@@ -468,7 +468,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_app_miruapp",
-      "community": 37,
+      "community": 125,
       "norm_label": "miruapp"
     },
     {
@@ -488,7 +488,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_app_miruappstate",
-      "community": 37,
+      "community": 125,
       "norm_label": "_miruappstate"
     },
     {
@@ -508,7 +508,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgetsbindingobserver",
-      "community": 37,
+      "community": 125,
       "norm_label": "widgetsbindingobserver"
     },
     {
@@ -628,7 +628,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "pengaduanprovider",
-      "community": 98,
+      "community": 82,
       "norm_label": "pengaduanprovider"
     },
     {
@@ -688,7 +688,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "penjemputanprovider",
-      "community": 34,
+      "community": 86,
       "norm_label": "penjemputanprovider"
     },
     {
@@ -748,7 +748,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "saldoprovider",
-      "community": 112,
+      "community": 123,
       "norm_label": "saldoprovider"
     },
     {
@@ -908,7 +908,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_go_router_go_router_dart",
-      "community": 19,
+      "community": 65,
       "norm_label": "package:go_router/go_router.dart"
     },
     {
@@ -928,7 +928,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "config_constants_dart",
-      "community": 53,
+      "community": 94,
       "norm_label": "../config/constants.dart"
     },
     {
@@ -988,7 +988,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "providers_home_provider_dart",
-      "community": 40,
+      "community": 82,
       "norm_label": "../providers/home_provider.dart"
     },
     {
@@ -1008,7 +1008,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "providers_pengaduan_provider_dart",
-      "community": 98,
+      "community": 46,
       "norm_label": "../../providers/pengaduan_provider.dart"
     },
     {
@@ -1048,7 +1048,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "providers_reward_provider_dart",
-      "community": 114,
+      "community": 40,
       "norm_label": "../../providers/reward_provider.dart"
     },
     {
@@ -1238,7 +1238,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_notification_dart",
-      "community": 43,
+      "community": 122,
       "norm_label": "../../models/notification.dart"
     },
     {
@@ -1848,7 +1848,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "string",
-      "community": 60,
+      "community": 98,
       "norm_label": "string?"
     },
     {
@@ -1908,7 +1908,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "bool_get",
-      "community": 94,
+      "community": 93,
       "norm_label": "bool get"
     },
     {
@@ -2448,7 +2448,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_complaint_complaintjenis",
-      "community": 98,
+      "community": 46,
       "norm_label": "complaintjenis"
     },
     {
@@ -3028,7 +3028,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_institution_settings",
-      "community": 60,
+      "community": 98,
       "norm_label": "institution_settings.dart"
     },
     {
@@ -3038,7 +3038,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_institution_settings_institutionsettings",
-      "community": 60,
+      "community": 98,
       "norm_label": "institutionsettings"
     },
     {
@@ -3048,7 +3048,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_institution_settings_namainstitusi",
-      "community": 60,
+      "community": 98,
       "norm_label": "namainstitusi"
     },
     {
@@ -3058,7 +3058,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_institution_settings_alamat",
-      "community": 60,
+      "community": 98,
       "norm_label": "alamat"
     },
     {
@@ -3068,7 +3068,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_institution_settings_kontak",
-      "community": 60,
+      "community": 98,
       "norm_label": "kontak"
     },
     {
@@ -3078,7 +3078,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_institution_settings_email",
-      "community": 60,
+      "community": 98,
       "norm_label": "email"
     },
     {
@@ -3088,7 +3088,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_institution_settings_logourl",
-      "community": 60,
+      "community": 98,
       "norm_label": "logourl"
     },
     {
@@ -3098,7 +3098,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_institution_settings_jamoperasional",
-      "community": 60,
+      "community": 98,
       "norm_label": "jamoperasional"
     },
     {
@@ -3108,7 +3108,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_institution_settings_pengumuman",
-      "community": 60,
+      "community": 98,
       "norm_label": "pengumuman"
     },
     {
@@ -3118,7 +3118,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_institution_settings_fromjson",
-      "community": 60,
+      "community": 98,
       "norm_label": "fromjson"
     },
     {
@@ -3208,7 +3208,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_konten_edukasi_kontenedukasi",
-      "community": 120,
+      "community": 97,
       "norm_label": "kontenedukasi"
     },
     {
@@ -3308,7 +3308,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_notification_appnotification",
-      "community": 43,
+      "community": 122,
       "norm_label": "appnotification"
     },
     {
@@ -5408,7 +5408,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "timer",
-      "community": 61,
+      "community": 58,
       "norm_label": "timer?"
     },
     {
@@ -6848,7 +6848,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "auth_forgot_password_screen_build",
-      "community": 95,
+      "community": 74,
       "norm_label": "build"
     },
     {
@@ -6858,7 +6858,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_login",
-      "community": 95,
+      "community": 74,
       "norm_label": "route /login"
     },
     {
@@ -6888,7 +6888,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "auth_login_screen_loginscreen",
-      "community": 65,
+      "community": 116,
       "norm_label": "loginscreen"
     },
     {
@@ -6898,7 +6898,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "auth_login_screen_loginscreenstate",
-      "community": 65,
+      "community": 116,
       "norm_label": "_loginscreenstate"
     },
     {
@@ -7048,7 +7048,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "auth_login_screen_build",
-      "community": 19,
+      "community": 65,
       "norm_label": "build"
     },
     {
@@ -7058,7 +7058,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_forgot_password",
-      "community": 19,
+      "community": 65,
       "norm_label": "route /forgot-password"
     },
     {
@@ -7068,7 +7068,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_register",
-      "community": 19,
+      "community": 65,
       "norm_label": "route /register"
     },
     {
@@ -7078,7 +7078,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_miru_logo_dart",
-      "community": 65,
+      "community": 13,
       "norm_label": "../../widgets/miru_logo.dart"
     },
     {
@@ -7238,7 +7238,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "auth_phone_verify_screen_sendotp",
-      "community": 91,
+      "community": 61,
       "norm_label": "_sendotp"
     },
     {
@@ -7258,7 +7258,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "auth_phone_verify_screen_logout",
-      "community": 95,
+      "community": 74,
       "norm_label": "_logout"
     },
     {
@@ -7298,7 +7298,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "auth_phone_verify_screen_build",
-      "community": 91,
+      "community": 61,
       "norm_label": "build"
     },
     {
@@ -7618,7 +7618,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "auth_register_screen_build",
-      "community": 95,
+      "community": 74,
       "norm_label": "build"
     },
     {
@@ -7628,7 +7628,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_settings_kebijakan_data",
-      "community": 95,
+      "community": 74,
       "norm_label": "route /settings/kebijakan-data"
     },
     {
@@ -7658,7 +7658,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "auth_reset_password_screen_resetpasswordscreen",
-      "community": 74,
+      "community": 116,
       "norm_label": "resetpasswordscreen"
     },
     {
@@ -7668,7 +7668,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "auth_reset_password_screen_resetpasswordscreenstate",
-      "community": 74,
+      "community": 116,
       "norm_label": "_resetpasswordscreenstate"
     },
     {
@@ -7788,7 +7788,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "auth_reset_password_screen_handlereset",
-      "community": 95,
+      "community": 74,
       "norm_label": "_handlereset"
     },
     {
@@ -7808,7 +7808,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "auth_reset_password_screen_build",
-      "community": 95,
+      "community": 74,
       "norm_label": "build"
     },
     {
@@ -8038,7 +8038,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_intl_intl_dart",
-      "community": 43,
+      "community": 122,
       "norm_label": "package:intl/intl.dart"
     },
     {
@@ -8138,7 +8138,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "home_home_screen_homescreen",
-      "community": 67,
+      "community": 117,
       "norm_label": "homescreen"
     },
     {
@@ -8148,7 +8148,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "home_home_screen_homescreenstate",
-      "community": 67,
+      "community": 117,
       "norm_label": "_homescreenstate"
     },
     {
@@ -8278,7 +8278,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "icondata",
-      "community": 49,
+      "community": 110,
       "norm_label": "icondata"
     },
     {
@@ -8308,7 +8308,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "color",
-      "community": 13,
+      "community": 49,
       "norm_label": "color"
     },
     {
@@ -8548,7 +8548,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "home_home_screen_build",
-      "community": 41,
+      "community": 124,
       "norm_label": "build"
     },
     {
@@ -8638,7 +8638,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_pengumuman_detail",
-      "community": 41,
+      "community": 124,
       "norm_label": "route /pengumuman/detail"
     },
     {
@@ -8678,7 +8678,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "notifikasi_detail_notifikasi_screen",
-      "community": 43,
+      "community": 122,
       "norm_label": "detail_notifikasi_screen.dart"
     },
     {
@@ -8688,7 +8688,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "notifikasi_detail_notifikasi_screen_detailnotifikasiscreen",
-      "community": 43,
+      "community": 122,
       "norm_label": "detailnotifikasiscreen"
     },
     {
@@ -8698,7 +8698,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "notifikasi_detail_notifikasi_screen_notification",
-      "community": 43,
+      "community": 122,
       "norm_label": "notification"
     },
     {
@@ -8708,7 +8708,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "notifikasi_detail_notifikasi_screen_build",
-      "community": 43,
+      "community": 122,
       "norm_label": "build"
     },
     {
@@ -8828,7 +8828,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_error_view_dart",
-      "community": 43,
+      "community": 40,
       "norm_label": "../../widgets/error_view.dart"
     },
     {
@@ -8838,7 +8838,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_login_prompt_dart",
-      "community": 98,
+      "community": 43,
       "norm_label": "../../widgets/login_prompt.dart"
     },
     {
@@ -8848,7 +8848,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "pengaduan_pengaduan_form_screen",
-      "community": 98,
+      "community": 46,
       "norm_label": "pengaduan_form_screen.dart"
     },
     {
@@ -8858,7 +8858,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "pengaduan_pengaduan_form_screen_pengaduanformscreen",
-      "community": 98,
+      "community": 46,
       "norm_label": "pengaduanformscreen"
     },
     {
@@ -8868,7 +8868,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "pengaduan_pengaduan_form_screen_pengaduanformscreenstate",
-      "community": 98,
+      "community": 46,
       "norm_label": "_pengaduanformscreenstate"
     },
     {
@@ -8878,7 +8878,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "pengaduan_pengaduan_form_screen_formkey",
-      "community": 98,
+      "community": 46,
       "norm_label": "_formkey"
     },
     {
@@ -8888,7 +8888,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "pengaduan_pengaduan_form_screen_keluhancontroller",
-      "community": 98,
+      "community": 46,
       "norm_label": "_keluhancontroller"
     },
     {
@@ -8898,7 +8898,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "pengaduan_pengaduan_form_screen_selectedjenis",
-      "community": 98,
+      "community": 46,
       "norm_label": "_selectedjenis"
     },
     {
@@ -8908,7 +8908,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "pengaduan_pengaduan_form_screen_createstate",
-      "community": 98,
+      "community": 46,
       "norm_label": "createstate"
     },
     {
@@ -8918,7 +8918,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "pengaduan_pengaduan_form_screen_dispose",
-      "community": 98,
+      "community": 46,
       "norm_label": "dispose"
     },
     {
@@ -8928,7 +8928,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "pengaduan_pengaduan_form_screen_submit",
-      "community": 98,
+      "community": 82,
       "norm_label": "_submit"
     },
     {
@@ -8938,7 +8938,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "pengaduan_pengaduan_form_screen_build",
-      "community": 98,
+      "community": 46,
       "norm_label": "build"
     },
     {
@@ -8948,7 +8948,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "pengaduan_pengaduan_form_screen_buildinfoheader",
-      "community": 98,
+      "community": 46,
       "norm_label": "_buildinfoheader"
     },
     {
@@ -8958,7 +8958,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "pengaduan_pengaduan_form_screen_buildslainfo",
-      "community": 98,
+      "community": 46,
       "norm_label": "_buildslainfo"
     },
     {
@@ -8968,7 +8968,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "pengaduan_pengaduan_form_screen_infobullet",
-      "community": 98,
+      "community": 46,
       "norm_label": "_infobullet"
     },
     {
@@ -9008,7 +9008,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "singletickerproviderstatemixin",
-      "community": 122,
+      "community": 35,
       "norm_label": "singletickerproviderstatemixin"
     },
     {
@@ -9118,7 +9118,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "pengaduan_pengaduan_screen_loaddata",
-      "community": 98,
+      "community": 82,
       "norm_label": "_loaddata"
     },
     {
@@ -9128,7 +9128,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "pengaduan_pengaduan_screen_build",
-      "community": 82,
+      "community": 117,
       "norm_label": "build"
     },
     {
@@ -9138,7 +9138,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_home_pengaduan_form",
-      "community": 82,
+      "community": 117,
       "norm_label": "route /home/pengaduan/form"
     },
     {
@@ -9358,7 +9358,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "profile_profile_screen_profilescreen",
-      "community": 116,
+      "community": 53,
       "norm_label": "profilescreen"
     },
     {
@@ -9368,7 +9368,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "profile_profile_screen_profilescreenstate",
-      "community": 116,
+      "community": 53,
       "norm_label": "_profilescreenstate"
     },
     {
@@ -9438,7 +9438,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "profile_profile_screen_loadprofile",
-      "community": 53,
+      "community": 42,
       "norm_label": "_loadprofile"
     },
     {
@@ -9558,7 +9558,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "profile_profile_screen_showlogoutconfirmation",
-      "community": 91,
+      "community": 53,
       "norm_label": "_showlogoutconfirmation"
     },
     {
@@ -9858,7 +9858,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "reward",
-      "community": 114,
+      "community": 40,
       "norm_label": "reward"
     },
     {
@@ -9918,7 +9918,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "reward_reward_screen_build",
-      "community": 117,
+      "community": 40,
       "norm_label": "build"
     },
     {
@@ -9948,7 +9948,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "reward_tukar_poin_screen",
-      "community": 114,
+      "community": 40,
       "norm_label": "tukar_poin_screen.dart"
     },
     {
@@ -9958,7 +9958,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "reward_tukar_poin_screen_tukarpoinscreen",
-      "community": 114,
+      "community": 40,
       "norm_label": "tukarpoinscreen"
     },
     {
@@ -9968,7 +9968,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "reward_tukar_poin_screen_tukarpoincontent",
-      "community": 114,
+      "community": 40,
       "norm_label": "_tukarpoincontent"
     },
     {
@@ -9978,7 +9978,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "reward_tukar_poin_screen_tukarpoincontentstate",
-      "community": 114,
+      "community": 40,
       "norm_label": "_tukarpoincontentstate"
     },
     {
@@ -9988,7 +9988,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "reward_tukar_poin_screen_tukarpoinbody",
-      "community": 114,
+      "community": 40,
       "norm_label": "_tukarpoinbody"
     },
     {
@@ -9998,7 +9998,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "reward_tukar_poin_screen_tukarpoinbodystate",
-      "community": 114,
+      "community": 40,
       "norm_label": "_tukarpoinbodystate"
     },
     {
@@ -10008,7 +10008,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "reward_tukar_poin_screen_reward",
-      "community": 114,
+      "community": 40,
       "norm_label": "reward"
     },
     {
@@ -10018,7 +10018,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "reward_tukar_poin_screen_isprocessing",
-      "community": 114,
+      "community": 40,
       "norm_label": "_isprocessing"
     },
     {
@@ -10028,7 +10028,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "reward_tukar_poin_screen_build",
-      "community": 117,
+      "community": 40,
       "norm_label": "build"
     },
     {
@@ -10038,7 +10038,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "reward_tukar_poin_screen_createstate",
-      "community": 114,
+      "community": 40,
       "norm_label": "createstate"
     },
     {
@@ -10048,7 +10048,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "reward_tukar_poin_screen_initstate",
-      "community": 114,
+      "community": 40,
       "norm_label": "initstate"
     },
     {
@@ -10058,7 +10058,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "reward_tukar_poin_screen_confirmredemption",
-      "community": 114,
+      "community": 40,
       "norm_label": "_confirmredemption"
     },
     {
@@ -10078,7 +10078,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "reward_tukar_poin_screen_detailrow",
-      "community": 114,
+      "community": 40,
       "norm_label": "_detailrow"
     },
     {
@@ -10088,7 +10088,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "reward_tukar_poin_screen_infobullet",
-      "community": 114,
+      "community": 40,
       "norm_label": "_infobullet"
     },
     {
@@ -10098,7 +10098,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_complete_profile_dialog_dart",
-      "community": 114,
+      "community": 40,
       "norm_label": "../../widgets/complete_profile_dialog.dart"
     },
     {
@@ -10248,7 +10248,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "saldo_riwayat_screen_ontabchanged",
-      "community": 112,
+      "community": 123,
       "norm_label": "_ontabchanged"
     },
     {
@@ -10258,7 +10258,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "saldo_riwayat_screen_loaddata",
-      "community": 112,
+      "community": 123,
       "norm_label": "_loaddata"
     },
     {
@@ -10268,7 +10268,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "saldo_riwayat_screen_build",
-      "community": 117,
+      "community": 112,
       "norm_label": "build"
     },
     {
@@ -10308,7 +10308,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "saldo_tarik_saldo_screen_tariksaldoscreen",
-      "community": 33,
+      "community": 123,
       "norm_label": "tariksaldoscreen"
     },
     {
@@ -10318,7 +10318,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "saldo_tarik_saldo_screen_tariksaldoscreenstate",
-      "community": 33,
+      "community": 123,
       "norm_label": "_tariksaldoscreenstate"
     },
     {
@@ -10698,7 +10698,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "setoran_ajukan_penjemputan_screen_categorychip",
-      "community": 34,
+      "community": 44,
       "norm_label": "_categorychip"
     },
     {
@@ -10708,7 +10708,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "setoran_ajukan_penjemputan_screen_datepickertile",
-      "community": 34,
+      "community": 44,
       "norm_label": "_datepickertile"
     },
     {
@@ -10908,7 +10908,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "setoran_ajukan_penjemputan_screen_submit",
-      "community": 34,
+      "community": 86,
       "norm_label": "_submit"
     },
     {
@@ -10968,7 +10968,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "setoran_info_sampah_screen_detailsection",
-      "community": 44,
+      "community": 71,
       "norm_label": "_detailsection"
     },
     {
@@ -10978,7 +10978,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "setoran_info_sampah_screen_infoskeletonitem",
-      "community": 44,
+      "community": 71,
       "norm_label": "_infoskeletonitem"
     },
     {
@@ -10988,7 +10988,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "setoran_info_sampah_screen_categorycard",
-      "community": 71,
+      "community": 44,
       "norm_label": "_categorycard"
     },
     {
@@ -11258,7 +11258,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "setoran_penjemputan_screen_loaddata",
-      "community": 34,
+      "community": 86,
       "norm_label": "_loaddata"
     },
     {
@@ -11268,7 +11268,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "setoran_penjemputan_screen_build",
-      "community": 86,
+      "community": 117,
       "norm_label": "build"
     },
     {
@@ -11278,7 +11278,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_home_penjemputan_ajukan",
-      "community": 86,
+      "community": 117,
       "norm_label": "route /home/penjemputan/ajukan"
     },
     {
@@ -11448,7 +11448,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "settings_pengumuman_screen_showdetail",
-      "community": 41,
+      "community": 124,
       "norm_label": "_showdetail"
     },
     {
@@ -11468,7 +11468,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "settings_settings_screen_settingsscreen",
-      "community": 91,
+      "community": 78,
       "norm_label": "settingsscreen"
     },
     {
@@ -11608,7 +11608,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "settings_settings_screen_build",
-      "community": 95,
+      "community": 78,
       "norm_label": "build"
     },
     {
@@ -11618,7 +11618,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_profile",
-      "community": 95,
+      "community": 78,
       "norm_label": "route /profile"
     },
     {
@@ -11628,7 +11628,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_settings_tentang",
-      "community": 95,
+      "community": 78,
       "norm_label": "route /settings/tentang"
     },
     {
@@ -11848,7 +11848,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "splash_splash_screen_initstate",
-      "community": 91,
+      "community": 83,
       "norm_label": "initstate"
     },
     {
@@ -12378,7 +12378,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "c_users_pc_projects_projects_miru_mirumobileapp_lib_services_storage_service_dart",
-      "community": 53,
+      "community": 95,
       "norm_label": "storage_service.dart"
     },
     {
@@ -12388,7 +12388,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "services_storage_service_storageservice",
-      "community": 53,
+      "community": 95,
       "norm_label": "storageservice"
     },
     {
@@ -12398,7 +12398,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "services_storage_service_storage",
-      "community": 53,
+      "community": 95,
       "norm_label": "_storage"
     },
     {
@@ -12408,7 +12408,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "fluttersecurestorage",
-      "community": 53,
+      "community": 95,
       "norm_label": "fluttersecurestorage"
     },
     {
@@ -12418,7 +12418,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "services_storage_service_write",
-      "community": 53,
+      "community": 95,
       "norm_label": "write"
     },
     {
@@ -12428,7 +12428,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "services_storage_service_read",
-      "community": 53,
+      "community": 95,
       "norm_label": "read"
     },
     {
@@ -12438,7 +12438,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "services_storage_service_delete",
-      "community": 53,
+      "community": 95,
       "norm_label": "delete"
     },
     {
@@ -12448,7 +12448,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "services_storage_service_deleteall",
-      "community": 53,
+      "community": 95,
       "norm_label": "deleteall"
     },
     {
@@ -12458,7 +12458,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "services_storage_service_readaccesstoken",
-      "community": 53,
+      "community": 95,
       "norm_label": "readaccesstoken"
     },
     {
@@ -12468,7 +12468,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "services_storage_service_readrefreshtoken",
-      "community": 53,
+      "community": 95,
       "norm_label": "readrefreshtoken"
     },
     {
@@ -12478,7 +12478,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "services_storage_service_hasaccesstoken",
-      "community": 53,
+      "community": 95,
       "norm_label": "hasaccesstoken"
     },
     {
@@ -12488,7 +12488,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "services_storage_service_writeaccesstoken",
-      "community": 53,
+      "community": 95,
       "norm_label": "writeaccesstoken"
     },
     {
@@ -12498,7 +12498,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "services_storage_service_writetokens",
-      "community": 53,
+      "community": 95,
       "norm_label": "writetokens"
     },
     {
@@ -12508,7 +12508,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "services_storage_service_cleartokens",
-      "community": 53,
+      "community": 95,
       "norm_label": "cleartokens"
     },
     {
@@ -12518,7 +12518,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_flutter_secure_storage_flutter_secure_storage_dart",
-      "community": 53,
+      "community": 95,
       "norm_label": "package:flutter_secure_storage/flutter_secure_storage.dart"
     },
     {
@@ -13288,7 +13288,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_login_prompt",
-      "community": 19,
+      "community": 65,
       "norm_label": "login_prompt.dart"
     },
     {
@@ -13298,7 +13298,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_login_prompt_loginprompt",
-      "community": 19,
+      "community": 65,
       "norm_label": "loginprompt"
     },
     {
@@ -13308,7 +13308,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_login_prompt_icon",
-      "community": 19,
+      "community": 65,
       "norm_label": "icon"
     },
     {
@@ -13318,7 +13318,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_login_prompt_title",
-      "community": 19,
+      "community": 65,
       "norm_label": "title"
     },
     {
@@ -13328,7 +13328,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_login_prompt_message",
-      "community": 19,
+      "community": 65,
       "norm_label": "message"
     },
     {
@@ -13338,7 +13338,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_login_prompt_showbackbutton",
-      "community": 19,
+      "community": 65,
       "norm_label": "showbackbutton"
     },
     {
@@ -13348,7 +13348,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_login_prompt_build",
-      "community": 19,
+      "community": 65,
       "norm_label": "build"
     },
     {
@@ -13378,7 +13378,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_miru_logo_mirulogo",
-      "community": 68,
+      "community": 44,
       "norm_label": "mirulogo"
     },
     {
@@ -13418,7 +13418,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "double",
-      "community": 68,
+      "community": 35,
       "norm_label": "double?"
     },
     {
@@ -13698,7 +13698,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_shimmer_loading_shimmerwidget",
-      "community": 122,
+      "community": 35,
       "norm_label": "shimmerwidget"
     },
     {
@@ -13708,7 +13708,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_shimmer_loading_shimmerwidgetstate",
-      "community": 122,
+      "community": 35,
       "norm_label": "_shimmerwidgetstate"
     },
     {
@@ -13738,7 +13738,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_shimmer_loading_skeletonlistitem",
-      "community": 44,
+      "community": 35,
       "norm_label": "skeletonlistitem"
     },
     {
@@ -13758,7 +13758,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_shimmer_loading_listskeleton",
-      "community": 35,
+      "community": 44,
       "norm_label": "listskeleton"
     },
     {
@@ -15132,30 +15132,20 @@
       "norm_label": "bagian a \u2014 belum selesai (prioritas atas)"
     },
     {
-      "label": "\ud83d\udd25 Audit Temuan \u2014 PRIORITAS UTAMA (kerjakan dulu)",
+      "label": "\ud83d\udd25 Audit Temuan \u2014 sisa (prioritas utama)",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
       "source_location": "L73",
       "_origin": "ast",
-      "id": "ai_steering_08_task_list_audit_temuan_prioritas_utama_kerjakan_dulu",
+      "id": "ai_steering_08_task_list_audit_temuan_sisa_prioritas_utama",
       "community": 63,
-      "norm_label": "\ud83d\udd25 audit temuan \u2014 prioritas utama (kerjakan dulu)"
-    },
-    {
-      "label": "M0. Navigasi & cache (umum)",
-      "file_type": "document",
-      "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L80",
-      "_origin": "ast",
-      "id": "ai_steering_08_task_list_m0_navigasi_cache_umum",
-      "community": 63,
-      "norm_label": "m0. navigasi & cache (umum)"
+      "norm_label": "\ud83d\udd25 audit temuan \u2014 sisa (prioritas utama)"
     },
     {
       "label": "M1. Modul 2 \u2014 Auth, register, reset password",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L95",
+      "source_location": "L81",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_m1_modul_2_auth_register_reset_password",
       "community": 63,
@@ -15165,7 +15155,7 @@
       "label": "M2. Modul 3 / 15 \u2014 Profil, kartu digital, QR di Home",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L113",
+      "source_location": "L92",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_m2_modul_3_15_profil_kartu_digital_qr_di_home",
       "community": 63,
@@ -15175,7 +15165,7 @@
       "label": "M3. Modul 7 \u2014 Form penjemputan",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L125",
+      "source_location": "L103",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_m3_modul_7_form_penjemputan",
       "community": 63,
@@ -15185,7 +15175,7 @@
       "label": "M4. Modul 11 \u2014 Tukar poin UI",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L138",
+      "source_location": "L116",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_m4_modul_11_tukar_poin_ui",
       "community": 63,
@@ -15195,7 +15185,7 @@
       "label": "M5. Modul 10 \u2014 Tarik saldo",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L148",
+      "source_location": "L126",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_m5_modul_10_tarik_saldo",
       "community": 63,
@@ -15205,7 +15195,7 @@
       "label": "M6. Modul 9 \u2014 Riwayat & aktivitas Home",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L156",
+      "source_location": "L134",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_m6_modul_9_riwayat_aktivitas_home",
       "community": 63,
@@ -15215,7 +15205,7 @@
       "label": "M7. Modul 4 \u2014 Edukasi Markdown",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L162",
+      "source_location": "L140",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_m7_modul_4_edukasi_markdown",
       "community": 63,
@@ -15225,7 +15215,7 @@
       "label": "M8. Modul 14 \u2014 Pengaduan",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L167",
+      "source_location": "L145",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_m8_modul_14_pengaduan",
       "community": 63,
@@ -15235,7 +15225,7 @@
       "label": "M9. Modul 5 \u2014 Banner harga H-3",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L171",
+      "source_location": "L149",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_m9_modul_5_banner_harga_h_3",
       "community": 63,
@@ -15245,7 +15235,7 @@
       "label": "M10. Modul 17 \u2014 Settings mobile",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L176",
+      "source_location": "L154",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_m10_modul_17_settings_mobile",
       "community": 63,
@@ -15255,7 +15245,7 @@
       "label": "Fase 8: Pengembangan Lanjutan",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L185",
+      "source_location": "L163",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_fase_8_pengembangan_lanjutan",
       "community": 70,
@@ -15265,27 +15255,17 @@
       "label": "8.1 Modul 2 \u2014 Autentikasi lanjutan",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L191",
+      "source_location": "L169",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_8_1_modul_2_autentikasi_lanjutan",
       "community": 70,
       "norm_label": "8.1 modul 2 \u2014 autentikasi lanjutan"
     },
     {
-      "label": "8.2 Modul 3 \u2014 Profil & kartu digital",
-      "file_type": "document",
-      "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L204",
-      "_origin": "ast",
-      "id": "ai_steering_08_task_list_8_2_modul_3_profil_kartu_digital",
-      "community": 70,
-      "norm_label": "8.2 modul 3 \u2014 profil & kartu digital"
-    },
-    {
       "label": "8.4 Modul 5 / 9 \u2014 Harga terjadwal & FCM push",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L215",
+      "source_location": "L178",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_8_4_modul_5_9_harga_terjadwal_fcm_push",
       "community": 70,
@@ -15295,7 +15275,7 @@
       "label": "8.5 Modul 7 \u2014 Wilayah & peta sederhana",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L231",
+      "source_location": "L194",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_8_5_modul_7_wilayah_peta_sederhana",
       "community": 70,
@@ -15305,7 +15285,7 @@
       "label": "8.6 Modul 10 / 11 \u2014 Bukti & masa berlaku poin",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L243",
+      "source_location": "L206",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_8_6_modul_10_11_bukti_masa_berlaku_poin",
       "community": 70,
@@ -15315,7 +15295,7 @@
       "label": "8.7 iOS & peningkatan opsional",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L258",
+      "source_location": "L221",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_8_7_ios_peningkatan_opsional",
       "community": 70,
@@ -15325,7 +15305,7 @@
       "label": "Fase 6: Kualitas & Testing (UAT Ready)",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L270",
+      "source_location": "L233",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_fase_6_kualitas_testing_uat_ready",
       "community": 72,
@@ -15335,7 +15315,7 @@
       "label": "6.0 Keamanan Client \u2014 sisa",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L275",
+      "source_location": "L238",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_6_0_keamanan_client_sisa",
       "community": 72,
@@ -15345,7 +15325,7 @@
       "label": "6.1 Automated Tests \u2014 sisa",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L282",
+      "source_location": "L245",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_6_1_automated_tests_sisa",
       "community": 72,
@@ -15355,7 +15335,7 @@
       "label": "6.2 Manual / UAT Checklist",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L290",
+      "source_location": "L253",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_6_2_manual_uat_checklist",
       "community": 72,
@@ -15365,7 +15345,7 @@
       "label": "6.3 Edge Cases",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L305",
+      "source_location": "L268",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_6_3_edge_cases",
       "community": 72,
@@ -15375,7 +15355,7 @@
       "label": "Fase 7: Production Android",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L313",
+      "source_location": "L276",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_fase_7_production_android",
       "community": 64,
@@ -15385,7 +15365,7 @@
       "label": "7.1 Build Configuration",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L317",
+      "source_location": "L281",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_7_1_build_configuration",
       "community": 64,
@@ -15395,7 +15375,7 @@
       "label": "7.2 Play Store Preparation",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L327",
+      "source_location": "L291",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_7_2_play_store_preparation",
       "community": 64,
@@ -15405,7 +15385,7 @@
       "label": "7.3 Security Release Checklist",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L337",
+      "source_location": "L305",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_7_3_security_release_checklist",
       "community": 64,
@@ -15415,7 +15395,7 @@
       "label": "Out of Scope / larangan",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L349",
+      "source_location": "L317",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_out_of_scope_larangan",
       "community": 64,
@@ -15425,17 +15405,87 @@
       "label": "BAGIAN B \u2014 SELESAI (arsip) \u2014 urutan bawah",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L363",
+      "source_location": "L331",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_bagian_b_selesai_arsip_urutan_bawah",
       "community": 1,
       "norm_label": "bagian b \u2014 selesai (arsip) \u2014 urutan bawah"
     },
     {
-      "label": "Fase 8 (sebagian) \u2014 sudah selesai \u2705",
+      "label": "Audit Temuan \u2014 selesai \u2705",
+      "file_type": "document",
+      "source_file": ".ai-steering/08-task-list.md",
+      "source_location": "L336",
+      "_origin": "ast",
+      "id": "ai_steering_08_task_list_audit_temuan_selesai",
+      "community": 114,
+      "norm_label": "audit temuan \u2014 selesai \u2705"
+    },
+    {
+      "label": "M0. Navigasi & cache (umum)",
+      "file_type": "document",
+      "source_file": ".ai-steering/08-task-list.md",
+      "source_location": "L338",
+      "_origin": "ast",
+      "id": "ai_steering_08_task_list_m0_navigasi_cache_umum",
+      "community": 114,
+      "norm_label": "m0. navigasi & cache (umum)"
+    },
+    {
+      "label": "M1. Modul 2 \u2014 Auth, register, reset password",
+      "file_type": "document",
+      "source_file": ".ai-steering/08-task-list.md",
+      "source_location": "L353",
+      "_origin": "ast",
+      "id": "ai_steering_08_task_list_m1_modul_2_auth_register_reset_password_353",
+      "community": 114,
+      "norm_label": "m1. modul 2 \u2014 auth, register, reset password"
+    },
+    {
+      "label": "M2. Modul 3 / 15 \u2014 Profil, kartu digital, QR di Home",
+      "file_type": "document",
+      "source_file": ".ai-steering/08-task-list.md",
+      "source_location": "L362",
+      "_origin": "ast",
+      "id": "ai_steering_08_task_list_m2_modul_3_15_profil_kartu_digital_qr_di_home_362",
+      "community": 114,
+      "norm_label": "m2. modul 3 / 15 \u2014 profil, kartu digital, qr di home"
+    },
+    {
+      "label": "Dari Fase 8: Pengembangan Lanjutan",
+      "file_type": "document",
+      "source_file": ".ai-steering/08-task-list.md",
+      "source_location": "L365",
+      "_origin": "ast",
+      "id": "ai_steering_08_task_list_dari_fase_8_pengembangan_lanjutan",
+      "community": 114,
+      "norm_label": "dari fase 8: pengembangan lanjutan"
+    },
+    {
+      "label": "8.1 Modul 2 \u2014 Autentikasi lanjutan",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
       "source_location": "L367",
+      "_origin": "ast",
+      "id": "ai_steering_08_task_list_8_1_modul_2_autentikasi_lanjutan_367",
+      "community": 114,
+      "norm_label": "8.1 modul 2 \u2014 autentikasi lanjutan"
+    },
+    {
+      "label": "8.2 Modul 3 \u2014 Profil & kartu digital",
+      "file_type": "document",
+      "source_file": ".ai-steering/08-task-list.md",
+      "source_location": "L373",
+      "_origin": "ast",
+      "id": "ai_steering_08_task_list_8_2_modul_3_profil_kartu_digital",
+      "community": 114,
+      "norm_label": "8.2 modul 3 \u2014 profil & kartu digital"
+    },
+    {
+      "label": "Fase 8 (sebagian) \u2014 sudah selesai \u2705",
+      "file_type": "document",
+      "source_file": ".ai-steering/08-task-list.md",
+      "source_location": "L385",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_fase_8_sebagian_sudah_selesai",
       "community": 89,
@@ -15445,7 +15495,7 @@
       "label": "Modul 3 \u2014 Share QR \u2705",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L369",
+      "source_location": "L387",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_modul_3_share_qr",
       "community": 89,
@@ -15455,7 +15505,7 @@
       "label": "Modul 4 \u2014 Artikel edukasi \u2705",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L372",
+      "source_location": "L390",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_modul_4_artikel_edukasi",
       "community": 89,
@@ -15465,7 +15515,7 @@
       "label": "Modul 7 \u2014 Status penjemputan \u2705",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L377",
+      "source_location": "L395",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_modul_7_status_penjemputan",
       "community": 89,
@@ -15475,7 +15525,7 @@
       "label": "Modul 9 \u2014 Notifikasi in-app \u2705",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L381",
+      "source_location": "L399",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_modul_9_notifikasi_in_app",
       "community": 89,
@@ -15485,7 +15535,7 @@
       "label": "Fase 6 (sebagian) \u2014 sudah selesai \u2705",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L388",
+      "source_location": "L406",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_fase_6_sebagian_sudah_selesai",
       "community": 1,
@@ -15495,7 +15545,7 @@
       "label": "Fase 0: Scaffold \u2705",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L398",
+      "source_location": "L416",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_fase_0_scaffold",
       "community": 1,
@@ -15505,7 +15555,7 @@
       "label": "Fase 1: Foundation \u2705",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L406",
+      "source_location": "L424",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_fase_1_foundation",
       "community": 1,
@@ -15515,7 +15565,7 @@
       "label": "Fase 2: Auth Flow \u2705",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L416",
+      "source_location": "L434",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_fase_2_auth_flow",
       "community": 1,
@@ -15525,7 +15575,7 @@
       "label": "Fase 3: MVP Screens \u2705",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L425",
+      "source_location": "L443",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_fase_3_mvp_screens",
       "community": 1,
@@ -15535,7 +15585,7 @@
       "label": "Fase 4: Navigation & UX Polish \u2705",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L438",
+      "source_location": "L456",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_fase_4_navigation_ux_polish",
       "community": 1,
@@ -15545,7 +15595,7 @@
       "label": "Fase 5: Settings & Informasi \u2705",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L447",
+      "source_location": "L465",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_fase_5_settings_informasi",
       "community": 1,
@@ -15555,7 +15605,7 @@
       "label": "Matriks Dependensi Backend \u2192 Mobile",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L455",
+      "source_location": "L473",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_matriks_dependensi_backend_mobile",
       "community": 1,
@@ -15565,7 +15615,7 @@
       "label": "Checklist Integrasi End-to-End",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L471",
+      "source_location": "L489",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_checklist_integrasi_end_to_end",
       "community": 1,
@@ -15575,7 +15625,7 @@
       "label": "Environment Testing",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L490",
+      "source_location": "L508",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_environment_testing",
       "community": 1,
@@ -15585,7 +15635,7 @@
       "label": "Definisi \"Selesai\" per Tahap",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L502",
+      "source_location": "L521",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_definisi_selesai_per_tahap",
       "community": 1,
@@ -15595,7 +15645,7 @@
       "label": "Indeks dokumen keamanan",
       "file_type": "document",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L513",
+      "source_location": "L532",
       "_origin": "ast",
       "id": "ai_steering_08_task_list_indeks_dokumen_keamanan",
       "community": 1,
@@ -16132,12 +16182,272 @@
       "norm_label": "12. aturan untuk ai / engineer"
     },
     {
+      "label": "12-play-internal-testing.md",
+      "file_type": "document",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "ai_steering_12_play_internal_testing",
+      "community": 19,
+      "norm_label": "12-play-internal-testing.md"
+    },
+    {
+      "label": "12 \u2014 Play Console Internal Testing (Staging untuk Stakeholder)",
+      "file_type": "document",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "ai_steering_12_play_internal_testing_12_play_console_internal_testing_staging_untuk_stakeholder",
+      "community": 19,
+      "norm_label": "12 \u2014 play console internal testing (staging untuk stakeholder)"
+    },
+    {
+      "label": "1. Mengapa Internal testing",
+      "file_type": "document",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L11",
+      "_origin": "ast",
+      "id": "ai_steering_12_play_internal_testing_1_mengapa_internal_testing",
+      "community": 19,
+      "norm_label": "1. mengapa internal testing"
+    },
+    {
+      "label": "2. Prasyarat",
+      "file_type": "document",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L25",
+      "_origin": "ast",
+      "id": "ai_steering_12_play_internal_testing_2_prasyarat",
+      "community": 19,
+      "norm_label": "2. prasyarat"
+    },
+    {
+      "label": "2.1 Akun & organisasi",
+      "file_type": "document",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L27",
+      "_origin": "ast",
+      "id": "ai_steering_12_play_internal_testing_2_1_akun_organisasi",
+      "community": 19,
+      "norm_label": "2.1 akun & organisasi"
+    },
+    {
+      "label": "2.2 Backend & konfigurasi app",
+      "file_type": "document",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L33",
+      "_origin": "ast",
+      "id": "ai_steering_12_play_internal_testing_2_2_backend_konfigurasi_app",
+      "community": 19,
+      "norm_label": "2.2 backend & konfigurasi app"
+    },
+    {
+      "label": "2.3 Listing minimal agar track testing aktif",
+      "file_type": "document",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L41",
+      "_origin": "ast",
+      "id": "ai_steering_12_play_internal_testing_2_3_listing_minimal_agar_track_testing_aktif",
+      "community": 19,
+      "norm_label": "2.3 listing minimal agar track testing aktif"
+    },
+    {
+      "label": "3. Alur one-time (setup)",
+      "file_type": "document",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L54",
+      "_origin": "ast",
+      "id": "ai_steering_12_play_internal_testing_3_alur_one_time_setup",
+      "community": 19,
+      "norm_label": "3. alur one-time (setup)"
+    },
+    {
+      "label": "4. Build AAB untuk Internal testing",
+      "file_type": "document",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L79",
+      "_origin": "ast",
+      "id": "ai_steering_12_play_internal_testing_4_build_aab_untuk_internal_testing",
+      "community": 19,
+      "norm_label": "4. build aab untuk internal testing"
+    },
+    {
+      "label": "4.1 Versi",
+      "file_type": "document",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L83",
+      "_origin": "ast",
+      "id": "ai_steering_12_play_internal_testing_4_1_versi",
+      "community": 19,
+      "norm_label": "4.1 versi"
+    },
+    {
+      "label": "4.2 Perintah build (manual)",
+      "file_type": "document",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L92",
+      "_origin": "ast",
+      "id": "ai_steering_12_play_internal_testing_4_2_perintah_build_manual",
+      "community": 19,
+      "norm_label": "4.2 perintah build (manual)"
+    },
+    {
+      "label": "4.3 Environment API",
+      "file_type": "document",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L106",
+      "_origin": "ast",
+      "id": "ai_steering_12_play_internal_testing_4_3_environment_api",
+      "community": 19,
+      "norm_label": "4.3 environment api"
+    },
+    {
+      "label": "5. Upload & rilis Internal testing",
+      "file_type": "document",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L118",
+      "_origin": "ast",
+      "id": "ai_steering_12_play_internal_testing_5_upload_rilis_internal_testing",
+      "community": 19,
+      "norm_label": "5. upload & rilis internal testing"
+    },
+    {
+      "label": "5.1 Manual (Play Console)",
+      "file_type": "document",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L120",
+      "_origin": "ast",
+      "id": "ai_steering_12_play_internal_testing_5_1_manual_play_console",
+      "community": 19,
+      "norm_label": "5.1 manual (play console)"
+    },
+    {
+      "label": "5.2 Stakeholder: install pertama kali",
+      "file_type": "document",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L129",
+      "_origin": "ast",
+      "id": "ai_steering_12_play_internal_testing_5_2_stakeholder_install_pertama_kali",
+      "community": 19,
+      "norm_label": "5.2 stakeholder: install pertama kali"
+    },
+    {
+      "label": "5.3 Stakeholder: update berikutnya",
+      "file_type": "document",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L138",
+      "_origin": "ast",
+      "id": "ai_steering_12_play_internal_testing_5_3_stakeholder_update_berikutnya",
+      "community": 19,
+      "norm_label": "5.3 stakeholder: update berikutnya"
+    },
+    {
+      "label": "6. Otomasi GitHub Actions (opsional, fase lanjut)",
+      "file_type": "document",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L148",
+      "_origin": "ast",
+      "id": "ai_steering_12_play_internal_testing_6_otomasi_github_actions_opsional_fase_lanjut",
+      "community": 19,
+      "norm_label": "6. otomasi github actions (opsional, fase lanjut)"
+    },
+    {
+      "label": "Secrets yang dibutuhkan (rencana)",
+      "file_type": "document",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L158",
+      "_origin": "ast",
+      "id": "ai_steering_12_play_internal_testing_secrets_yang_dibutuhkan_rencana",
+      "community": 19,
+      "norm_label": "secrets yang dibutuhkan (rencana)"
+    },
+    {
+      "label": "Guardrail",
+      "file_type": "document",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L169",
+      "_origin": "ast",
+      "id": "ai_steering_12_play_internal_testing_guardrail",
+      "community": 19,
+      "norm_label": "guardrail"
+    },
+    {
+      "label": "7. Checklist rilis UAT (per build)",
+      "file_type": "document",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L179",
+      "_origin": "ast",
+      "id": "ai_steering_12_play_internal_testing_7_checklist_rilis_uat_per_build",
+      "community": 19,
+      "norm_label": "7. checklist rilis uat (per build)"
+    },
+    {
+      "label": "Sebelum build",
+      "file_type": "document",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L181",
+      "_origin": "ast",
+      "id": "ai_steering_12_play_internal_testing_sebelum_build",
+      "community": 19,
+      "norm_label": "sebelum build"
+    },
+    {
+      "label": "Build & upload",
+      "file_type": "document",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L188",
+      "_origin": "ast",
+      "id": "ai_steering_12_play_internal_testing_build_upload",
+      "community": 19,
+      "norm_label": "build & upload"
+    },
+    {
+      "label": "Setelah Available",
+      "file_type": "document",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L195",
+      "_origin": "ast",
+      "id": "ai_steering_12_play_internal_testing_setelah_available",
+      "community": 19,
+      "norm_label": "setelah available"
+    },
+    {
+      "label": "8. Troubleshooting singkat",
+      "file_type": "document",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L203",
+      "_origin": "ast",
+      "id": "ai_steering_12_play_internal_testing_8_troubleshooting_singkat",
+      "community": 19,
+      "norm_label": "8. troubleshooting singkat"
+    },
+    {
+      "label": "9. Referensi silang",
+      "file_type": "document",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L215",
+      "_origin": "ast",
+      "id": "ai_steering_12_play_internal_testing_9_referensi_silang",
+      "community": 19,
+      "norm_label": "9. referensi silang"
+    },
+    {
+      "label": "10. Definisi selesai (untuk jalur ini)",
+      "file_type": "document",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L227",
+      "_origin": "ast",
+      "id": "ai_steering_12_play_internal_testing_10_definisi_selesai_untuk_jalur_ini",
+      "community": 19,
+      "norm_label": "10. definisi selesai (untuk jalur ini)"
+    },
+    {
       "label": ".claude.md",
       "file_type": "document",
       "source_file": ".claude.md",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "c_users_pc_projects_projects_miru_mirumobileapp_claude_md",
+      "id": "claude",
       "community": 17,
       "norm_label": ".claude.md"
     },
@@ -16175,7 +16485,7 @@
       "label": "Aturan Keras",
       "file_type": "document",
       "source_file": ".claude.md",
-      "source_location": "L23",
+      "source_location": "L25",
       "_origin": "ast",
       "id": "claude_aturan_keras",
       "community": 17,
@@ -16185,7 +16495,7 @@
       "label": "Prioritas Platform",
       "file_type": "document",
       "source_file": ".claude.md",
-      "source_location": "L36",
+      "source_location": "L38",
       "_origin": "ast",
       "id": "claude_prioritas_platform",
       "community": 17,
@@ -16195,7 +16505,7 @@
       "label": "Referensi Cepat",
       "file_type": "document",
       "source_file": ".claude.md",
-      "source_location": "L41",
+      "source_location": "L43",
       "_origin": "ast",
       "id": "claude_referensi_cepat",
       "community": 17,
@@ -16257,7 +16567,7 @@
       "source_file": "README.md",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "c_users_pc_projects_projects_miru_mirumobileapp_readme_md",
+      "id": "readme",
       "community": 2,
       "norm_label": "readme.md"
     },
@@ -16435,7 +16745,7 @@
       "label": "Scripts",
       "file_type": "document",
       "source_file": "README.md",
-      "source_location": "L187",
+      "source_location": "L188",
       "_origin": "ast",
       "id": "readme_scripts",
       "community": 2,
@@ -16445,7 +16755,7 @@
       "label": "Status Proyek",
       "file_type": "document",
       "source_file": "README.md",
-      "source_location": "L197",
+      "source_location": "L198",
       "_origin": "ast",
       "id": "readme_status_proyek",
       "community": 2,
@@ -16455,7 +16765,7 @@
       "label": "Branding",
       "file_type": "document",
       "source_file": "README.md",
-      "source_location": "L201",
+      "source_location": "L202",
       "_origin": "ast",
       "id": "readme_branding",
       "community": 2,
@@ -16465,7 +16775,7 @@
       "label": "Batasan Penting",
       "file_type": "document",
       "source_file": "README.md",
-      "source_location": "L209",
+      "source_location": "L210",
       "_origin": "ast",
       "id": "readme_batasan_penting",
       "community": 2,
@@ -40084,9 +40394,9 @@
       "source_file": ".ai-steering/08-task-list.md",
       "source_location": "L73",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "ai_steering_08_task_list_bagian_a_belum_selesai_prioritas_atas",
-      "target": "ai_steering_08_task_list_audit_temuan_prioritas_utama_kerjakan_dulu"
+      "target": "ai_steering_08_task_list_audit_temuan_sisa_prioritas_utama",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -40132,111 +40442,101 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L80",
+      "source_location": "L154",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "ai_steering_08_task_list_audit_temuan_prioritas_utama_kerjakan_dulu",
-      "target": "ai_steering_08_task_list_m0_navigasi_cache_umum"
+      "source": "ai_steering_08_task_list_audit_temuan_sisa_prioritas_utama",
+      "target": "ai_steering_08_task_list_m10_modul_17_settings_mobile",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L176",
+      "source_location": "L81",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "ai_steering_08_task_list_audit_temuan_prioritas_utama_kerjakan_dulu",
-      "target": "ai_steering_08_task_list_m10_modul_17_settings_mobile"
+      "source": "ai_steering_08_task_list_audit_temuan_sisa_prioritas_utama",
+      "target": "ai_steering_08_task_list_m1_modul_2_auth_register_reset_password",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L95",
+      "source_location": "L92",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "ai_steering_08_task_list_audit_temuan_prioritas_utama_kerjakan_dulu",
-      "target": "ai_steering_08_task_list_m1_modul_2_auth_register_reset_password"
+      "source": "ai_steering_08_task_list_audit_temuan_sisa_prioritas_utama",
+      "target": "ai_steering_08_task_list_m2_modul_3_15_profil_kartu_digital_qr_di_home",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L113",
+      "source_location": "L103",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "ai_steering_08_task_list_audit_temuan_prioritas_utama_kerjakan_dulu",
-      "target": "ai_steering_08_task_list_m2_modul_3_15_profil_kartu_digital_qr_di_home"
+      "source": "ai_steering_08_task_list_audit_temuan_sisa_prioritas_utama",
+      "target": "ai_steering_08_task_list_m3_modul_7_form_penjemputan",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L125",
+      "source_location": "L116",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "ai_steering_08_task_list_audit_temuan_prioritas_utama_kerjakan_dulu",
-      "target": "ai_steering_08_task_list_m3_modul_7_form_penjemputan"
+      "source": "ai_steering_08_task_list_audit_temuan_sisa_prioritas_utama",
+      "target": "ai_steering_08_task_list_m4_modul_11_tukar_poin_ui",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L138",
+      "source_location": "L126",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "ai_steering_08_task_list_audit_temuan_prioritas_utama_kerjakan_dulu",
-      "target": "ai_steering_08_task_list_m4_modul_11_tukar_poin_ui"
+      "source": "ai_steering_08_task_list_audit_temuan_sisa_prioritas_utama",
+      "target": "ai_steering_08_task_list_m5_modul_10_tarik_saldo",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L148",
+      "source_location": "L134",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "ai_steering_08_task_list_audit_temuan_prioritas_utama_kerjakan_dulu",
-      "target": "ai_steering_08_task_list_m5_modul_10_tarik_saldo"
+      "source": "ai_steering_08_task_list_audit_temuan_sisa_prioritas_utama",
+      "target": "ai_steering_08_task_list_m6_modul_9_riwayat_aktivitas_home",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L156",
+      "source_location": "L140",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "ai_steering_08_task_list_audit_temuan_prioritas_utama_kerjakan_dulu",
-      "target": "ai_steering_08_task_list_m6_modul_9_riwayat_aktivitas_home"
+      "source": "ai_steering_08_task_list_audit_temuan_sisa_prioritas_utama",
+      "target": "ai_steering_08_task_list_m7_modul_4_edukasi_markdown",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L162",
+      "source_location": "L145",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "ai_steering_08_task_list_audit_temuan_prioritas_utama_kerjakan_dulu",
-      "target": "ai_steering_08_task_list_m7_modul_4_edukasi_markdown"
+      "source": "ai_steering_08_task_list_audit_temuan_sisa_prioritas_utama",
+      "target": "ai_steering_08_task_list_m8_modul_14_pengaduan",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L167",
+      "source_location": "L149",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "ai_steering_08_task_list_audit_temuan_prioritas_utama_kerjakan_dulu",
-      "target": "ai_steering_08_task_list_m8_modul_14_pengaduan"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": ".ai-steering/08-task-list.md",
-      "source_location": "L171",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "ai_steering_08_task_list_audit_temuan_prioritas_utama_kerjakan_dulu",
-      "target": "ai_steering_08_task_list_m9_modul_5_banner_harga_h_3"
+      "source": "ai_steering_08_task_list_audit_temuan_sisa_prioritas_utama",
+      "target": "ai_steering_08_task_list_m9_modul_5_banner_harga_h_3",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -40372,6 +40672,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": ".ai-steering/08-task-list.md",
+      "source_location": "L336",
+      "weight": 1.0,
+      "source": "ai_steering_08_task_list_bagian_b_selesai_arsip_urutan_bawah",
+      "target": "ai_steering_08_task_list_audit_temuan_selesai",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/08-task-list.md",
       "source_location": "L360",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -40497,6 +40807,66 @@
       "confidence_score": 1.0,
       "source": "ai_steering_08_task_list_bagian_b_selesai_arsip_urutan_bawah",
       "target": "ai_steering_08_task_list_matriks_dependensi_backend_mobile"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/08-task-list.md",
+      "source_location": "L367",
+      "weight": 1.0,
+      "source": "ai_steering_08_task_list_audit_temuan_selesai",
+      "target": "ai_steering_08_task_list_8_1_modul_2_autentikasi_lanjutan_367",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/08-task-list.md",
+      "source_location": "L373",
+      "weight": 1.0,
+      "source": "ai_steering_08_task_list_audit_temuan_selesai",
+      "target": "ai_steering_08_task_list_8_2_modul_3_profil_kartu_digital",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/08-task-list.md",
+      "source_location": "L365",
+      "weight": 1.0,
+      "source": "ai_steering_08_task_list_audit_temuan_selesai",
+      "target": "ai_steering_08_task_list_dari_fase_8_pengembangan_lanjutan",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/08-task-list.md",
+      "source_location": "L338",
+      "weight": 1.0,
+      "source": "ai_steering_08_task_list_audit_temuan_selesai",
+      "target": "ai_steering_08_task_list_m0_navigasi_cache_umum",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/08-task-list.md",
+      "source_location": "L353",
+      "weight": 1.0,
+      "source": "ai_steering_08_task_list_audit_temuan_selesai",
+      "target": "ai_steering_08_task_list_m1_modul_2_auth_register_reset_password_353",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/08-task-list.md",
+      "source_location": "L362",
+      "weight": 1.0,
+      "source": "ai_steering_08_task_list_audit_temuan_selesai",
+      "target": "ai_steering_08_task_list_m2_modul_3_15_profil_kartu_digital_qr_di_home_362",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -41041,12 +41411,262 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "ai_steering_12_play_internal_testing",
+      "target": "ai_steering_12_play_internal_testing_12_play_console_internal_testing_staging_untuk_stakeholder",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L227",
+      "weight": 1.0,
+      "source": "ai_steering_12_play_internal_testing_12_play_console_internal_testing_staging_untuk_stakeholder",
+      "target": "ai_steering_12_play_internal_testing_10_definisi_selesai_untuk_jalur_ini",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "ai_steering_12_play_internal_testing_12_play_console_internal_testing_staging_untuk_stakeholder",
+      "target": "ai_steering_12_play_internal_testing_1_mengapa_internal_testing",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L25",
+      "weight": 1.0,
+      "source": "ai_steering_12_play_internal_testing_12_play_console_internal_testing_staging_untuk_stakeholder",
+      "target": "ai_steering_12_play_internal_testing_2_prasyarat",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L54",
+      "weight": 1.0,
+      "source": "ai_steering_12_play_internal_testing_12_play_console_internal_testing_staging_untuk_stakeholder",
+      "target": "ai_steering_12_play_internal_testing_3_alur_one_time_setup",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L79",
+      "weight": 1.0,
+      "source": "ai_steering_12_play_internal_testing_12_play_console_internal_testing_staging_untuk_stakeholder",
+      "target": "ai_steering_12_play_internal_testing_4_build_aab_untuk_internal_testing",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L118",
+      "weight": 1.0,
+      "source": "ai_steering_12_play_internal_testing_12_play_console_internal_testing_staging_untuk_stakeholder",
+      "target": "ai_steering_12_play_internal_testing_5_upload_rilis_internal_testing",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L148",
+      "weight": 1.0,
+      "source": "ai_steering_12_play_internal_testing_12_play_console_internal_testing_staging_untuk_stakeholder",
+      "target": "ai_steering_12_play_internal_testing_6_otomasi_github_actions_opsional_fase_lanjut",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L179",
+      "weight": 1.0,
+      "source": "ai_steering_12_play_internal_testing_12_play_console_internal_testing_staging_untuk_stakeholder",
+      "target": "ai_steering_12_play_internal_testing_7_checklist_rilis_uat_per_build",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L203",
+      "weight": 1.0,
+      "source": "ai_steering_12_play_internal_testing_12_play_console_internal_testing_staging_untuk_stakeholder",
+      "target": "ai_steering_12_play_internal_testing_8_troubleshooting_singkat",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L215",
+      "weight": 1.0,
+      "source": "ai_steering_12_play_internal_testing_12_play_console_internal_testing_staging_untuk_stakeholder",
+      "target": "ai_steering_12_play_internal_testing_9_referensi_silang",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L27",
+      "weight": 1.0,
+      "source": "ai_steering_12_play_internal_testing_2_prasyarat",
+      "target": "ai_steering_12_play_internal_testing_2_1_akun_organisasi",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L33",
+      "weight": 1.0,
+      "source": "ai_steering_12_play_internal_testing_2_prasyarat",
+      "target": "ai_steering_12_play_internal_testing_2_2_backend_konfigurasi_app",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L41",
+      "weight": 1.0,
+      "source": "ai_steering_12_play_internal_testing_2_prasyarat",
+      "target": "ai_steering_12_play_internal_testing_2_3_listing_minimal_agar_track_testing_aktif",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L83",
+      "weight": 1.0,
+      "source": "ai_steering_12_play_internal_testing_4_build_aab_untuk_internal_testing",
+      "target": "ai_steering_12_play_internal_testing_4_1_versi",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L92",
+      "weight": 1.0,
+      "source": "ai_steering_12_play_internal_testing_4_build_aab_untuk_internal_testing",
+      "target": "ai_steering_12_play_internal_testing_4_2_perintah_build_manual",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L106",
+      "weight": 1.0,
+      "source": "ai_steering_12_play_internal_testing_4_build_aab_untuk_internal_testing",
+      "target": "ai_steering_12_play_internal_testing_4_3_environment_api",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L120",
+      "weight": 1.0,
+      "source": "ai_steering_12_play_internal_testing_5_upload_rilis_internal_testing",
+      "target": "ai_steering_12_play_internal_testing_5_1_manual_play_console",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L129",
+      "weight": 1.0,
+      "source": "ai_steering_12_play_internal_testing_5_upload_rilis_internal_testing",
+      "target": "ai_steering_12_play_internal_testing_5_2_stakeholder_install_pertama_kali",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L138",
+      "weight": 1.0,
+      "source": "ai_steering_12_play_internal_testing_5_upload_rilis_internal_testing",
+      "target": "ai_steering_12_play_internal_testing_5_3_stakeholder_update_berikutnya",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L169",
+      "weight": 1.0,
+      "source": "ai_steering_12_play_internal_testing_6_otomasi_github_actions_opsional_fase_lanjut",
+      "target": "ai_steering_12_play_internal_testing_guardrail",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L158",
+      "weight": 1.0,
+      "source": "ai_steering_12_play_internal_testing_6_otomasi_github_actions_opsional_fase_lanjut",
+      "target": "ai_steering_12_play_internal_testing_secrets_yang_dibutuhkan_rencana",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L188",
+      "weight": 1.0,
+      "source": "ai_steering_12_play_internal_testing_7_checklist_rilis_uat_per_build",
+      "target": "ai_steering_12_play_internal_testing_build_upload",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L181",
+      "weight": 1.0,
+      "source": "ai_steering_12_play_internal_testing_7_checklist_rilis_uat_per_build",
+      "target": "ai_steering_12_play_internal_testing_sebelum_build",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".ai-steering/12-play-internal-testing.md",
+      "source_location": "L195",
+      "weight": 1.0,
+      "source": "ai_steering_12_play_internal_testing_7_checklist_rilis_uat_per_build",
+      "target": "ai_steering_12_play_internal_testing_setelah_available",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": ".claude.md",
       "source_location": "L3",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "c_users_pc_projects_projects_miru_mirumobileapp_claude_md",
-      "target": "claude_graphify"
+      "source": "claude",
+      "target": "claude_graphify",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -41054,9 +41674,9 @@
       "source_file": ".claude.md",
       "source_location": "L1",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "c_users_pc_projects_projects_miru_mirumobileapp_claude_md",
-      "target": "claude_miru_bank_sampah_mobile_app_nasabah_flutter"
+      "source": "claude",
+      "target": "claude_miru_bank_sampah_mobile_app_nasabah_flutter",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -41144,9 +41764,9 @@
       "source_file": "README.md",
       "source_location": "L1",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "c_users_pc_projects_projects_miru_mirumobileapp_readme_md",
-      "target": "readme_miru_bank_sampah_mobile_app_miru_g"
+      "source": "readme",
+      "target": "readme_miru_bank_sampah_mobile_app_miru_g",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -41410,5 +42030,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "27d26b61e7a246d78177fc2d1c07a03602e1e766"
+  "built_at_commit": "a824ecf30fdb8970dbc6a261c7f688a1ccb73a03"
 }

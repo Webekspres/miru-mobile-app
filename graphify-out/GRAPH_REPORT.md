@@ -1,16 +1,16 @@
 # Graph Report - mirumobileapp  (2026-08-11)
 
 ## Corpus Check
-- 117 files · ~79,832 words
+- 118 files · ~81,272 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1654 nodes · 2437 edges · 123 communities (116 shown, 7 thin omitted)
+- 1685 nodes · 2468 edges · 126 communities (119 shown, 7 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `27d26b61`
+- Built from commit: `a824ecf3`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -131,35 +131,38 @@
 - [[_COMMUNITY_Community 120|Community 120]]
 - [[_COMMUNITY_Community 121|Community 121]]
 - [[_COMMUNITY_Community 122|Community 122]]
+- [[_COMMUNITY_Community 123|Community 123]]
+- [[_COMMUNITY_Community 124|Community 124]]
+- [[_COMMUNITY_Community 125|Community 125]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `_` - 17 edges
-2. `BAGIAN B — SELESAI (arsip) — urutan bawah` - 14 edges
+2. `BAGIAN B — SELESAI (arsip) — urutan bawah` - 15 edges
 3. `11 — Security & Privacy (Mobile — mirumobileapp)` - 13 edges
 4. `MIRU Bank Sampah — Mobile App (Miru-G)` - 13 edges
-5. `🔥 Audit Temuan — PRIORITAS UTAMA (kerjakan dulu)` - 12 edges
-6. `04 — API Integration (Mobile)` - 11 edges
-7. `Ringkasan Aturan untuk UI Mobile` - 11 edges
-8. `08 — Task List: Mobile App Development Roadmap` - 11 edges
-9. `01 — Project Overview (Mobile App)` - 10 edges
-10. `10 — Integration & Roles (Mobile App)` - 10 edges
+5. `04 — API Integration (Mobile)` - 11 edges
+6. `Ringkasan Aturan untuk UI Mobile` - 11 edges
+7. `08 — Task List: Mobile App Development Roadmap` - 11 edges
+8. `🔥 Audit Temuan — sisa (prioritas utama)` - 11 edges
+9. `12 — Play Console Internal Testing (Staging untuk Stakeholder)` - 11 edges
+10. `01 — Project Overview (Mobile App)` - 10 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `MiruApp` --inherits--> `StatefulWidget`  [EXTRACTED]
-  lib/app.dart → None  _Bridges community 37 → community 116_
+  lib/app.dart → None  _Bridges community 125 → community 116_
 - `MiruApp` --inherits--> `StatelessWidget`  [EXTRACTED]
-  lib/app.dart → None  _Bridges community 37 → community 44_
-- `LoginScreen` --inherits--> `StatefulWidget`  [EXTRACTED]
-  lib/screens/auth/login_screen.dart → None  _Bridges community 116 → community 65_
-- `ResetPasswordScreen` --inherits--> `StatefulWidget`  [EXTRACTED]
-  lib/screens/auth/reset_password_screen.dart → None  _Bridges community 116 → community 74_
+  lib/app.dart → None  _Bridges community 125 → community 44_
 - `EdukasiDetailScreen` --inherits--> `StatefulWidget`  [EXTRACTED]
   lib/screens/edukasi/edukasi_detail_screen.dart → None  _Bridges community 116 → community 85_
+- `EdukasiListScreen` --inherits--> `StatefulWidget`  [EXTRACTED]
+  lib/screens/edukasi/edukasi_list_screen.dart → None  _Bridges community 116 → community 119_
+- `HomeScreen` --inherits--> `StatefulWidget`  [EXTRACTED]
+  lib/screens/home/home_screen.dart → None  _Bridges community 116 → community 117_
 
 ## Import Cycles
 - None detected.
 
-## Communities (123 total, 7 thin omitted)
+## Communities (126 total, 7 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.10
@@ -215,7 +218,7 @@ Nodes (21): api_exception.dart, ApiEnvelope, ApiMeta, code, data, errors, fromJs
 
 ### Community 13 - "Community 13"
 Cohesion: 0.15
-Nodes (15): Color, ../../providers/settings_provider.dart, build, children, createState, icon, iconBgColor, iconColor (+7 more)
+Nodes (15): ../../providers/settings_provider.dart, build, children, createState, icon, iconBgColor, iconColor, initState (+7 more)
 
 ### Community 14 - "Community 14"
 Cohesion: 0.25
@@ -238,8 +241,8 @@ Cohesion: 0.18
 Nodes (10): accessTokenKey, apiBaseUrl, AppConstants, appName, connectTimeout, receiveTimeout, refreshTokenKey, tokenExpiry (+2 more)
 
 ### Community 19 - "Community 19"
-Cohesion: 0.18
-Nodes (10): build, package:go_router/go_router.dart, Route /forgot-password, Route /register, build, icon, LoginPrompt, message (+2 more)
+Cohesion: 0.08
+Nodes (25): 10. Definisi selesai (untuk jalur ini), 12 — Play Console Internal Testing (Staging untuk Stakeholder), 1. Mengapa Internal testing, 2.1 Akun & organisasi, 2.2 Backend & konfigurasi app, 2.3 Listing minimal agar track testing aktif, 2. Prasyarat, 3. Alur one-time (setup) (+17 more)
 
 ### Community 20 - "Community 20"
 Cohesion: 0.33
@@ -274,15 +277,15 @@ Nodes (3): Bundle, FlutterActivity, MainActivity
 
 ### Community 33 - "Community 33"
 Cohesion: 0.07
-Nodes (28): NumberFormat, _buildQuickAmountChips, createState, dispose, _formatRupiah, formatter, _formKey, _hasInteracted (+20 more)
+Nodes (26): NumberFormat, _buildQuickAmountChips, createState, dispose, _formatRupiah, formatter, _formKey, _hasInteracted (+18 more)
 
 ### Community 34 - "Community 34"
-Cohesion: 0.09
-Nodes (24): PenjemputanProvider, AjukanPenjemputanScreen, _AjukanPenjemputanScreenState, _alamatController, _beratController, _buildInfoHeader, category, _CategoryChip (+16 more)
+Cohesion: 0.11
+Nodes (19): AjukanPenjemputanScreen, _AjukanPenjemputanScreenState, _alamatController, _beratController, _buildInfoHeader, category, createState, dispose (+11 more)
 
 ### Community 35 - "Community 35"
-Cohesion: 0.12
-Nodes (15): AnimationController, _animation, borderRadius, build, child, _controller, createState, dispose (+7 more)
+Cohesion: 0.11
+Nodes (19): AnimationController, double?, SingleTickerProviderStateMixin, _animation, borderRadius, build, child, _controller (+11 more)
 
 ### Community 36 - "Community 36"
 Cohesion: 0.07
@@ -290,7 +293,7 @@ Nodes (27): _alamatController, _applyFieldErrors, _clearFieldErrors, createState
 
 ### Community 37 - "Community 37"
 Cohesion: 0.08
-Nodes (26): config/routes.dart, _apiClient, _authProvider, _authService, _authSession, build, createState, didChangeAppLifecycleState (+18 more)
+Nodes (23): config/routes.dart, _apiClient, _authProvider, _authService, _authSession, build, createState, didChangeAppLifecycleState (+15 more)
 
 ### Community 38 - "Community 38"
 Cohesion: 0.09
@@ -301,24 +304,24 @@ Cohesion: 0.08
 Nodes (25): auth_session.dart, AuthService, authService, authSession, checkAuthStatus, clearError, _clearSession, _error (+17 more)
 
 ### Community 40 - "Community 40"
-Cohesion: 0.12
-Nodes (18): ../providers/home_provider.dart, createState, initState, _loadData, onTukar, _onTukarTap, poin, _PoinHeaderCard (+10 more)
+Cohesion: 0.07
+Nodes (35): ../../providers/reward_provider.dart, Reward, build, createState, initState, _loadData, onTukar, _onTukarTap (+27 more)
 
 ### Community 41 - "Community 41"
-Cohesion: 0.14
-Nodes (16): build, _loadData, ../../models/announcement.dart, PengumumanProvider, ../../providers/pengumuman_provider.dart, Route /pengumuman/detail, _AnnouncementCard, build (+8 more)
+Cohesion: 0.18
+Nodes (13): _loadData, ../../models/announcement.dart, PengumumanProvider, ../../providers/pengumuman_provider.dart, _AnnouncementCard, build, createState, initState (+5 more)
 
 ### Community 42 - "Community 42"
-Cohesion: 0.24
-Nodes (11): HomeProvider, build, _saveProfile, _ensureDataLoaded, ProfileProvider, _getSaldo, _loadCategories, _prefillAlamat (+3 more)
+Cohesion: 0.21
+Nodes (12): HomeProvider, build, _saveProfile, _loadProfile, _ensureDataLoaded, ProfileProvider, _getSaldo, _loadCategories (+4 more)
 
 ### Community 43 - "Community 43"
-Cohesion: 0.11
-Nodes (20): _onAuthChanged, AppNotification, ../../models/notification.dart, NotificationProvider, build, DetailNotifikasiScreen, notification, createState (+12 more)
+Cohesion: 0.16
+Nodes (14): _onAuthChanged, NotificationProvider, createState, initState, isUnread, item, _loadData, _NotifCard (+6 more)
 
 ### Community 44 - "Community 44"
-Cohesion: 0.17
-Nodes (12): _ActivityItemWidget, _AnnouncementBanner, _ConfirmationRow, _MetodeSelector, _SaldoDisplayCard, _SlaInfoBanner, _DetailSection, _InfoSkeletonItem (+4 more)
+Cohesion: 0.14
+Nodes (14): _ActivityItemWidget, _AnnouncementBanner, _ConfirmationRow, _MetodeSelector, _SaldoDisplayCard, _SlaInfoBanner, _CategoryChip, _DatePickerTile (+6 more)
 
 ### Community 45 - "Community 45"
 Cohesion: 0.09
@@ -326,11 +329,11 @@ Nodes (21): menunggu,
   selesai,, apiValue, displayLabel, ditolak, fromApiValue, fromJson, id, listFromJson (+13 more)
 
 ### Community 46 - "Community 46"
-Cohesion: 0.09
-Nodes (21): beratTidakSesuai,
+Cohesion: 0.06
+Nodes (34): beratTidakSesuai,
   hargaTidakSesuai,
   petugasTidakDatang,
-  kesalahanData,, apiValue, buktiTidakMuncul, Complaint, ComplaintStatus, displayLabel, ditutup, fromApiValue (+13 more)
+  kesalahanData,, apiValue, buktiTidakMuncul, Complaint, ComplaintJenis, ComplaintStatus, displayLabel, ditutup (+26 more)
 
 ### Community 47 - "Community 47"
 Cohesion: 0.09
@@ -341,8 +344,8 @@ Cohesion: 0.10
 Nodes (20): deposit_detail.dart, buktiDigital, Deposit, DepositDigitalProof, details, fromJson, id, listFromJson (+12 more)
 
 ### Community 49 - "Community 49"
-Cohesion: 0.27
-Nodes (14): IconData, ../models/complaint.dart, ../models/pickup.dart, _, build, color, complaint, _complaintColor (+6 more)
+Cohesion: 0.26
+Nodes (14): Color, ../models/complaint.dart, ../models/pickup.dart, _, build, color, complaint, _complaintColor (+6 more)
 
 ### Community 50 - "Community 50"
 Cohesion: 0.09
@@ -357,8 +360,8 @@ Cohesion: 0.20
 Nodes (9): fromJson, id, isAffordable, listFromJson, nama, poinDibutuhkan, Reward, stok (+1 more)
 
 ### Community 53 - "Community 53"
-Cohesion: 0.06
-Nodes (33): ../config/constants.dart, FlutterSecureStorage, package:flutter_secure_storage/flutter_secure_storage.dart, build, _buildAvatarSection, _buildEditProfileTile, _buildLogoutSection, _buildQRCard (+25 more)
+Cohesion: 0.10
+Nodes (20): build, _buildAvatarSection, _buildEditProfileTile, _buildLogoutSection, _buildQRCard, _buildSaldoSection, _buildSkeleton, createState (+12 more)
 
 ### Community 54 - "Community 54"
 Cohesion: 0.29
@@ -378,35 +381,35 @@ Nodes (18): 10. Checklist Go-Live Keamanan (Mobile), 11. Mapping Task List, 11 �
 
 ### Community 58 - "Community 58"
 Cohesion: 0.10
-Nodes (19): int get, _apiClient, clearCache, _error, hasError, _isFetching, _isLoading, isPolling (+11 more)
+Nodes (20): int get, _apiClient, clearCache, _error, hasError, _isFetching, _isLoading, isPolling (+12 more)
 
 ### Community 59 - "Community 59"
 Cohesion: 0.12
 Nodes (16): ../../models/reward.dart, ../models/reward_redemption.dart, _apiClient, clearCache, clearError, clearSubmitError, createRedemption, _error (+8 more)
 
 ### Community 60 - "Community 60"
-Cohesion: 0.09
-Nodes (21): InstitutionSettings? get, alamat, ../models/institution_settings.dart, email, fromJson, InstitutionSettings, jamOperasional, kontak (+13 more)
+Cohesion: 0.17
+Nodes (11): InstitutionSettings? get, ../models/institution_settings.dart, _apiClient, clearCache, _error, hasError, _isLoading, loadSettings (+3 more)
 
 ### Community 61 - "Community 61"
 Cohesion: 0.11
-Nodes (17): createState, _displayPhone, dispose, _formKey, initState, _isSending, _isVerifying, _maskedPhone (+9 more)
+Nodes (18): build, createState, _displayPhone, dispose, _formKey, initState, _isSending, _isVerifying (+10 more)
 
 ### Community 62 - "Community 62"
 Cohesion: 0.11
 Nodes (17): Future, AuthInterceptor, authSession, _clearSession, _doRefresh, _isPublicPath, onError, onRequest (+9 more)
 
 ### Community 63 - "Community 63"
-Cohesion: 0.17
-Nodes (12): 🔥 Audit Temuan — PRIORITAS UTAMA (kerjakan dulu), M0. Navigasi & cache (umum), M10. Modul 17 — Settings mobile, M1. Modul 2 — Auth, register, reset password, M2. Modul 3 / 15 — Profil, kartu digital, QR di Home, M3. Modul 7 — Form penjemputan, M4. Modul 11 — Tukar poin UI, M5. Modul 10 — Tarik saldo (+4 more)
+Cohesion: 0.18
+Nodes (11): 🔥 Audit Temuan — sisa (prioritas utama), M10. Modul 17 — Settings mobile, M1. Modul 2 — Auth, register, reset password, M2. Modul 3 / 15 — Profil, kartu digital, QR di Home, M3. Modul 7 — Form penjemputan, M4. Modul 11 — Tukar poin UI, M5. Modul 10 — Tarik saldo, M6. Modul 9 — Riwayat & aktivitas Home (+3 more)
 
 ### Community 64 - "Community 64"
 Cohesion: 0.29
 Nodes (6): 7.1 Build Configuration, 7.2 Play Store Preparation, 7.3 Security Release Checklist, BAGIAN A — BELUM SELESAI (prioritas atas), Fase 7: Production Android, Out of Scope / larangan
 
 ### Community 65 - "Community 65"
-Cohesion: 0.14
-Nodes (14): _canSubmit, createState, dispose, _formKey, initState, _isSubmitting, LoginScreen, _LoginScreenState (+6 more)
+Cohesion: 0.09
+Nodes (21): build, _canSubmit, createState, dispose, _formKey, initState, _isSubmitting, _obscurePassword (+13 more)
 
 ### Community 66 - "Community 66"
 Cohesion: 0.12
@@ -414,23 +417,23 @@ Nodes (16): _apiClient, clearCache, clearError, clearSubmitError, closedComplain
 
 ### Community 67 - "Community 67"
 Cohesion: 0.06
-Nodes (35): Deposit, ../edukasi/edukasi_card.dart, _authSession, _buildAnnouncementBanners, _buildEdukasiSection, _buildEmptyActivity, _buildHomeShell, _buildNotifBell (+27 more)
+Nodes (33): Deposit, ../edukasi/edukasi_card.dart, _authSession, _buildAnnouncementBanners, _buildEdukasiSection, _buildEmptyActivity, _buildHomeShell, _buildNotifBell (+25 more)
 
 ### Community 68 - "Community 68"
-Cohesion: 0.09
-Nodes (21): BoxFit, double?, _asset, _bgPaddingFactor, build, fit, _gapFactor, height (+13 more)
+Cohesion: 0.10
+Nodes (19): BoxFit, _asset, _bgPaddingFactor, build, fit, _gapFactor, height, _horizontal (+11 more)
 
 ### Community 69 - "Community 69"
 Cohesion: 0.20
 Nodes (9): copyWith, createdAt, deskripsi, fromJson, id, isRead, judul, kategori (+1 more)
 
 ### Community 70 - "Community 70"
-Cohesion: 0.29
-Nodes (7): 8.1 Modul 2 — Autentikasi lanjutan, 8.2 Modul 3 — Profil & kartu digital, 8.4 Modul 5 / 9 — Harga terjadwal & FCM push, 8.5 Modul 7 — Wilayah & peta sederhana, 8.6 Modul 10 / 11 — Bukti & masa berlaku poin, 8.7 iOS & peningkatan opsional, Fase 8: Pengembangan Lanjutan
+Cohesion: 0.33
+Nodes (6): 8.1 Modul 2 — Autentikasi lanjutan, 8.4 Modul 5 / 9 — Harga terjadwal & FCM push, 8.5 Modul 7 — Wilayah & peta sederhana, 8.6 Modul 10 / 11 — Bukti & masa berlaku poin, 8.7 iOS & peningkatan opsional, Fase 8: Pengembangan Lanjutan
 
 ### Community 71 - "Community 71"
-Cohesion: 0.11
-Nodes (19): ../../models/waste_category.dart, build, _buildInfoHeader, _buildNotes, category, _CategoryCard, _categoryVisual, content (+11 more)
+Cohesion: 0.10
+Nodes (20): ../../models/waste_category.dart, build, _buildInfoHeader, _buildNotes, category, _categoryVisual, content, _contohSampah (+12 more)
 
 ### Community 72 - "Community 72"
 Cohesion: 0.40
@@ -441,8 +444,8 @@ Cohesion: 0.11
 Nodes (17): _apiClient, clearCache, clearError, disableEditMode, enableEditMode, _error, hasError, _isEditMode (+9 more)
 
 ### Community 74 - "Community 74"
-Cohesion: 0.14
-Nodes (14): _confirmPasswordController, createState, dispose, _formKey, initialToken, initState, _isSubmitting, _obscureConfirm (+6 more)
+Cohesion: 0.11
+Nodes (19): build, _logout, build, build, _confirmPasswordController, createState, dispose, _formKey (+11 more)
 
 ### Community 75 - "Community 75"
 Cohesion: 0.14
@@ -457,8 +460,8 @@ Cohesion: 0.13
 Nodes (14): activePickups, _apiClient, clearCache, clearError, createPickup, _currentUserId, _error, hasError (+6 more)
 
 ### Community 78 - "Community 78"
-Cohesion: 0.13
-Nodes (14): icon, iconBgColor, iconColor, item, items, label, _MenuItem, onTap (+6 more)
+Cohesion: 0.11
+Nodes (18): Route /profile, Route /settings/tentang, build, icon, iconBgColor, iconColor, item, items (+10 more)
 
 ### Community 79 - "Community 79"
 Cohesion: 0.14
@@ -474,11 +477,11 @@ Nodes (13): ChangeNotifier, AuthProvider, AuthSession, EdukasiProvider, HomeProv
 
 ### Community 82 - "Community 82"
 Cohesion: 0.13
-Nodes (15): Complaint, build, _buildTabContent, complaint, _ComplaintCard, createState, dispose, initState (+7 more)
+Nodes (17): Complaint, _submit, _buildTabContent, complaint, _ComplaintCard, createState, dispose, initState (+9 more)
 
 ### Community 83 - "Community 83"
-Cohesion: 0.22
-Nodes (9): ../../providers/auth_provider.dart, build, createState, _minDisplay, previewMode, _splashAsset, SplashScreen, _SplashScreenState (+1 more)
+Cohesion: 0.20
+Nodes (10): ../../providers/auth_provider.dart, build, createState, initState, _minDisplay, previewMode, _splashAsset, SplashScreen (+2 more)
 
 ### Community 84 - "Community 84"
 Cohesion: 0.20
@@ -489,8 +492,8 @@ Cohesion: 0.15
 Nodes (16): _ArticleBody, build, createState, EdukasiDetailScreen, _EdukasiDetailScreenState, edukasiId, _ensureLoaded, initState (+8 more)
 
 ### Community 86 - "Community 86"
-Cohesion: 0.12
-Nodes (16): Pickup, ../../providers/penjemputan_provider.dart, Route /home/penjemputan/ajukan, build, _buildTabContent, createState, dispose, initState (+8 more)
+Cohesion: 0.13
+Nodes (17): PenjemputanProvider, Pickup, ../../providers/penjemputan_provider.dart, _submit, _buildTabContent, createState, dispose, initState (+9 more)
 
 ### Community 87 - "Community 87"
 Cohesion: 0.17
@@ -510,36 +513,36 @@ Cohesion: 0.10
 Nodes (19): exit_dialog.dart, StatefulNavigationShell, static const double, badgeCount, _barHeight, BottomNavScaffold, _fabProtrude, _fabSize (+11 more)
 
 ### Community 91 - "Community 91"
-Cohesion: 0.23
-Nodes (13): _handleLogin, build, _sendOtp, _verifyOtp, _handleRegister, AuthProvider, _showLogoutConfirmation, Route /home (+5 more)
+Cohesion: 0.46
+Nodes (8): _handleLogin, _verifyOtp, _handleRegister, AuthProvider, Route /home, Route /verify-phone, _showLogoutConfirmation, _bootstrap
 
 ### Community 92 - "Community 92"
 Cohesion: 0.25
 Nodes (7): int?, build, _formatCurrency, isLoading, poin, saldo, SaldoCard
 
 ### Community 93 - "Community 93"
-Cohesion: 0.10
-Nodes (20): ApiClient, _apiClient, clearCache, _error, findById, hasError, _isLoading, _items (+12 more)
+Cohesion: 0.09
+Nodes (21): ApiClient, bool get, _apiClient, clearCache, _error, findById, hasError, _isLoading (+13 more)
 
 ### Community 94 - "Community 94"
 Cohesion: 0.18
-Nodes (10): bool get, clearSession, _isLoggedIn, _needsPhoneVerification, refresh, setLoggedIn, setNeedsPhoneVerification, _storage (+2 more)
+Nodes (10): ../config/constants.dart, clearSession, _isLoggedIn, _needsPhoneVerification, refresh, setLoggedIn, setNeedsPhoneVerification, _storage (+2 more)
 
 ### Community 95 - "Community 95"
-Cohesion: 0.20
-Nodes (10): build, _logout, build, build, _handleReset, Route /login, Route /profile, Route /settings/kebijakan-data (+2 more)
+Cohesion: 0.13
+Nodes (14): FlutterSecureStorage, package:flutter_secure_storage/flutter_secure_storage.dart, clearTokens, delete, deleteAll, hasAccessToken, read, readAccessToken (+6 more)
 
 ### Community 96 - "Community 96"
 Cohesion: 0.20
 Nodes (8): app.dart, initializeDateFormatting, main, package:flutter/material.dart, package:intl/date_symbol_data_local.dart, build, PlaceholderScreen, title
 
 ### Community 97 - "Community 97"
-Cohesion: 0.20
-Nodes (9): json_parsing.dart, createdAt, fromJson, id, isi, judul, kategoriTerkaitNama, listFromJson (+1 more)
+Cohesion: 0.18
+Nodes (10): json_parsing.dart, createdAt, fromJson, id, isi, judul, kategoriTerkaitNama, KontenEdukasi (+2 more)
 
 ### Community 98 - "Community 98"
-Cohesion: 0.13
-Nodes (17): ComplaintJenis, build, _buildInfoHeader, _buildSlaInfo, createState, dispose, _formKey, _infoBullet (+9 more)
+Cohesion: 0.18
+Nodes (10): alamat, email, fromJson, InstitutionSettings, jamOperasional, kontak, logoUrl, namaInstitusi (+2 more)
 
 ### Community 99 - "Community 99"
 Cohesion: 0.22
@@ -554,8 +557,8 @@ Cohesion: 0.29
 Nodes (6): interceptors/auth_interceptor.dart, interceptors/envelope_interceptor.dart, package:flutter/foundation.dart, ../../providers/auth_session.dart, ApiClient, _createDio
 
 ### Community 110 - "Community 110"
-Cohesion: 0.22
-Nodes (8): Widget, action, build, description, EmptyState, expand, icon, title
+Cohesion: 0.20
+Nodes (9): IconData, Widget, action, build, description, EmptyState, expand, icon (+1 more)
 
 ### Community 111 - "Community 111"
 Cohesion: 0.50
@@ -563,27 +566,27 @@ Nodes (4): _showNotifPopup, build, Route /notifikasi, Route /notifikasi/detail
 
 ### Community 112 - "Community 112"
 Cohesion: 0.12
-Nodes (19): ../../providers/saldo_provider.dart, _ActivityCard, createState, dispose, filter, _FilterTab, initState, item (+11 more)
+Nodes (17): ../../providers/saldo_provider.dart, _ActivityCard, build, createState, dispose, filter, _FilterTab, initState (+9 more)
 
 ### Community 113 - "Community 113"
 Cohesion: 0.13
 Nodes (15): _alamatController, _buildLabel, createState, dispose, EditProfileScreen, _EditProfileScreenState, _formKey, initialUser (+7 more)
 
 ### Community 114 - "Community 114"
-Cohesion: 0.14
-Nodes (15): ../../providers/reward_provider.dart, Reward, _confirmRedemption, createState, _detailRow, _infoBullet, initState, _isProcessing (+7 more)
+Cohesion: 0.29
+Nodes (7): 8.1 Modul 2 — Autentikasi lanjutan, 8.2 Modul 3 — Profil & kartu digital, Audit Temuan — selesai ✅, Dari Fase 8: Pengembangan Lanjutan, M0. Navigasi & cache (umum), M1. Modul 2 — Auth, register, reset password, M2. Modul 3 / 15 — Profil, kartu digital, QR di Home
 
 ### Community 115 - "Community 115"
 Cohesion: 0.13
 Nodes (14): EdgeInsetsGeometry?, List, actions, AppScaffold, body, bodyPadding, bottomNavigationBar, build (+6 more)
 
 ### Community 116 - "Community 116"
-Cohesion: 0.27
-Nodes (10): ForgotPasswordScreen, _ForgotPasswordScreenState, PhoneVerifyScreen, _PhoneVerifyScreenState, RegisterScreen, _RegisterScreenState, ProfileScreen, _ProfileScreenState (+2 more)
+Cohesion: 0.23
+Nodes (12): ForgotPasswordScreen, _ForgotPasswordScreenState, LoginScreen, _LoginScreenState, PhoneVerifyScreen, _PhoneVerifyScreenState, RegisterScreen, _RegisterScreenState (+4 more)
 
 ### Community 117 - "Community 117"
-Cohesion: 0.20
-Nodes (10): AuthSession, dispose, initState, build, build, build, build, initState (+2 more)
+Cohesion: 0.15
+Nodes (13): AuthSession, dispose, HomeScreen, _HomeScreenState, initState, build, Route /home/pengaduan/form, Route /home/penjemputan/ajukan (+5 more)
 
 ### Community 118 - "Community 118"
 Cohesion: 0.25
@@ -594,36 +597,48 @@ Cohesion: 0.29
 Nodes (7): edukasi_card.dart, build, createState, EdukasiListScreen, _EdukasiListScreenState, package:provider/provider.dart, ../../providers/edukasi_provider.dart
 
 ### Community 120 - "Community 120"
-Cohesion: 0.25
-Nodes (7): build, EdukasiCard, item, onTap, ../../models/konten_edukasi.dart, KontenEdukasi, VoidCallback?
+Cohesion: 0.29
+Nodes (6): build, EdukasiCard, item, onTap, ../../models/konten_edukasi.dart, VoidCallback?
 
 ### Community 121 - "Community 121"
 Cohesion: 0.40
 Nodes (4): ../config/theme.dart, build, _buildSection, KebijakanDataScreen
 
 ### Community 122 - "Community 122"
+Cohesion: 0.29
+Nodes (6): AppNotification, ../../models/notification.dart, build, DetailNotifikasiScreen, notification, package:intl/intl.dart
+
+### Community 123 - "Community 123"
+Cohesion: 0.40
+Nodes (5): _loadData, _onTabChanged, TarikSaldoScreen, _TarikSaldoScreenState, SaldoProvider
+
+### Community 124 - "Community 124"
 Cohesion: 0.67
-Nodes (3): SingleTickerProviderStateMixin, ShimmerWidget, _ShimmerWidgetState
+Nodes (3): build, Route /pengumuman/detail, _showDetail
+
+### Community 125 - "Community 125"
+Cohesion: 0.67
+Nodes (3): MiruApp, _MiruAppState, WidgetsBindingObserver
 
 ## Knowledge Gaps
-- **1062 isolated node(s):** `Bundle`, `SBFrame`, `SBDebugger`, `flutter_export_environment.sh script`, `UIApplication` (+1057 more)
+- **1084 isolated node(s):** `Bundle`, `SBFrame`, `SBDebugger`, `flutter_export_environment.sh script`, `UIApplication` (+1079 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **7 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `build` connect `Community 19` to `Community 65`?**
-  _High betweenness centrality (0.009) - this node is a cross-community bridge._
 - **Why does `build` connect `Community 53` to `Community 117`?**
-  _High betweenness centrality (0.009) - this node is a cross-community bridge._
+  _High betweenness centrality (0.008) - this node is a cross-community bridge._
 - **Why does `WasteCategory` connect `Community 80` to `Community 34`, `Community 67`, `Community 71`?**
   _High betweenness centrality (0.007) - this node is a cross-community bridge._
 - **What connects `Bundle`, `SBFrame`, `SBDebugger` to the rest of the system?**
-  _1063 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _1085 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
   _Cohesion score 0.09523809523809523 - nodes in this community are weakly interconnected._
 - **Should `Community 2` be split into smaller, more focused modules?**
   _Cohesion score 0.09090909090909091 - nodes in this community are weakly interconnected._
 - **Should `Community 3` be split into smaller, more focused modules?**
   _Cohesion score 0.10526315789473684 - nodes in this community are weakly interconnected._
+- **Should `Community 4` be split into smaller, more focused modules?**
+  _Cohesion score 0.1111111111111111 - nodes in this community are weakly interconnected._
