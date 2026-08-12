@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../../config/theme.dart';
 import '../../models/user.dart';
 import '../../providers/profile_provider.dart';
+import '../../services/avatar_picker.dart';
+import '../../widgets/user_avatar.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key, required this.initialUser});
@@ -109,26 +111,35 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               Center(
                 child: Column(
                   children: [
-                    CircleAvatar(
+                    UserAvatar(
+                      name: profile.user?.namaLengkap ?? widget.initialUser.namaLengkap,
+                      imageUrl: profile.user?.avatarUrl ?? widget.initialUser.avatarUrl,
                       radius: 40,
-                      backgroundColor:
-                          AppTheme.primaryColor.withValues(alpha: 0.15),
-                      child: Text(
-                        widget.initialUser.namaLengkap.isNotEmpty
-                            ? widget.initialUser.namaLengkap[0].toUpperCase()
-                            : 'U',
-                        style: theme.textTheme.headlineLarge?.copyWith(
-                          color: AppTheme.primaryColor,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      'Foto profil tidak dapat diubah',
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
+                    TextButton.icon(
+                      onPressed: profile.isSaving
+                          ? null
+                          : () async {
+                              final file = await pickAndCropAvatar(context);
+                              if (file == null || !context.mounted) return;
+                              final ok = await profile.updateAvatar(file);
+                              if (!context.mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    ok
+                                        ? 'Foto profil berhasil diperbarui'
+                                        : (profile.error ?? 'Gagal menyimpan foto'),
+                                  ),
+                                  backgroundColor: ok
+                                      ? AppTheme.primaryColor
+                                      : AppTheme.errorColor,
+                                ),
+                              );
+                            },
+                      icon: const Icon(Icons.camera_alt_outlined, size: 18),
+                      label: const Text('Ubah foto profil'),
                     ),
                   ],
                 ),

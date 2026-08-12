@@ -6,6 +6,8 @@ class InstitutionSettings {
   final String? logoUrl;
   final String jamOperasional;
   final String pengumuman;
+  final String tentang;
+  final String kebijakan;
 
   const InstitutionSettings({
     required this.namaInstitusi,
@@ -15,6 +17,8 @@ class InstitutionSettings {
     this.logoUrl,
     this.jamOperasional = '',
     this.pengumuman = '',
+    this.tentang = '',
+    this.kebijakan = '',
   });
 
   factory InstitutionSettings.fromJson(Map<String, dynamic> json) {
@@ -26,6 +30,8 @@ class InstitutionSettings {
       logoUrl: json['logo_url'] as String?,
       jamOperasional: json['jam_operasional'] as String? ?? '',
       pengumuman: json['pengumuman'] as String? ?? '',
+      tentang: json['tentang'] as String? ?? '',
+      kebijakan: json['kebijakan'] as String? ?? '',
     );
   }
 }

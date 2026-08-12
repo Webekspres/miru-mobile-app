@@ -570,7 +570,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Consumer<EdukasiProvider>(
       builder: (context, edukasi, _) {
-        final preview = edukasi.items.take(4).toList();
+        final preview = edukasi.items.take(3).toList();
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -594,13 +594,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 8),
             if (edukasi.isLoading)
               const Column(
                 children: [
-                  SkeletonCard(height: 96),
-                  SizedBox(height: 10),
-                  SkeletonCard(height: 96),
+                  SkeletonCard(height: 220),
+                  SizedBox(height: 12),
+                  SkeletonCard(height: 220),
                 ],
               )
             else if (edukasi.hasError && preview.isEmpty)
@@ -638,7 +638,7 @@ class _HomeScreenState extends State<HomeScreen> {
             else
               ...preview.map(
                 (item) => Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
+                  padding: const EdgeInsets.only(bottom: 14),
                   child: EdukasiCard(
                     item: item,
                     onTap: () => context.push('/home/edukasi/${item.id}'),

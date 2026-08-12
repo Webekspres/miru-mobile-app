@@ -19,6 +19,7 @@ class User {
     this.kelurahanNama = '',
     this.dateJoined,
     this.qr,
+    this.avatarUrl,
   });
 
   final int id;
@@ -46,6 +47,7 @@ class User {
   final bool phoneVerified;
   final DateTime? dateJoined;
   final UserQr? qr;
+  final String? avatarUrl;
 
   double get saldoAsDouble => parseDecimal(saldo);
 
@@ -94,6 +96,7 @@ class User {
       qr: json['qr'] != null
           ? UserQr.fromJson(Map<String, dynamic>.from(json['qr'] as Map))
           : null,
+      avatarUrl: json['avatar_url'] as String?,
     );
   }
 
@@ -114,11 +117,13 @@ class User {
         'phone_verified': phoneVerified,
         if (dateJoined != null) 'date_joined': dateJoined!.toIso8601String(),
         if (qr != null) 'qr': qr!.toJson(),
+        if (avatarUrl != null) 'avatar_url': avatarUrl,
       };
 
   User copyWith({
     bool? phoneVerified,
     String? noHp,
+    String? avatarUrl,
   }) {
     return User(
       id: id,
@@ -138,6 +143,7 @@ class User {
       phoneVerified: phoneVerified ?? this.phoneVerified,
       dateJoined: dateJoined,
       qr: qr,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
     );
   }
 

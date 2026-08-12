@@ -77,6 +77,23 @@ class ApiClient {
     return fromJson(response.data);
   }
 
+  Future<T> upload<T>(
+    String path, {
+    required FormData data,
+    required T Function(dynamic json) fromJson,
+  }) async {
+    final response = await dio.post<dynamic>(
+      path,
+      data: data,
+      options: Options(
+        contentType: null,
+        sendTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 30),
+      ),
+    );
+    return fromJson(response.data);
+  }
+
   Future<T> patch<T>(
     String path, {
     dynamic data,

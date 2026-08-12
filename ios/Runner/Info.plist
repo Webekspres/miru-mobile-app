@@ -66,6 +66,10 @@
 			<string>UIInterfaceOrientationLandscapeLeft</string>
 			<string>UIInterfaceOrientationLandscapeRight</string>
 		</array>
+		<key>NSCameraUsageDescription</key>
+		<string>MIRU membutuhkan kamera untuk mengambil foto profil.</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>MIRU membutuhkan akses galeri untuk memilih foto profil.</string>
 		<key>UIStatusBarHidden</key>
 		<false/>
 	</dict>

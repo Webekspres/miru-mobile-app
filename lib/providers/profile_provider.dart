@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
@@ -137,6 +139,48 @@ class ProfileProvider extends ChangeNotifier {
 
       _user = User.fromJson(updatedData);
       _isEditMode = false;
+      _isSaving = false;
+      notifyListeners();
+      return true;
+    } on DioException catch (e) {
+      _error = parseDioError(e);
+      _isSaving = false;
+      notifyListeners();
+      return false;
+    } catch (_) {
+      _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      _isSaving = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> updateAvatar(File file) async {
+    if (_user == null) return false;
+
+    _isSaving = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final form = FormData.fromMap({
+        'file': await MultipartFile.fromFile(
+          file.path,
+          filename: 'avatar.jpg',
+        ),
+        'purpose': 'avatar',
+      });
+      final uploaded = await _apiClient.upload<Map<String, dynamic>>(
+        '/media/uploads/',
+        data: form,
+        fromJson: (json) => Map<String, dynamic>.from(json as Map),
+      );
+      final updatedData = await _apiClient.patch<Map<String, dynamic>>(
+        '/auth/me/',
+        data: {'avatar_url': uploaded['url']},
+        fromJson: (json) => Map<String, dynamic>.from(json as Map),
+      );
+      _user = User.fromJson(updatedData);
       _isSaving = false;
       notifyListeners();
       return true;

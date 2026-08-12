@@ -5,25 +5,29 @@ class KontenEdukasi {
     required this.id,
     required this.judul,
     required this.isi,
+    this.gambarUrl,
     this.kategoriTerkaitNama,
-    this.urutan = 0,
     required this.createdAt,
   });
 
   final int id;
   final String judul;
   final String isi;
+  final String? gambarUrl;
   final String? kategoriTerkaitNama;
-  final int urutan;
   final DateTime createdAt;
 
   factory KontenEdukasi.fromJson(Map<String, dynamic> json) {
+    final rawGambar = json['gambar_url'] ?? json['featured_image'];
+    final gambar = rawGambar is String && rawGambar.trim().isNotEmpty
+        ? rawGambar.trim()
+        : null;
     return KontenEdukasi(
       id: json['id'] as int,
       judul: json['judul'] as String? ?? '',
       isi: json['isi'] as String? ?? '',
+      gambarUrl: gambar,
       kategoriTerkaitNama: json['kategori_terkait_nama'] as String?,
-      urutan: json['urutan'] as int? ?? 0,
       createdAt: parseDateTime(json['created_at']),
     );
   }
@@ -34,10 +38,13 @@ class KontenEdukasi {
         .toList();
   }
 
-  /// Cuplikan singkat untuk kartu di beranda.
+  /// Cuplikan singkat untuk kartu artikel.
   String get excerpt {
-    final plain = isi.replaceAll(RegExp(r'\s+'), ' ').trim();
-    if (plain.length <= 100) return plain;
-    return '${plain.substring(0, 100).trimRight()}…';
+    final plain = isi
+        .replaceAll(RegExp(r'[#*_`>~\[\]]'), '')
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+    if (plain.length <= 120) return plain;
+    return '${plain.substring(0, 120).trimRight()}…';
   }
 }

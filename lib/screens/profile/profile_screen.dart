@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../../config/constants.dart';
 import '../../config/theme.dart';
+import '../../models/user.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/auth_session.dart';
 import '../../providers/profile_provider.dart';
@@ -12,7 +13,9 @@ import '../../widgets/exit_dialog.dart';
 import '../../widgets/error_view.dart';
 import '../../widgets/login_prompt.dart';
 import '../../widgets/bottom_nav_scaffold.dart';
+import '../../services/avatar_picker.dart';
 import '../../widgets/shimmer_loading.dart';
+import '../../widgets/user_avatar.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -112,7 +115,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 children: [
                   // Ringkas: foto + nama
-                  _buildAvatarSection(context, user.namaLengkap),
+                  _buildAvatarSection(context, profile, user),
                   const SizedBox(height: 24),
                   // Entry kartu digital
                   _buildQRCard(context),
@@ -155,27 +158,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildAvatarSection(BuildContext context, String namaLengkap) {
-    final initial = namaLengkap.isNotEmpty ? namaLengkap[0].toUpperCase() : 'U';
-    final theme = Theme.of(context);
+  Future<void> _changeAvatar(BuildContext context, ProfileProvider profile) async {
+    final file = await pickAndCropAvatar(context);
+    if (file == null || !context.mounted) return;
+    final ok = await profile.updateAvatar(file);
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(ok ? 'Foto profil berhasil diperbarui' : (profile.error ?? 'Gagal menyimpan foto')),
+        backgroundColor: ok ? AppTheme.primaryColor : AppTheme.errorColor,
+      ),
+    );
+  }
 
+  Widget _buildAvatarSection(
+    BuildContext context,
+    ProfileProvider profile,
+    User user,
+  ) {
     return Column(
       children: [
-        CircleAvatar(
-          radius: 40,
-          backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.15),
-          child: Text(
-            initial,
-            style: theme.textTheme.headlineLarge?.copyWith(
-              color: AppTheme.primaryColor,
-              fontWeight: FontWeight.w700,
-            ),
+        GestureDetector(
+          onTap: profile.isSaving ? null : () => _changeAvatar(context, profile),
+          child: Stack(
+            alignment: Alignment.bottomRight,
+            children: [
+              UserAvatar(
+                name: user.namaLengkap,
+                imageUrl: user.avatarUrl,
+                radius: 40,
+              ),
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: AppTheme.primaryColor,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 2),
+                ),
+                child: const Icon(Icons.camera_alt, size: 14, color: Colors.white),
+              ),
+            ],
           ),
         ),
         const SizedBox(height: 12),
         Text(
-          namaLengkap,
-          style: theme.textTheme.titleLarge,
+          user.namaLengkap,
+          style: Theme.of(context).textTheme.titleLarge,
           textAlign: TextAlign.center,
         ),
       ],

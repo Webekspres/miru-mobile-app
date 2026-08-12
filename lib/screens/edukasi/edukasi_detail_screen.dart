@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -5,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../../config/theme.dart';
 import '../../models/konten_edukasi.dart';
 import '../../providers/edukasi_provider.dart';
+import '../../widgets/markdown_document.dart';
 
 class EdukasiDetailScreen extends StatefulWidget {
   const EdukasiDetailScreen({super.key, required this.edukasiId});
@@ -125,14 +127,24 @@ class _ArticleBody extends StatelessWidget {
               color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
-          const SizedBox(height: 20),
-          Text(
-            item.isi,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              height: 1.55,
-              color: theme.colorScheme.onSurface,
+          if (item.gambarUrl != null) ...[
+            const SizedBox(height: 16),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(14),
+              child: CachedNetworkImage(
+                imageUrl: item.gambarUrl!,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => const SizedBox(
+                  height: 180,
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+                errorWidget: (context, url, error) => const SizedBox.shrink(),
+              ),
             ),
-          ),
+          ],
+          const SizedBox(height: 20),
+          MarkdownDocument(data: item.isi),
         ],
       ),
     );

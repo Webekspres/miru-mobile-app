@@ -42,11 +42,11 @@ class _EdukasiListScreenState extends State<EdukasiListScreen> {
               padding: EdgeInsets.fromLTRB(16, 12, 16, 24),
               child: Column(
                 children: [
-                  SkeletonCard(height: 110),
-                  SizedBox(height: 12),
-                  SkeletonCard(height: 110),
-                  SizedBox(height: 12),
-                  SkeletonCard(height: 110),
+                  SkeletonCard(height: 240),
+                  SizedBox(height: 14),
+                  SkeletonCard(height: 240),
+                  SizedBox(height: 14),
+                  SkeletonCard(height: 240),
                 ],
               ),
             );
@@ -105,7 +105,7 @@ class _EdukasiListScreenState extends State<EdukasiListScreen> {
             child: ListView.separated(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
               itemCount: provider.items.length,
-              separatorBuilder: (_, _) => const SizedBox(height: 12),
+              separatorBuilder: (_, _) => const SizedBox(height: 14),
               itemBuilder: (context, index) {
                 final item = provider.items[index];
                 return EdukasiCard(

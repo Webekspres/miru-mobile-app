@@ -10,8 +10,8 @@
     "semantic_hash": ""
   },
   "android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java": {
-    "mtime": 1783572104.9982026,
-    "ast_hash": "eb9168f6d3643714648f507c237c952a",
+    "mtime": 1786499991.6937602,
+    "ast_hash": "b0f6b76a5b8a475378fad4be3ad9a873",
     "semantic_hash": ""
   },
   "android/app/src/main/kotlin/com/example/mirumobileapp/MainActivity.kt": {
@@ -35,7 +35,7 @@
     "semantic_hash": ""
   },
   "ios/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage/Package.swift": {
-    "mtime": 1786434942.884561,
+    "mtime": 1786504643.539579,
     "ast_hash": "63bc00d19466662a75b7492ac07d5a97",
     "semantic_hash": ""
   },
@@ -80,8 +80,8 @@
     "semantic_hash": ""
   },
   "ios/Runner/GeneratedPluginRegistrant.m": {
-    "mtime": 1783572105.0168836,
-    "ast_hash": "c5dc2d011dcea326b2789b49acda42dc",
+    "mtime": 1786499991.7324183,
+    "ast_hash": "0e98ceae6228abe7bc9cc0fd9d3df496",
     "semantic_hash": ""
   },
   "ios/Runner/Runner-Bridging-Header.h": {
@@ -125,8 +125,8 @@
     "semantic_hash": ""
   },
   "lib/services/api_client.dart": {
-    "mtime": 1783502594.457733,
-    "ast_hash": "8869ec8aa96ae8385db5c06b7cb139b6",
+    "mtime": 1786499929.6737647,
+    "ast_hash": "439d979f0089ef227c2f6b700dbdaad7",
     "semantic_hash": ""
   },
   "lib/services/auth_service.dart": {
@@ -230,8 +230,8 @@
     "semantic_hash": ""
   },
   "pubspec.yaml": {
-    "mtime": 1784881709.7121305,
-    "ast_hash": "58ab2e03233ced15b1c180b1de5e3973",
+    "mtime": 1786504591.2654562,
+    "ast_hash": "23678275ea70bbc5e265b5d68329cd6c",
     "semantic_hash": ""
   },
   "android/app/src/main/res/mipmap-hdpi/ic_launcher.png": {
@@ -375,8 +375,8 @@
     "semantic_hash": ""
   },
   "lib/screens/profile/profile_screen.dart": {
-    "mtime": 1786431092.0069623,
-    "ast_hash": "f4bad522ac861b833eb8d1eca5f8d943",
+    "mtime": 1786499962.0747907,
+    "ast_hash": "f31cf145e4c9c0f795fca445a5304baf",
     "semantic_hash": ""
   },
   "lib/screens/profile/qrcode_screen.dart": {
@@ -475,8 +475,8 @@
     "semantic_hash": ""
   },
   "lib/models/user.dart": {
-    "mtime": 1786431033.349074,
-    "ast_hash": "88fb83eeb4977284d048a6175329aad4",
+    "mtime": 1786499936.0957432,
+    "ast_hash": "fe615f160245f012eba49d099a5692ad",
     "semantic_hash": ""
   },
   "lib/models/waste_category.dart": {
@@ -520,8 +520,8 @@
     "semantic_hash": ""
   },
   "lib/models/institution_settings.dart": {
-    "mtime": 1783586592.549843,
-    "ast_hash": "cc2e1ba644dabe7350bb72a7b4e1f034",
+    "mtime": 1786504557.405293,
+    "ast_hash": "1c71a8bab08b5f274af29c254bc4879f",
     "semantic_hash": ""
   },
   "lib/models/notification.dart": {
@@ -560,8 +560,8 @@
     "semantic_hash": ""
   },
   "lib/providers/profile_provider.dart": {
-    "mtime": 1786431023.357722,
-    "ast_hash": "c1a9726d93e7885eef54ad4e5137d1f3",
+    "mtime": 1786499936.0702415,
+    "ast_hash": "f18d0f18bde4b8bb2e5154b66ca583d8",
     "semantic_hash": ""
   },
   "lib/providers/reward_provider.dart": {
@@ -595,8 +595,8 @@
     "semantic_hash": ""
   },
   "lib/screens/profile/edit_profile_screen.dart": {
-    "mtime": 1784706079.261855,
-    "ast_hash": "07baddb7dbcc121f0fbfafe32e8baedb",
+    "mtime": 1786499965.2857785,
+    "ast_hash": "00a07fb3d5ec62ebebab6592576314f6",
     "semantic_hash": ""
   },
   "lib/screens/reward/tukar_poin_screen.dart": {
@@ -610,8 +610,8 @@
     "semantic_hash": ""
   },
   "lib/screens/settings/kebijakan_data_screen.dart": {
-    "mtime": 1784193902.5242677,
-    "ast_hash": "17307b8c4e9dd096293944d13edc65a9",
+    "mtime": 1786504560.541768,
+    "ast_hash": "3e94bcd9dbd4e008c104905f592c1407",
     "semantic_hash": ""
   },
   "lib/screens/settings/pengumuman_screen.dart": {
@@ -625,8 +625,8 @@
     "semantic_hash": ""
   },
   "lib/screens/settings/tentang_screen.dart": {
-    "mtime": 1784193804.416273,
-    "ast_hash": "b20c9c5cd9b53215ad599e9828f9539e",
+    "mtime": 1786504560.5752082,
+    "ast_hash": "1bae523c7f0ba8c48dd92e2570015141",
     "semantic_hash": ""
   },
   "lib/widgets/bottom_nav_scaffold.dart": {
@@ -670,8 +670,8 @@
     "semantic_hash": ""
   },
   "lib/models/konten_edukasi.dart": {
-    "mtime": 1784547003.7137399,
-    "ast_hash": "66b8625069000d8627a4fea6c01e4d38",
+    "mtime": 1786499006.7759187,
+    "ast_hash": "e465d39bfe8b2118f05ddc3ad2cf7e53",
     "semantic_hash": ""
   },
   "lib/providers/edukasi_provider.dart": {
@@ -680,13 +680,13 @@
     "semantic_hash": ""
   },
   "lib/screens/edukasi/edukasi_card.dart": {
-    "mtime": 1784547022.9335678,
-    "ast_hash": "27512997b9a77d0d2cad2aeb54763f0e",
+    "mtime": 1786499009.369661,
+    "ast_hash": "cca2c5024342e498e6fa264768d31f6f",
     "semantic_hash": ""
   },
   "lib/screens/edukasi/edukasi_detail_screen.dart": {
-    "mtime": 1784547114.6178446,
-    "ast_hash": "83962afe6be61e8ce697714db7444834",
+    "mtime": 1786504569.367597,
+    "ast_hash": "bef0fc793241473907795409fc42164d",
     "semantic_hash": ""
   },
   "lib/screens/edukasi/edukasi_list_screen.dart": {
@@ -757,6 +757,21 @@
   ".ai-steering/12-play-internal-testing.md": {
     "mtime": 1786437716.160681,
     "ast_hash": "b3141c59e17e3ff8fe1cd2ed35f01f52",
+    "semantic_hash": ""
+  },
+  "lib/services/avatar_picker.dart": {
+    "mtime": 1786499946.9139955,
+    "ast_hash": "3311905d3212215956a2dafbbcabe9e8",
+    "semantic_hash": ""
+  },
+  "lib/widgets/user_avatar.dart": {
+    "mtime": 1786499946.543236,
+    "ast_hash": "b91187f4507382703879e25660803a2f",
+    "semantic_hash": ""
+  },
+  "lib/widgets/markdown_document.dart": {
+    "mtime": 1786504764.6305654,
+    "ast_hash": "daae8135005e4d19e73d5519068e6617",
     "semantic_hash": ""
   }
 }
