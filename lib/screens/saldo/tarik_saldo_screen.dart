@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -20,7 +23,11 @@ class TarikSaldoScreen extends StatefulWidget {
 class _TarikSaldoScreenState extends State<TarikSaldoScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nominalController = TextEditingController();
+  final _nominalFocus = FocusNode();
   bool _hasInteracted = false;
+  String? _serverNominalError;
+  File? _ktpFile;
+  String? _ktpError;
 
   // Validation state
   String? _validationMessage;
@@ -28,6 +35,7 @@ class _TarikSaldoScreenState extends State<TarikSaldoScreen> {
   Color _validationColor = Colors.transparent;
 
   static const double _minWithdrawal = 50000;
+  static const double _besarNominal = 1000000;
   static const List<double> _quickAmounts = [
     50000,
     100000,
@@ -50,7 +58,32 @@ class _TarikSaldoScreenState extends State<TarikSaldoScreen> {
   void dispose() {
     _nominalController.removeListener(_onNominalChanged);
     _nominalController.dispose();
+    _nominalFocus.dispose();
     super.dispose();
+  }
+
+  double? _parsedNominal() {
+    final raw =
+        _nominalController.text.replaceAll('.', '').replaceAll(',', '.');
+    return double.tryParse(raw);
+  }
+
+  bool get _needsKtp {
+    final n = _parsedNominal();
+    return n != null && n >= _besarNominal;
+  }
+
+  Future<void> _pickKtp() async {
+    final picked = await ImagePicker().pickImage(
+      source: ImageSource.camera,
+      imageQuality: 85,
+      maxWidth: 1600,
+    );
+    if (picked == null || !mounted) return;
+    setState(() {
+      _ktpFile = File(picked.path);
+      _ktpError = null;
+    });
   }
 
   // ─────────────────────────────────────────────
@@ -58,6 +91,11 @@ class _TarikSaldoScreenState extends State<TarikSaldoScreen> {
   // ─────────────────────────────────────────────
 
   void _onNominalChanged() {
+    if (_serverNominalError != null) {
+      _serverNominalError = null;
+      context.read<SaldoProvider>().clearSubmitError();
+    }
+
     final text = _nominalController.text;
     if (text.isEmpty) {
       setState(() {
@@ -151,8 +189,16 @@ class _TarikSaldoScreenState extends State<TarikSaldoScreen> {
   void _setQuickAmount(double amount) {
     _nominalController.text =
         NumberFormat.decimalPattern('id_ID').format(amount.toInt());
+    _nominalFocus.unfocus();
     setState(() => _hasInteracted = true);
     _onNominalChanged();
+  }
+
+  String? _extractFieldError(dynamic error) {
+    if (error == null) return null;
+    if (error is List && error.isNotEmpty) return error.first.toString();
+    if (error is String && error.trim().isNotEmpty) return error;
+    return null;
   }
 
   // ─────────────────────────────────────────────
@@ -163,6 +209,9 @@ class _TarikSaldoScreenState extends State<TarikSaldoScreen> {
     required double nominal,
     required String metode,
   }) async {
+    _nominalFocus.unfocus();
+    FocusManager.instance.primaryFocus?.unfocus();
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) {
@@ -244,6 +293,7 @@ class _TarikSaldoScreenState extends State<TarikSaldoScreen> {
               ),
             ],
           ),
+          actionsAlignment: MainAxisAlignment.center,
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(false),
@@ -281,19 +331,63 @@ class _TarikSaldoScreenState extends State<TarikSaldoScreen> {
     final result = await saldo.createWithdrawal(
       nominal: nominal,
       metode: metode,
+      lampiranKtp: nominal >= _besarNominal ? _ktpFile : null,
     );
 
     if (!mounted) return;
 
     if (result != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Pengajuan penarikan berhasil dikirim'),
-          backgroundColor: AppTheme.primaryColor,
-        ),
+      _nominalFocus.unfocus();
+      await showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) {
+          final theme = Theme.of(ctx);
+          return AlertDialog(
+            actionsAlignment: MainAxisAlignment.center,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            title: const Text('Penarikan diproses'),
+            content: Text(
+              'Pengajuan penarikan Anda sudah kami terima. '
+              'Pencairan dilakukan dalam 1–2 hari kerja.',
+              style: theme.textTheme.bodyMedium?.copyWith(height: 1.4),
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF2563EB),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text('Mengerti'),
+              ),
+            ],
+          );
+        },
       );
-      context.pop();
-    } else if (saldo.hasSubmitError) {
+      if (mounted) context.pop();
+      return;
+    }
+
+    final nominalError = _extractFieldError(saldo.submitFieldErrors?['nominal']);
+    if (nominalError != null) {
+      setState(() {
+        _serverNominalError = nominalError;
+        _hasInteracted = true;
+        _isValid = false;
+        _validationMessage = nominalError;
+        _validationColor = AppTheme.errorColor;
+      });
+      _formKey.currentState?.validate();
+      return;
+    }
+
+    if (saldo.hasSubmitError) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(saldo.submitError!),
@@ -329,6 +423,14 @@ class _TarikSaldoScreenState extends State<TarikSaldoScreen> {
           backgroundColor: AppTheme.errorColor,
         ),
       );
+      return;
+    }
+
+    if (nominal >= _besarNominal && _ktpFile == null) {
+      setState(() {
+        _ktpError =
+            'Penarikan Rp1.000.000 atau lebih wajib foto KTP. File dihapus setelah petugas memproses.';
+      });
       return;
     }
 
@@ -371,7 +473,9 @@ class _TarikSaldoScreenState extends State<TarikSaldoScreen> {
         builder: (context, home, saldo, _) {
           final currentSaldo = home.saldo;
 
-          return SingleChildScrollView(
+          return GestureDetector(
+            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+            child: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Form(
               key: _formKey,
@@ -396,7 +500,9 @@ class _TarikSaldoScreenState extends State<TarikSaldoScreen> {
                   const SizedBox(height: 8),
                   TextFormField(
                     controller: _nominalController,
+                    focusNode: _nominalFocus,
                     keyboardType: TextInputType.number,
+                    onTapOutside: (_) => _nominalFocus.unfocus(),
                     decoration: InputDecoration(
                       prefixText: 'Rp ',
                       hintText: '0',
@@ -414,6 +520,7 @@ class _TarikSaldoScreenState extends State<TarikSaldoScreen> {
                           : null,
                     ),
                     validator: (v) {
+                      if (_serverNominalError != null) return _serverNominalError;
                       if (v == null || v.trim().isEmpty) {
                         return 'Nominal penarikan wajib diisi';
                       }
@@ -503,6 +610,44 @@ class _TarikSaldoScreenState extends State<TarikSaldoScreen> {
                   _MetodeSelector(theme: theme),
                   const SizedBox(height: 20),
 
+                  if (_needsKtp) ...[
+                    Text(
+                      'Foto KTP (sementara)',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    OutlinedButton.icon(
+                      onPressed: _pickKtp,
+                      icon: const Icon(Icons.photo_camera_outlined, size: 18),
+                      label: Text(
+                        _ktpFile == null
+                            ? 'Ambil foto KTP'
+                            : 'Foto KTP terpilih — ganti',
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Hanya untuk verifikasi pencairan ini. Tidak disimpan di profil dan dihapus setelah diproses.',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                        height: 1.35,
+                      ),
+                    ),
+                    if (_ktpError != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 6),
+                        child: Text(
+                          _ktpError!,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: AppTheme.errorColor,
+                          ),
+                        ),
+                      ),
+                    const SizedBox(height: 20),
+                  ],
+
                   // ── SLA Info ──
                   _SlaInfoBanner(theme: theme),
                   const SizedBox(height: 28),
@@ -544,6 +689,7 @@ class _TarikSaldoScreenState extends State<TarikSaldoScreen> {
                   const SizedBox(height: 32),
                 ],
               ),
+            ),
             ),
           );
         },

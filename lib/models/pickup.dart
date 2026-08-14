@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../utils/wit_datetime.dart';
 import 'json_parsing.dart';
 
 enum PickupStatus {
@@ -70,6 +71,8 @@ class Pickup {
     this.nasabahNama = '',
     this.petugas,
     this.petugasNama,
+    this.latitude,
+    this.longitude,
   });
 
   final int id;
@@ -81,6 +84,8 @@ class Pickup {
   final String alamatJemput;
   final DateTime jadwal;
   final PickupStatus status;
+  final double? latitude;
+  final double? longitude;
 
   double get estimasiBeratAsDouble => parseDecimal(estimasiBerat);
 
@@ -95,6 +100,8 @@ class Pickup {
       alamatJemput: json['alamat_jemput'] as String? ?? '',
       jadwal: parseDateTime(json['jadwal']),
       status: PickupStatus.fromApiValue(json['status'] as String? ?? 'menunggu'),
+      latitude: parseOptionalDecimal(json['latitude']),
+      longitude: parseOptionalDecimal(json['longitude']),
     );
   }
 
@@ -108,12 +115,16 @@ class Pickup {
         'alamat_jemput': alamatJemput,
         'jadwal': jadwal.toIso8601String(),
         'status': status.apiValue,
+        if (latitude != null) 'latitude': latitude!.toStringAsFixed(6),
+        if (longitude != null) 'longitude': longitude!.toStringAsFixed(6),
       };
 
   Map<String, dynamic> toCreateJson() => {
         'estimasi_berat': estimasiBeratAsDouble,
         'alamat_jemput': alamatJemput,
-        'jadwal': jadwal.toIso8601String(),
+        'jadwal': WitDateTime.toIsoOffset(jadwal),
+        if (latitude != null) 'latitude': latitude!.toStringAsFixed(6),
+        if (longitude != null) 'longitude': longitude!.toStringAsFixed(6),
       };
 
   static List<Pickup> listFromJson(dynamic json) {

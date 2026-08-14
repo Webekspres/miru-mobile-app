@@ -1,11 +1,15 @@
-import 'package:dio/dio.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../config/theme.dart';
 import '../../models/api_exception.dart';
 import '../../providers/auth_provider.dart';
+
+enum _ForgotStep { username, phone, otp }
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -17,59 +21,152 @@ class ForgotPasswordScreen extends StatefulWidget {
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _otpController = TextEditingController();
 
+  _ForgotStep _step = _ForgotStep.username;
   bool _isSubmitting = false;
-  bool _isSuccess = false;
-  String? _resetToken;
+  String? _maskedPhone;
+  String? _fieldErrorUsername;
+  String? _fieldErrorPhone;
+  String? _fieldErrorOtp;
+  int _resendSeconds = 0;
+  Timer? _resendTimer;
 
   @override
   void dispose() {
+    _resendTimer?.cancel();
     _usernameController.dispose();
+    _phoneController.dispose();
+    _otpController.dispose();
     super.dispose();
   }
 
-  Future<void> _handleSubmit() async {
-    if (!_formKey.currentState!.validate()) return;
-
+  void _clearFieldErrors() {
     setState(() {
-      _isSubmitting = true;
-      _isSuccess = false;
-      _resetToken = null;
+      _fieldErrorUsername = null;
+      _fieldErrorPhone = null;
+      _fieldErrorOtp = null;
     });
+  }
+
+  String? _extractError(dynamic error) {
+    if (error == null) return null;
+    if (error is List && error.isNotEmpty) return error.first.toString();
+    if (error is String) return error;
+    return null;
+  }
+
+  void _applyFieldErrors(Map<String, dynamic>? errors) {
+    if (errors == null) return;
+    setState(() {
+      _fieldErrorUsername = _extractError(errors['username']);
+      _fieldErrorPhone = _extractError(errors['no_hp']);
+      _fieldErrorOtp = _extractError(errors['otp']);
+    });
+  }
+
+  void _startResendCooldown([int seconds = 60]) {
+    _resendTimer?.cancel();
+    setState(() => _resendSeconds = seconds);
+    _resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      if (_resendSeconds <= 1) {
+        timer.cancel();
+        setState(() => _resendSeconds = 0);
+      } else {
+        setState(() => _resendSeconds -= 1);
+      }
+    });
+  }
+
+  Future<void> _submitUsername() async {
+    if (!_formKey.currentState!.validate()) return;
+    _clearFieldErrors();
+    setState(() => _isSubmitting = true);
 
     try {
-      final token = await context.read<AuthProvider>().forgotPassword(
+      final data = await context.read<AuthProvider>().forgotPassword(
             username: _usernameController.text.trim(),
           );
-
       if (!mounted) return;
-
-      if (token != null) {
-        // Token returned — success (dev mode)
-        setState(() {
-          _resetToken = token;
-          _isSuccess = true;
-        });
-      } else {
-        // Safe generic message (username not found — don't reveal)
-        _showSuccess(
-          'Jika username terdaftar, '
-          'token reset password akan dikirim.',
-        );
-        setState(() => _isSuccess = true);
-      }
+      setState(() {
+        _maskedPhone = data['masked_phone'] as String?;
+        _step = _ForgotStep.phone;
+      });
     } on ApiException catch (e) {
       if (!mounted) return;
+      _applyFieldErrors(e.fieldErrors);
       _showError(e.message);
-    } on DioException {
-      if (!mounted) return;
-      _showError('Terjadi kesalahan. Silakan coba lagi.');
-    } catch (e) {
+    } catch (_) {
       if (!mounted) return;
       _showError('Terjadi kesalahan. Silakan coba lagi.');
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
+  }
+
+  Future<void> _submitPhone({bool fromResend = false}) async {
+    if (!fromResend && !_formKey.currentState!.validate()) return;
+    _clearFieldErrors();
+    setState(() => _isSubmitting = true);
+
+    try {
+      final data = await context.read<AuthProvider>().requestResetPasswordOtp(
+            username: _usernameController.text.trim(),
+            noHp: _phoneController.text.trim(),
+          );
+      if (!mounted) return;
+      setState(() {
+        _maskedPhone = data['masked_phone'] as String? ?? _maskedPhone;
+        _step = _ForgotStep.otp;
+      });
+      _startResendCooldown(60);
+      _showSuccess(
+        'Cek notifikasi WhatsApp untuk kode verifikasi.',
+      );
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      _applyFieldErrors(e.fieldErrors);
+      _showError(e.message);
+    } catch (_) {
+      if (!mounted) return;
+      _showError('Terjadi kesalahan. Silakan coba lagi.');
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
+    }
+  }
+
+  Future<void> _submitOtp() async {
+    if (!_formKey.currentState!.validate()) return;
+    _clearFieldErrors();
+    setState(() => _isSubmitting = true);
+
+    try {
+      final token = await context.read<AuthProvider>().verifyResetPasswordOtp(
+            username: _usernameController.text.trim(),
+            otp: _otpController.text.trim(),
+          );
+      if (!mounted) return;
+      context.pushReplacement('/reset-password', extra: token);
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      _applyFieldErrors(e.fieldErrors);
+      _showError(e.message);
+    } catch (_) {
+      if (!mounted) return;
+      _showError('Terjadi kesalahan. Silakan coba lagi.');
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
+    }
+  }
+
+  Future<void> _resendOtp() async {
+    if (_isSubmitting || _resendSeconds > 0) return;
+    await _submitPhone(fromResend: true);
   }
 
   void _showError(String message) {
@@ -90,6 +187,40 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     );
   }
 
+  String get _subtitle {
+    switch (_step) {
+      case _ForgotStep.username:
+        return 'Masukkan username akun Anda. Kami akan menampilkan nomor HP yang terdaftar.';
+      case _ForgotStep.phone:
+        return 'Nomor terdaftar: ${_maskedPhone ?? '—'}. Masukkan nomor HP yang sama agar kami kirim kode ke WhatsApp.';
+      case _ForgotStep.otp:
+        return 'Masukkan kode yang dikirim ke WhatsApp ${_maskedPhone ?? 'Anda'}.';
+    }
+  }
+
+  VoidCallback? get _onSubmit {
+    if (_isSubmitting) return null;
+    switch (_step) {
+      case _ForgotStep.username:
+        return _submitUsername;
+      case _ForgotStep.phone:
+        return _submitPhone;
+      case _ForgotStep.otp:
+        return _submitOtp;
+    }
+  }
+
+  String get _submitLabel {
+    switch (_step) {
+      case _ForgotStep.username:
+        return 'Lanjut';
+      case _ForgotStep.phone:
+        return 'Kirim kode ke WhatsApp';
+      case _ForgotStep.otp:
+        return 'Verifikasi kode';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -102,204 +233,170 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 24),
-              Icon(
-                Icons.lock_reset_rounded,
-                size: 64,
-                color: AppTheme.primaryColor,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Reset Password',
-                style: theme.textTheme.headlineSmall,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Masukkan username akun Anda. '
-                'Kami akan mengirimkan token reset password.',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 32),
-
-              if (!_isSuccess) ...[
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      TextFormField(
-                        controller: _usernameController,
-                        decoration: const InputDecoration(
-                          labelText: 'Username',
-                          prefixIcon: Icon(Icons.person_outline_rounded),
-                          helperText:
-                              'Masukkan username yang digunakan saat '
-                              'pendaftaran',
-                        ),
-                        textInputAction: TextInputAction.done,
-                        autocorrect: false,
-                        onFieldSubmitted: (_) => _handleSubmit(),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Username tidak boleh kosong';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 24),
-                      SizedBox(
-                        height: 48,
-                        child: ElevatedButton(
-                          onPressed: _isSubmitting ? null : _handleSubmit,
-                          child: _isSubmitting
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              : const Text('Kirim Token Reset'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-
-              if (_isSuccess) ...[
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppTheme.primaryColor.withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: AppTheme.primaryColor.withValues(alpha: 0.25),
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.check_circle_rounded,
-                        size: 48,
-                        color: AppTheme.primaryColor,
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'Permintaan reset berhasil!',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.primaryColor,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      if (_resetToken != null) ...[
-                        const SizedBox(height: 16),
-                        Text(
-                          'Salin token reset di bawah ini untuk '
-                          'melanjutkan:',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 8),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.surfaceContainerHighest,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: SelectableText(
-                            _resetToken!,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              fontFamily: 'monospace',
-                              fontSize: 11,
-                              letterSpacing: 0.5,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Token berlaku selama 1 jam.',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: const Color(0xFFD97706),
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 20),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 48,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              context.pushReplacement(
-                                '/reset-password',
-                                extra: _resetToken,
-                              );
-                            },
-                            child: const Text('Masukkan Token & Password Baru'),
-                          ),
-                        ),
-                      ],
-                      if (_resetToken == null) ...[
-                        const SizedBox(height: 16),
-                        Text(
-                          'Silakan cek email atau notifikasi Anda.',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ],
-                  ),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 24),
+                Icon(
+                  Icons.lock_reset_rounded,
+                  size: 64,
+                  color: AppTheme.primaryColor,
                 ),
                 const SizedBox(height: 16),
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      _isSuccess = false;
-                      _resetToken = null;
-                    });
-                  },
-                  child: const Text('Kirim Ulang'),
+                Text(
+                  'Atur Ulang Password',
+                  style: theme.textTheme.headlineSmall,
+                  textAlign: TextAlign.center,
                 ),
-              ],
-
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Sudah ingat password? ',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
+                const SizedBox(height: 8),
+                Text(
+                  _subtitle,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
-                  GestureDetector(
-                    onTap: () => context.go('/login'),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 32),
+                if (_step == _ForgotStep.username)
+                  TextFormField(
+                    controller: _usernameController,
+                    decoration: InputDecoration(
+                      labelText: 'Username',
+                      prefixIcon: const Icon(Icons.person_outline_rounded),
+                      helperText: 'Username yang dipakai saat mendaftar',
+                      errorText: _fieldErrorUsername,
+                    ),
+                    textInputAction: TextInputAction.done,
+                    autocorrect: false,
+                    onFieldSubmitted: (_) => _onSubmit?.call(),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Username tidak boleh kosong';
+                      }
+                      return null;
+                    },
+                  ),
+                if (_step == _ForgotStep.phone)
+                  TextFormField(
+                    controller: _phoneController,
+                    decoration: InputDecoration(
+                      labelText: 'Nomor HP',
+                      prefixIcon: const Icon(Icons.phone_outlined),
+                      helperText: 'Harus sama dengan nomor yang terdaftar',
+                      errorText: _fieldErrorPhone,
+                    ),
+                    textInputAction: TextInputAction.done,
+                    keyboardType: TextInputType.phone,
+                    onFieldSubmitted: (_) => _onSubmit?.call(),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Nomor HP tidak boleh kosong';
+                      }
+                      if (value.trim().length < 10) {
+                        return 'Nomor HP minimal 10 digit';
+                      }
+                      return null;
+                    },
+                  ),
+                if (_step == _ForgotStep.otp)
+                  TextFormField(
+                    controller: _otpController,
+                    decoration: InputDecoration(
+                      labelText: 'Kode dari WhatsApp',
+                      prefixIcon: const Icon(Icons.pin_outlined),
+                      hintText: '6 digit',
+                      errorText: _fieldErrorOtp,
+                    ),
+                    keyboardType: TextInputType.number,
+                    textInputAction: TextInputAction.done,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(6),
+                    ],
+                    onFieldSubmitted: (_) => _onSubmit?.call(),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Kode wajib diisi';
+                      }
+                      if (value.trim().length < 4) {
+                        return 'Kode tidak valid';
+                      }
+                      return null;
+                    },
+                  ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  height: 48,
+                  child: ElevatedButton(
+                    onPressed: _onSubmit,
+                    child: _isSubmitting
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : Text(_submitLabel),
+                  ),
+                ),
+                if (_step == _ForgotStep.otp) ...[
+                  const SizedBox(height: 12),
+                  TextButton(
+                    onPressed: _isSubmitting || _resendSeconds > 0
+                        ? null
+                        : _resendOtp,
                     child: Text(
-                      'Masuk',
-                      style: theme.textTheme.labelLarge?.copyWith(
-                        color: AppTheme.primaryColor,
-                      ),
+                      _resendSeconds > 0
+                          ? 'Kirim ulang ($_resendSeconds dtk)'
+                          : 'Kirim ulang kode',
                     ),
                   ),
                 ],
-              ),
-              const SizedBox(height: 32),
-            ],
+                if (_step != _ForgotStep.username) ...[
+                  TextButton(
+                    onPressed: _isSubmitting
+                        ? null
+                        : () {
+                            setState(() {
+                              if (_step == _ForgotStep.otp) {
+                                _step = _ForgotStep.phone;
+                                _otpController.clear();
+                              } else {
+                                _step = _ForgotStep.username;
+                              }
+                            });
+                          },
+                    child: const Text('Kembali'),
+                  ),
+                ],
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Sudah ingat password? ',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => context.go('/login'),
+                      child: Text(
+                        'Masuk',
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: AppTheme.primaryColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 32),
+              ],
+            ),
           ),
         ),
       ),

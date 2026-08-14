@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 
 import '../providers/auth_session.dart';
+import '../providers/launch_experience.dart';
 import '../models/notification.dart';
 import '../models/user.dart';
 import '../screens/auth/forgot_password_screen.dart';
@@ -25,18 +27,18 @@ import '../screens/edukasi/edukasi_detail_screen.dart';
 import '../screens/edukasi/edukasi_list_screen.dart';
 import '../screens/setoran/info_sampah_screen.dart';
 import '../screens/setoran/penjemputan_screen.dart';
+import '../screens/onboarding/onboarding_screen.dart';
 import '../screens/splash/splash_screen.dart';
 import '../screens/settings/kebijakan_data_screen.dart';
 import '../screens/settings/pengumuman_screen.dart';
-import '../screens/settings/settings_screen.dart';
 import '../screens/settings/tentang_screen.dart';
 import '../widgets/bottom_nav_scaffold.dart';
 import '../models/announcement.dart';
 
-GoRouter createAppRouter(AuthSession authSession) {
+GoRouter createAppRouter(AuthSession authSession, LaunchExperience launch) {
   return GoRouter(
     initialLocation: '/splash',
-    refreshListenable: authSession,
+    refreshListenable: Listenable.merge([authSession, launch]),
     redirect: (context, state) {
       final location = state.matchedLocation;
       final isLoggedIn = authSession.isLoggedIn;
@@ -54,6 +56,7 @@ GoRouter createAppRouter(AuthSession authSession) {
 
       // Sudah verifikasi → jangan tinggal di layar OTP
       if (isLoggedIn && location == '/verify-phone') {
+        if (launch.pendingOnboarding) return '/onboarding';
         return '/home';
       }
 
@@ -63,7 +66,12 @@ GoRouter createAppRouter(AuthSession authSession) {
               location == '/register' ||
               location == '/forgot-password' ||
               location == '/reset-password')) {
+        if (launch.pendingOnboarding) return '/onboarding';
         return '/home';
+      }
+
+      if (!isLoggedIn && location == '/onboarding') {
+        return '/login';
       }
 
       return null;
@@ -103,6 +111,10 @@ GoRouter createAppRouter(AuthSession authSession) {
       GoRoute(
         path: '/verify-phone',
         builder: (context, state) => const PhoneVerifyScreen(),
+      ),
+      GoRoute(
+        path: '/onboarding',
+        builder: (context, state) => const OnboardingScreen(),
       ),
 
       // ── Main app shell with bottom nav ──
@@ -245,20 +257,14 @@ GoRouter createAppRouter(AuthSession authSession) {
         builder: (context, state) => const QRCodeScreen(),
       ),
 
-      // ── Settings Routes (standalone, no bottom nav) ──
+      // Kebijakan / Tentang — top-level (register consent + profil)
       GoRoute(
-        path: '/settings',
-        builder: (context, state) => const SettingsScreen(),
-        routes: [
-          GoRoute(
-            path: 'kebijakan-data',
-            builder: (context, state) => const KebijakanDataScreen(),
-          ),
-          GoRoute(
-            path: 'tentang',
-            builder: (context, state) => const TentangScreen(),
-          ),
-        ],
+        path: '/settings/kebijakan-data',
+        builder: (context, state) => const KebijakanDataScreen(),
+      ),
+      GoRoute(
+        path: '/settings/tentang',
+        builder: (context, state) => const TentangScreen(),
       ),
     ],
   );

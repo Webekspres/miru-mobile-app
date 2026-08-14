@@ -51,26 +51,16 @@ class AuthService {
     required String username,
     required String password,
     required String namaLengkap,
-    required String noHp,
-    required String alamat,
-    String rt = '',
-    String rw = '',
     bool setujuKebijakanData = true,
-  }) async {
-    final data = <String, dynamic>{
-      'username': username,
-      'password': password,
-      'nama_lengkap': namaLengkap,
-      'no_hp': noHp,
-      'alamat': alamat,
-      'setuju_kebijakan_data': setujuKebijakanData,
-    };
-    if (rt.isNotEmpty) data['rt'] = rt;
-    if (rw.isNotEmpty) data['rw'] = rw;
-
+  }) {
     return apiClient.post<JsonMap>(
       '/users/',
-      data: data,
+      data: {
+        'username': username,
+        'password': password,
+        'nama_lengkap': namaLengkap,
+        'setuju_kebijakan_data': setujuKebijakanData,
+      },
       fromJson: _asJsonMap,
     );
   }
@@ -82,11 +72,11 @@ class AuthService {
     );
   }
 
-  /// Request a password reset token.
+  /// Langkah 1 lupa password: username → masked_phone.
   /// POST /auth/forgot-password/
   Future<JsonMap> forgotPassword({
     required String username,
-  }) async {
+  }) {
     return apiClient.post<JsonMap>(
       '/auth/forgot-password/',
       data: {
@@ -96,17 +86,51 @@ class AuthService {
     );
   }
 
-  /// Reset password using a reset token.
-  /// POST /auth/reset-password/
+  /// Langkah 2 lupa password: konfirmasi no_hp → kirim OTP WA.
+  /// POST /auth/reset-password/request-otp/
+  Future<JsonMap> requestResetPasswordOtp({
+    required String username,
+    required String noHp,
+  }) {
+    return apiClient.post<JsonMap>(
+      '/auth/reset-password/request-otp/',
+      data: {
+        'username': username,
+        'no_hp': noHp,
+      },
+      fromJson: _asJsonMap,
+    );
+  }
+
+  /// Langkah 3 lupa password: verifikasi OTP → reset_token.
+  /// POST /auth/reset-password/verify-otp/
+  Future<JsonMap> verifyResetPasswordOtp({
+    required String username,
+    required String otp,
+  }) {
+    return apiClient.post<JsonMap>(
+      '/auth/reset-password/verify-otp/',
+      data: {
+        'username': username,
+        'otp': otp,
+      },
+      fromJson: _asJsonMap,
+    );
+  }
+
+  /// Langkah 4 lupa password: password baru.
+  /// POST /auth/reset-password/  {token, password, password_confirm}
   Future<JsonMap> resetPassword({
     required String token,
-    required String newPassword,
-  }) async {
+    required String password,
+    required String passwordConfirm,
+  }) {
     return apiClient.post<JsonMap>(
       '/auth/reset-password/',
       data: {
         'token': token,
-        'new_password': newPassword,
+        'password': password,
+        'password_confirm': passwordConfirm,
       },
       fromJson: _asJsonMap,
     );

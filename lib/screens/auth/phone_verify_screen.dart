@@ -75,15 +75,14 @@ class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
       });
       _startResendCooldown(60);
       _showInfo(
-        data['message'] as String? ??
-            'Kode OTP telah dikirim ke WhatsApp Anda.',
+        'Cek notifikasi WhatsApp untuk kode verifikasi.',
       );
     } on ApiException catch (e) {
       if (!mounted) return;
       _showError(e.message);
     } on DioException {
       if (!mounted) return;
-      _showError('Gagal mengirim OTP. Silakan coba lagi.');
+      _showError('Gagal mengirim kode. Silakan coba lagi.');
     } catch (_) {
       if (!mounted) return;
       _showError('Terjadi kesalahan. Silakan coba lagi.');

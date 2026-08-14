@@ -24,6 +24,7 @@ class NotificationProvider extends ChangeNotifier {
   String? _error;
   Timer? _pollTimer;
   bool _isFetching = false;
+  bool _hasLoaded = false;
 
   // ──────────────────────────────────────────────
   // Getters
@@ -50,6 +51,12 @@ class NotificationProvider extends ChangeNotifier {
   // Load Notifications
   // ──────────────────────────────────────────────
 
+  /// Fetch once per session. Polling / pull-to-refresh still use [loadNotifications].
+  Future<void> ensureLoaded() {
+    if (_hasLoaded || _isFetching) return Future.value();
+    return loadNotifications();
+  }
+
   /// [silent] = true: update list tanpa skeleton/loading (untuk polling).
   Future<void> loadNotifications({bool silent = false}) async {
     if (_isFetching) return;
@@ -67,6 +74,7 @@ class NotificationProvider extends ChangeNotifier {
         fromJson: (json) => json as List<dynamic>,
       );
       final next = AppNotification.listFromJson(data);
+      _hasLoaded = true;
       if (!_sameNotifications(_notifications, next)) {
         _notifications = next;
         notifyListeners();
@@ -183,6 +191,7 @@ class NotificationProvider extends ChangeNotifier {
     _error = null;
     _isLoading = false;
     _isFetching = false;
+    _hasLoaded = false;
     notifyListeners();
   }
 }

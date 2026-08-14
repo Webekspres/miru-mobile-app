@@ -8,6 +8,7 @@ import '../../models/notification.dart';
 import '../../providers/auth_session.dart';
 import '../../providers/notification_provider.dart';
 import '../../widgets/error_view.dart';
+import '../../widgets/load_when_visible.dart';
 import '../../widgets/login_prompt.dart';
 import '../../widgets/bottom_nav_scaffold.dart';
 import '../../widgets/shimmer_loading.dart';
@@ -20,17 +21,8 @@ class NotifikasiScreen extends StatefulWidget {
 }
 
 class _NotifikasiScreenState extends State<NotifikasiScreen> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _loadData());
-  }
-
   void _loadData() {
-    final notif = context.read<NotificationProvider>();
-    if (!notif.isLoading) {
-      notif.loadNotifications();
-    }
+    context.read<NotificationProvider>().ensureLoaded();
   }
 
   @override
@@ -47,7 +39,9 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
       );
     }
 
-    return Scaffold(
+    return LoadWhenVisible(
+      onVisible: _loadData,
+      child: Scaffold(
       appBar: AppBar(
         title: const Text('Notifikasi'),
         actions: [
@@ -167,6 +161,7 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
           );
         },
       ),
+    ),
     );
   }
 }

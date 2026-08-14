@@ -40,7 +40,7 @@ Aplikasi mobile **hanya untuk role `nasabah`**.
 
 - Checkbox `setuju_kebijakan_data` **wajib** sebelum submit
 - Link/halaman kebijakan data tersedia dari settings & registrasi
-- NIK opsional; **jangan** minta foto KTP di registrasi (Constraints)
+- **Jangan** minta NIK atau foto KTP di registrasi. Foto KTP hanya saat tarik ≥ Rp1.000.000 (lampiran sementara).
 
 ---
 
@@ -77,9 +77,9 @@ Aplikasi mobile **hanya untuk role `nasabah`**.
 | Data | Perlakuan |
 |------|-----------|
 | Token | Secure storage only |
-| Saldo/poin cache | Boleh memory/provider; offline cache post-MVP — jangan tulis NIK ke disk plain |
-| Screenshot sensitive | Hindari menampilkan NIK penuh di UI |
-| Logs | Release: **tidak** log token, password, NIK, body auth |
+| Saldo/poin cache | Boleh memory/provider; jangan tulis dokumen identitas ke disk |
+| Screenshot sensitive | Jangan tampilkan foto KTP di screenshot berbagi |
+| Logs | Release: **tidak** log token, password, body auth, path file KTP |
 | Backup Android | Pertimbangkan exclude secure prefs dari auto-backup jika berisi sesi |
 
 ### eng_falcon tidak boleh minta berlebihan

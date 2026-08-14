@@ -7,12 +7,13 @@ enum ComplaintJenis {
   hargaTidakSesuai,
   petugasTidakDatang,
   kesalahanData,
-  buktiTidakMuncul;
+  buktiTidakMuncul,
+  lainnya;
 
   static ComplaintJenis fromApiValue(String value) {
     return ComplaintJenis.values.firstWhere(
       (jenis) => jenis.apiValue == value,
-      orElse: () => ComplaintJenis.saldoBelumMasuk,
+      orElse: () => ComplaintJenis.lainnya,
     );
   }
 
@@ -24,6 +25,7 @@ enum ComplaintJenis {
         ComplaintJenis.petugasTidakDatang => 'petugas_tidak_datang',
         ComplaintJenis.kesalahanData => 'kesalahan_data',
         ComplaintJenis.buktiTidakMuncul => 'bukti_tidak_muncul',
+        ComplaintJenis.lainnya => 'lainnya',
       };
 
   String get displayLabel => switch (this) {
@@ -34,6 +36,7 @@ enum ComplaintJenis {
         ComplaintJenis.petugasTidakDatang => 'Petugas tidak datang',
         ComplaintJenis.kesalahanData => 'Kesalahan data nasabah',
         ComplaintJenis.buktiTidakMuncul => 'Bukti transaksi tidak muncul',
+        ComplaintJenis.lainnya => 'Lainnya',
       };
 }
 

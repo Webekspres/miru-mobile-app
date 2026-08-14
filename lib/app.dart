@@ -9,6 +9,7 @@ import 'providers/auth_provider.dart';
 import 'providers/auth_session.dart';
 import 'providers/edukasi_provider.dart';
 import 'providers/home_provider.dart';
+import 'providers/launch_experience.dart';
 import 'providers/notification_provider.dart';
 import 'providers/pengaduan_provider.dart';
 import 'providers/pengumuman_provider.dart';
@@ -33,6 +34,7 @@ class _MiruAppState extends State<MiruApp> with WidgetsBindingObserver {
   late final AuthSession _authSession;
   late final AuthProvider _authProvider;
   late final HomeProvider _homeProvider;
+  late final LaunchExperience _launchExperience;
   late final NotificationProvider _notificationProvider;
   late final PengaduanProvider _pengaduanProvider;
   late final EdukasiProvider _edukasiProvider;
@@ -67,6 +69,7 @@ class _MiruAppState extends State<MiruApp> with WidgetsBindingObserver {
       authSession: _authSession,
     );
     _homeProvider = HomeProvider(apiClient: _apiClient);
+    _launchExperience = LaunchExperience();
     _notificationProvider = NotificationProvider(apiClient: _apiClient);
     _pengaduanProvider = PengaduanProvider(apiClient: _apiClient);
     _edukasiProvider = EdukasiProvider(apiClient: _apiClient);
@@ -76,7 +79,7 @@ class _MiruAppState extends State<MiruApp> with WidgetsBindingObserver {
     _rewardProvider = RewardProvider(apiClient: _apiClient);
     _saldoProvider = SaldoProvider(apiClient: _apiClient);
     _settingsProvider = SettingsProvider(apiClient: _apiClient);
-    _router = createAppRouter(_authSession);
+    _router = createAppRouter(_authSession, _launchExperience);
     _authSession.refresh();
 
     // Hapus semua cache provider saat logout / mulai poll saat login
@@ -132,6 +135,7 @@ class _MiruAppState extends State<MiruApp> with WidgetsBindingObserver {
         ChangeNotifierProvider.value(value: _authSession),
         ChangeNotifierProvider.value(value: _authProvider),
         ChangeNotifierProvider.value(value: _homeProvider),
+        ChangeNotifierProvider.value(value: _launchExperience),
         ChangeNotifierProvider.value(value: _notificationProvider),
         ChangeNotifierProvider.value(value: _pengaduanProvider),
         ChangeNotifierProvider.value(value: _edukasiProvider),

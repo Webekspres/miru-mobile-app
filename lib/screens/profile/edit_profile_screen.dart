@@ -248,24 +248,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
               const SizedBox(height: 20),
 
-              _buildLabel(theme, 'NIK'),
-              const SizedBox(height: 8),
-              TextFormField(
-                initialValue: widget.initialUser.nik.isNotEmpty
-                    ? widget.initialUser.nik
-                    : 'Belum diisi',
-                readOnly: true,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.badge_outlined, size: 20),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  filled: true,
-                  fillColor: theme.colorScheme.surfaceContainerHighest,
-                ),
-              ),
-              const SizedBox(height: 24),
-
               // ── Info ──
               Container(
                 padding: const EdgeInsets.all(12),

@@ -66,6 +66,8 @@
 			<string>UIInterfaceOrientationLandscapeLeft</string>
 			<string>UIInterfaceOrientationLandscapeRight</string>
 		</array>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>MIRU membutuhkan lokasi untuk menandai titik penjemputan sampah.</string>
 		<key>NSCameraUsageDescription</key>
 		<string>MIRU membutuhkan kamera untuk mengambil foto profil.</string>
 		<key>NSPhotoLibraryUsageDescription</key>

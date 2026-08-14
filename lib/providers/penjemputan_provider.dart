@@ -103,19 +103,28 @@ class PenjemputanProvider extends ChangeNotifier {
     required double estimasiBerat,
     required String alamatJemput,
     required DateTime jadwal,
+    double? latitude,
+    double? longitude,
   }) async {
     _isSubmitting = true;
     _error = null;
     notifyListeners();
 
     try {
+      final payload = Pickup(
+        id: 0,
+        nasabah: 0,
+        estimasiBerat: estimasiBerat.toStringAsFixed(2),
+        alamatJemput: alamatJemput,
+        jadwal: jadwal,
+        status: PickupStatus.menunggu,
+        latitude: latitude,
+        longitude: longitude,
+      ).toCreateJson();
+
       final data = await _apiClient.post<Map<String, dynamic>>(
         '/pickups/',
-        data: {
-          'estimasi_berat': estimasiBerat,
-          'alamat_jemput': alamatJemput,
-          'jadwal': jadwal.toIso8601String(),
-        },
+        data: payload,
         fromJson: (json) => Map<String, dynamic>.from(json as Map),
       );
 

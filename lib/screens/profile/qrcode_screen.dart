@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -12,11 +13,13 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../config/constants.dart';
 import '../../config/theme.dart';
+import '../../models/user.dart';
 import '../../providers/auth_session.dart';
 import '../../providers/home_provider.dart';
 import '../../providers/profile_provider.dart';
 import '../../widgets/error_view.dart';
 import '../../widgets/login_prompt.dart';
+import '../../widgets/miru_logo.dart';
 
 class QRCodeScreen extends StatefulWidget {
   const QRCodeScreen({super.key});
@@ -28,6 +31,7 @@ class QRCodeScreen extends StatefulWidget {
 class _QRCodeScreenState extends State<QRCodeScreen> {
   final _cardKey = GlobalKey();
   bool _isSharing = false;
+  bool _showBack = false;
 
   @override
   void initState() {
@@ -36,11 +40,11 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
   }
 
   void _ensureDataLoaded() {
+    if (!context.read<AuthSession>().isLoggedIn) return;
     final profile = context.read<ProfileProvider>();
-    final home = context.read<HomeProvider>();
-    if (profile.user == null && home.user == null) {
-      profile.loadProfile();
-    }
+    final seed = profile.user ?? context.read<HomeProvider>().user;
+    if (seed != null) profile.hydrateFrom(seed);
+    profile.ensureLoaded();
   }
 
   Future<void> _shareQR() async {
@@ -68,7 +72,9 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Gagal membagikan gambar. Gunakan salin data QR sebagai alternatif.'),
+          content: Text(
+            'Gagal membagikan gambar. Gunakan salin data QR sebagai alternatif.',
+          ),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -86,7 +92,8 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
         appBar: AppBar(title: const Text('Kartu Digital')),
         body: const LoginPrompt(
           title: 'Kartu Digital',
-          message: 'Masuk untuk melihat dan membagikan kartu digital ${AppConstants.appName} Anda.',
+          message:
+              'Masuk untuk melihat dan membagikan kartu digital ${AppConstants.appName} Anda.',
         ),
       );
     }
@@ -97,7 +104,6 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
       ),
       body: Consumer2<ProfileProvider, HomeProvider>(
         builder: (context, profile, home, _) {
-          // Use profile provider if available, fallback to home provider
           final user = profile.user ?? home.user;
 
           if ((profile.isLoading || home.isLoading) && user == null) {
@@ -120,7 +126,6 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
             );
           }
 
-          // Build QR payload: { id, nama_lengkap, no_hp }
           final qrPayload = jsonEncode({
             'id': user.id,
             'nama_lengkap': user.namaLengkap,
@@ -131,17 +136,22 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
             padding: const EdgeInsets.all(24),
             child: Column(
               children: [
-                const SizedBox(height: 16),
-                // ── Kartu Digital Card (wrapped for screenshot) ──
                 RepaintBoundary(
                   key: _cardKey,
-                  child: _buildDigitalCard(context, user, qrPayload),
+                  child: ColoredBox(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    child: Column(
+                      children: [
+                        _buildQrBlock(context, qrPayload),
+                        const SizedBox(height: 24),
+                        _buildFlipCard(context, user),
+                      ],
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 32),
-                // ── Info Penggunaan ──
                 _buildUsageInfo(context),
                 const SizedBox(height: 24),
-                // ── Tombol Aksi ──
                 _buildActionButtons(context, qrPayload),
               ],
             ),
@@ -151,151 +161,225 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
     );
   }
 
-  Widget _buildDigitalCard(
-    BuildContext context,
-    dynamic user,
-    String qrPayload,
-  ) {
-    final theme = Theme.of(context);
-    final formatter = NumberFormat.currency(
-      locale: 'id_ID',
-      symbol: 'Rp',
-      decimalDigits: 0,
+  Widget _buildQrBlock(BuildContext context, String qrPayload) {
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outlineVariant,
+            width: 1.5,
+          ),
+        ),
+        child: QrImageView(
+          data: qrPayload,
+          version: QrVersions.auto,
+          size: 220,
+          backgroundColor: Colors.white,
+          eyeStyle: const QrEyeStyle(
+            eyeShape: QrEyeShape.square,
+            color: Color(0xFF16A34A),
+          ),
+          dataModuleStyle: const QrDataModuleStyle(
+            dataModuleShape: QrDataModuleShape.square,
+            color: Color(0xFF16A34A),
+          ),
+          embeddedImage: const AssetImage('assets/images/logo.png'),
+          embeddedImageStyle: const QrEmbeddedImageStyle(
+            size: Size(44, 44),
+          ),
+        ),
+      ),
     );
+  }
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
+  Widget _buildFlipCard(BuildContext context, User user) {
+    return GestureDetector(
+      onTap: () => setState(() => _showBack = !_showBack),
+      child: TweenAnimationBuilder<double>(
+        tween: Tween(begin: 0, end: _showBack ? 1 : 0),
+        duration: const Duration(milliseconds: 420),
+        curve: Curves.easeInOut,
+        builder: (context, value, _) {
+          final angle = value * math.pi;
+          final isBack = value > 0.5;
+          return Transform(
+            alignment: Alignment.center,
+            transform: Matrix4.identity()
+              ..setEntry(3, 2, 0.0012)
+              ..rotateY(angle),
+            child: isBack
+                ? Transform(
+                    alignment: Alignment.center,
+                    transform: Matrix4.identity()..rotateY(math.pi),
+                    child: _cardBack(context, user),
+                  )
+                : _cardFront(context, user),
+          );
+        },
+      ),
+    );
+  }
+
+  BoxDecoration get _cardDecoration => BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: theme.colorScheme.outlineVariant),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppTheme.primaryColor,
+            AppTheme.primaryDark,
+          ],
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.12),
+            blurRadius: 18,
+            offset: const Offset(0, 6),
           ),
         ],
-      ),
+      );
+
+  Widget _cardFront(BuildContext context, User user) {
+    return Container(
+      width: double.infinity,
+      height: 200,
+      padding: const EdgeInsets.all(20),
+      decoration: _cardDecoration,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Header ──
-          Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryColor,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Center(
-                  child: Text(
-                    'M',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 18,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                'MIRU Bank Sampah',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ],
+          const MiruLogo(
+            variant: MiruLogoVariant.fullWhite,
+            height: 28,
           ),
-          const SizedBox(height: 24),
-
-          // ── QR Code ──
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: theme.colorScheme.outlineVariant,
-                width: 1.5,
-              ),
-            ),
-            child: QrImageView(
-              data: qrPayload,
-              version: QrVersions.auto,
-              size: 200,
-              backgroundColor: Colors.white,
-              eyeStyle: const QrEyeStyle(
-                eyeShape: QrEyeShape.square,
-                color: Color(0xFF16A34A),
-              ),
-              dataModuleStyle: const QrDataModuleStyle(
-                dataModuleShape: QrDataModuleShape.square,
-                color: Color(0xFF16A34A),
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
-
-          // ── User Info ──
+          const Spacer(),
           Text(
-            user.namaLengkap,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+            'Kartu Anggota',
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: Colors.white.withValues(alpha: 0.85),
+                  letterSpacing: 0.6,
+                ),
           ),
           const SizedBox(height: 4),
           Text(
-            user.noHp.isNotEmpty ? user.noHp : '(belum ada no. HP)',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // ── Saldo ──
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-            decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withValues(alpha: 0.08),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(
-                  Icons.account_balance_wallet_outlined,
-                  size: 18,
-                  color: AppTheme.primaryColor,
+            user.namaLengkap.isEmpty ? 'Nasabah MIRU' : user.namaLengkap,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
                 ),
-                const SizedBox(width: 8),
-                Text(
-                  'Saldo: ${formatter.format(user.saldoAsDouble)}',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: AppTheme.primaryDark,
-                  ),
-                ),
-              ],
-            ),
           ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Icon(
+                Icons.flip_rounded,
+                size: 16,
+                color: Colors.white.withValues(alpha: 0.85),
+              ),
+              const SizedBox(width: 6),
+              Text(
+                'Ketuk untuk melihat data',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Colors.white.withValues(alpha: 0.85),
+                    ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 
-          const SizedBox(height: 16),
+  Widget _cardBack(BuildContext context, User user) {
+    final theme = Theme.of(context);
+    final joined = user.dateJoined == null
+        ? '—'
+        : DateFormat('d MMMM yyyy', 'id_ID').format(user.dateJoined!.toLocal());
 
-          // ── ID ──
+    return Container(
+      width: double.infinity,
+      height: 200,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      decoration: _cardDecoration,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
           Text(
-            'ID: ${user.id}',
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+            'Data anggota',
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: Colors.white.withValues(alpha: 0.85),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  _backRow('Nama', user.namaLengkap),
+                  _backRow('ID', '${user.id}'),
+                  _backRow('RT/RW', _rtRw(user)),
+                  _backRow(
+                    'Alamat',
+                    user.alamat.trim().isEmpty ? '—' : user.alamat.trim(),
+                  ),
+                  _backRow('Tanggal bergabung', joined),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Ketuk untuk membalik',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: Colors.white.withValues(alpha: 0.8),
             ),
           ),
         ],
       ),
     );
+  }
+
+  Widget _backRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 128,
+            child: Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white70,
+                fontSize: 12,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _rtRw(User user) {
+    final rt = user.rt.trim();
+    final rw = user.rw.trim();
+    if (rt.isEmpty && rw.isEmpty) return '—';
+    return 'RT ${rt.isEmpty ? '—' : rt} / RW ${rw.isEmpty ? '—' : rw}';
   }
 
   Widget _buildUsageInfo(BuildContext context) {
@@ -314,17 +398,16 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
+          const Icon(
             Icons.info_outline_rounded,
             size: 18,
-            color: const Color(0xFF2563EB),
+            color: Color(0xFF2563EB),
           ),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              'Tunjukkan QR code ini kepada petugas saat melakukan '
-              'setoran sampah. QR code berisi data diri Anda untuk '
-              'mempermudah pencatatan transaksi.',
+              'Tunjukkan kode ini kepada petugas saat setor sampah. '
+              'Ketuk kartu di bawah kode untuk melihat data diri.',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: const Color(0xFF1E40AF),
                 height: 1.5,
@@ -341,7 +424,6 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
 
     return Column(
       children: [
-        // ── Bagikan Kartu Digital ──
         SizedBox(
           width: double.infinity,
           child: ElevatedButton.icon(
@@ -368,7 +450,6 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
           ),
         ),
         const SizedBox(height: 12),
-        // ── Salin Data QR ──
         SizedBox(
           width: double.infinity,
           child: OutlinedButton.icon(

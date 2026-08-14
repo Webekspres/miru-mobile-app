@@ -26,6 +26,8 @@ class ProfileProvider extends ChangeNotifier {
   bool _isSaving = false;
   String? _error;
   bool _isEditMode = false;
+  int _generation = 0;
+  Future<void>? _inFlight;
 
   // ──────────────────────────────────────────────
   // Getters
@@ -69,7 +71,28 @@ class ProfileProvider extends ChangeNotifier {
   // Fetch Profile
   // ──────────────────────────────────────────────
 
-  Future<void> loadProfile() async {
+  /// Seed from login / home cache so the profile tab is never empty after
+  /// re-login. Does not hit the network.
+  void hydrateFrom(User user) {
+    if (_user != null) return;
+    _user = user;
+    _error = null;
+    notifyListeners();
+  }
+
+  /// Fetch only when this session has no profile yet. In-flight calls share
+  /// one Future so IndexedStack / pull-to-refresh cannot double-hit `/auth/me/`.
+  Future<void> ensureLoaded() {
+    if (_user != null) return Future.value();
+    return loadProfile();
+  }
+
+  Future<void> loadProfile() {
+    return _inFlight ??= _fetch();
+  }
+
+  Future<void> _fetch() async {
+    final gen = _generation;
     final showLoading = _user == null;
     if (showLoading) {
       _isLoading = true;
@@ -85,19 +108,25 @@ class ProfileProvider extends ChangeNotifier {
         '/auth/me/',
         fromJson: (json) => Map<String, dynamic>.from(json as Map),
       );
+      if (gen != _generation) return;
       _user = User.fromJson(userData);
       _error = null;
     } on DioException catch (e) {
+      if (gen != _generation) return;
       if (_user == null) {
         _error = parseDioError(e);
       }
     } catch (_) {
+      if (gen != _generation) return;
       if (_user == null) {
         _error = 'Terjadi kesalahan. Silakan coba lagi.';
       }
     } finally {
-      if (_isLoading) _isLoading = false;
-      notifyListeners();
+      if (gen == _generation) {
+        if (_isLoading) _isLoading = false;
+        _inFlight = null;
+        notifyListeners();
+      }
     }
   }
 
@@ -213,6 +242,8 @@ class ProfileProvider extends ChangeNotifier {
   // ──────────────────────────────────────────────
 
   void clearCache() {
+    _generation++;
+    _inFlight = null;
     _user = null;
     _error = null;
     _isEditMode = false;

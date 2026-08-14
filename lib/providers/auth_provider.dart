@@ -102,16 +102,12 @@ class AuthProvider extends ChangeNotifier {
   // Register
   // ──────────────────────────────────────────────
 
-  /// Register a new nasabah account, then auto-login.
+  /// Daftar nasabah singkat. Akun belum aktif sampai OTP WhatsApp (langkah 2).
+  /// Jangan auto-login — user inactive sampai verifikasi nomor.
   Future<void> register({
     required String username,
     required String password,
     required String namaLengkap,
-    required String noHp,
-    required String alamat,
-    String? nik,
-    String rt = '',
-    String rw = '',
     bool setujuKebijakanData = true,
   }) async {
     _isLoading = true;
@@ -123,23 +119,18 @@ class AuthProvider extends ChangeNotifier {
         username: username,
         password: password,
         namaLengkap: namaLengkap,
-        noHp: noHp,
-        alamat: alamat,
-        rt: rt,
-        rw: rw,
         setujuKebijakanData: setujuKebijakanData,
       );
-
-      // Auto-login after successful registration
-      await login(username: username, password: password);
-    } on ApiException {
+    } on ApiException catch (e) {
+      _error = e.message;
       rethrow;
     } on DioException catch (e) {
-      _error = parseDioError(e);
-      rethrow;
+      final apiError = apiExceptionFromDio(e);
+      _error = apiError.message;
+      throw apiError;
     } catch (e) {
       _error = 'Terjadi kesalahan. Silakan coba lagi.';
-      rethrow;
+      throw ApiException(_error!);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -190,14 +181,19 @@ class AuthProvider extends ChangeNotifier {
   // ──────────────────────────────────────────────
 
   /// Request OTP WhatsApp untuk verifikasi nomor HP.
-  Future<Map<String, dynamic>> requestPhoneOtp({String? noHp}) async {
-    final user = _user;
-    if (user == null) {
-      throw const ApiException('Anda harus masuk terlebih dahulu.');
+  /// Login (gate `/verify-phone`): username dari sesi.
+  /// Registrasi langkah 2: kirim [username] + [noHp] tanpa login.
+  Future<Map<String, dynamic>> requestPhoneOtp({
+    String? noHp,
+    String? username,
+  }) async {
+    final resolvedUsername = (username ?? _user?.username ?? '').trim();
+    final phone = (noHp ?? _user?.noHp ?? '').trim();
+    if (resolvedUsername.isEmpty) {
+      throw const ApiException('Username wajib diisi.');
     }
-    final phone = (noHp ?? user.noHp).trim();
     if (phone.isEmpty) {
-      throw const ApiException('Nomor HP belum diisi. Hubungi admin MIRU.');
+      throw const ApiException('Nomor HP belum diisi.');
     }
 
     _isLoading = true;
@@ -207,30 +203,33 @@ class AuthProvider extends ChangeNotifier {
     try {
       return await authService.requestPhoneOtp(
         noHp: phone,
-        username: user.username,
+        username: resolvedUsername,
       );
-    } on ApiException {
+    } on ApiException catch (e) {
+      _error = e.message;
       rethrow;
     } on DioException catch (e) {
-      _error = parseDioError(e);
-      rethrow;
+      final apiError = apiExceptionFromDio(e);
+      _error = apiError.message;
+      throw apiError;
     } catch (e) {
       _error = 'Terjadi kesalahan. Silakan coba lagi.';
-      rethrow;
+      throw ApiException(_error!);
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  /// Verifikasi OTP; set `phone_verified=true` dan lepas gate OTP.
+  /// Verifikasi OTP HP. Setelah login: refresh profil. Saat daftar: tanpa sesi.
   Future<void> verifyPhoneOtp({
     required String otp,
     String? noHp,
+    String? username,
   }) async {
-    final user = _user;
-    if (user == null) {
-      throw const ApiException('Anda harus masuk terlebih dahulu.');
+    final resolvedUsername = (username ?? _user?.username ?? '').trim();
+    if (resolvedUsername.isEmpty) {
+      throw const ApiException('Username wajib diisi.');
     }
 
     _isLoading = true;
@@ -240,22 +239,25 @@ class AuthProvider extends ChangeNotifier {
     try {
       await authService.verifyPhoneOtp(
         otp: otp.trim(),
-        username: user.username,
-        noHp: noHp ?? user.noHp,
+        username: resolvedUsername,
+        noHp: noHp,
       );
 
-      // Refresh profil agar state lokal sinkron dengan server
-      final userData = await authService.getMe();
-      _user = User.fromJson(userData);
-      authSession.setNeedsPhoneVerification(!_user!.phoneVerified);
-    } on ApiException {
+      if (_user != null) {
+        final userData = await authService.getMe();
+        _user = User.fromJson(userData);
+        authSession.setNeedsPhoneVerification(!_user!.phoneVerified);
+      }
+    } on ApiException catch (e) {
+      _error = e.message;
       rethrow;
     } on DioException catch (e) {
-      _error = parseDioError(e);
-      rethrow;
+      final apiError = apiExceptionFromDio(e);
+      _error = apiError.message;
+      throw apiError;
     } catch (e) {
       _error = 'Terjadi kesalahan. Silakan coba lagi.';
-      rethrow;
+      throw ApiException(_error!);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -266,10 +268,8 @@ class AuthProvider extends ChangeNotifier {
   // Forgot Password
   // ──────────────────────────────────────────────
 
-  /// Request a password reset token.
-  /// Returns the reset token on success, or null if username not found
-  /// (server returns a safe generic message either way).
-  Future<String?> forgotPassword({
+  /// Langkah 1: username → data.masked_phone.
+  Future<Map<String, dynamic>> forgotPassword({
     required String username,
   }) async {
     _isLoading = true;
@@ -277,20 +277,82 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final data = await authService.forgotPassword(
-        username: username,
-      );
-
-      final resetToken = data['reset_token'] as String?;
-      return resetToken;
-    } on ApiException {
+      return await authService.forgotPassword(username: username);
+    } on ApiException catch (e) {
+      _error = e.message;
       rethrow;
     } on DioException catch (e) {
-      _error = parseDioError(e);
-      rethrow;
+      final apiError = apiExceptionFromDio(e);
+      _error = apiError.message;
+      throw apiError;
     } catch (e) {
       _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      throw ApiException(_error!);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Langkah 2: no_hp harus cocok → kirim kode ke WhatsApp.
+  Future<Map<String, dynamic>> requestResetPasswordOtp({
+    required String username,
+    required String noHp,
+  }) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      return await authService.requestResetPasswordOtp(
+        username: username,
+        noHp: noHp,
+      );
+    } on ApiException catch (e) {
+      _error = e.message;
       rethrow;
+    } on DioException catch (e) {
+      final apiError = apiExceptionFromDio(e);
+      _error = apiError.message;
+      throw apiError;
+    } catch (e) {
+      _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      throw ApiException(_error!);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Langkah 3: verifikasi kode → reset_token untuk `/reset-password`.
+  Future<String> verifyResetPasswordOtp({
+    required String username,
+    required String otp,
+  }) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final data = await authService.verifyResetPasswordOtp(
+        username: username,
+        otp: otp,
+      );
+      final token = data['reset_token'] as String?;
+      if (token == null || token.isEmpty) {
+        throw const ApiException('Kode tidak valid. Silakan coba lagi.');
+      }
+      return token;
+    } on ApiException catch (e) {
+      _error = e.message;
+      rethrow;
+    } on DioException catch (e) {
+      final apiError = apiExceptionFromDio(e);
+      _error = apiError.message;
+      throw apiError;
+    } catch (e) {
+      _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      throw ApiException(_error!);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -301,11 +363,11 @@ class AuthProvider extends ChangeNotifier {
   // Reset Password
   // ──────────────────────────────────────────────
 
-  /// Reset password using a reset token.
-  /// Throws [ApiException] if token is invalid, expired, or password too short.
+  /// Langkah 4: password + password_confirm (min 6).
   Future<void> resetPassword({
     required String token,
-    required String newPassword,
+    required String password,
+    required String passwordConfirm,
   }) async {
     _isLoading = true;
     _error = null;
@@ -314,16 +376,19 @@ class AuthProvider extends ChangeNotifier {
     try {
       await authService.resetPassword(
         token: token,
-        newPassword: newPassword,
+        password: password,
+        passwordConfirm: passwordConfirm,
       );
-    } on ApiException {
+    } on ApiException catch (e) {
+      _error = e.message;
       rethrow;
     } on DioException catch (e) {
-      _error = parseDioError(e);
-      rethrow;
+      final apiError = apiExceptionFromDio(e);
+      _error = apiError.message;
+      throw apiError;
     } catch (e) {
       _error = 'Terjadi kesalahan. Silakan coba lagi.';
-      rethrow;
+      throw ApiException(_error!);
     } finally {
       _isLoading = false;
       notifyListeners();

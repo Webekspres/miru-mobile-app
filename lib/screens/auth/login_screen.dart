@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../config/theme.dart';
 import '../../models/api_exception.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/launch_experience.dart';
 import '../../widgets/miru_logo.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -48,9 +49,13 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _handleLogin() async {
+    FocusScope.of(context).unfocus();
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isSubmitting = true);
+
+    final launch = context.read<LaunchExperience>();
+    launch.markLoggedIn();
 
     try {
       await context.read<AuthProvider>().login(
@@ -66,9 +71,11 @@ class _LoginScreenState extends State<LoginScreen> {
         context.go('/home');
       }
     } on ApiException catch (e) {
+      launch.consumeWelcomeBack();
       if (!mounted) return;
       _showError(e.message);
     } catch (e) {
+      launch.consumeWelcomeBack();
       if (!mounted) return;
       _showError('Terjadi kesalahan. Silakan coba lagi.');
     } finally {

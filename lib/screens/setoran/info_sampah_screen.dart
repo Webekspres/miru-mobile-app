@@ -7,6 +7,7 @@ import '../../models/waste_category.dart';
 import '../../providers/home_provider.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/error_view.dart';
+import '../../widgets/harga_berlaku_banner.dart';
 import '../../widgets/shimmer_loading.dart';
 
 /// Static descriptions for common waste types based on category name.
@@ -182,6 +183,7 @@ class _InfoSampahScreenState extends State<InfoSampahScreen> {
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
+                      const HargaBerlakuBanner(),
                       // ── Header Info ──
                       _buildInfoHeader(context),
                       const SizedBox(height: 20),

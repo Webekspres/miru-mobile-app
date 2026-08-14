@@ -4,10 +4,13 @@ import 'package:provider/provider.dart';
 
 import '../../config/theme.dart';
 import '../../models/activity_item.dart';
+import '../../providers/auth_provider.dart';
 import '../../providers/auth_session.dart';
 import '../../providers/home_provider.dart';
+import '../../providers/profile_provider.dart';
 import '../../providers/saldo_provider.dart';
 import '../../widgets/error_view.dart';
+import '../../widgets/load_when_visible.dart';
 import '../../widgets/login_prompt.dart';
 import '../../widgets/bottom_nav_scaffold.dart';
 import '../../widgets/shimmer_loading.dart';
@@ -35,7 +38,6 @@ class _RiwayatScreenState extends State<RiwayatScreen>
     super.initState();
     _tabController = TabController(length: _tabs.length, vsync: this);
     _tabController.addListener(_onTabChanged);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _loadData());
   }
 
   @override
@@ -53,12 +55,11 @@ class _RiwayatScreenState extends State<RiwayatScreen>
   }
 
   void _loadData() {
-    final saldo = context.read<SaldoProvider>();
-    final home = context.read<HomeProvider>();
-    final userId = home.user?.id;
-    if (userId != null && !saldo.isLoading) {
-      saldo.loadActivity(userId: userId);
-    }
+    final userId = context.read<AuthProvider>().user?.id ??
+        context.read<HomeProvider>().user?.id ??
+        context.read<ProfileProvider>().user?.id;
+    if (userId == null) return;
+    context.read<SaldoProvider>().ensureLoaded(userId: userId);
   }
 
   @override
@@ -75,7 +76,9 @@ class _RiwayatScreenState extends State<RiwayatScreen>
       );
     }
 
-    return Scaffold(
+    return LoadWhenVisible(
+      onVisible: _loadData,
+      child: Scaffold(
       appBar: AppBar(
         title: const Text('Riwayat'),
         bottom: TabBar(
@@ -178,6 +181,7 @@ class _RiwayatScreenState extends State<RiwayatScreen>
           );
         },
       ),
+    ),
     );
   }
 
@@ -211,12 +215,19 @@ class _RiwayatScreenState extends State<RiwayatScreen>
 
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
         return Padding(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.fromLTRB(
+            24,
+            24,
+            24,
+            24 + MediaQuery.paddingOf(ctx).bottom,
+          ),
+          child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -337,6 +348,9 @@ class _RiwayatScreenState extends State<RiwayatScreen>
                 const SizedBox(height: 16),
               ],
 
+              if (item.type == ActivityType.setoran)
+                ..._setoranDetailRows(theme, item, dateFormat, timeFormat),
+
               // Status
               Row(
                 children: [
@@ -366,9 +380,86 @@ class _RiwayatScreenState extends State<RiwayatScreen>
               ),
             ],
           ),
+          ),
         );
       },
     );
+  }
+
+  List<Widget> _setoranDetailRows(
+    ThemeData theme,
+    ActivityItem item,
+    DateFormat dateFormat,
+    DateFormat timeFormat,
+  ) {
+    final labelStyle = theme.textTheme.labelSmall?.copyWith(
+      color: theme.colorScheme.onSurfaceVariant,
+    );
+    final valueStyle = theme.textTheme.bodyMedium;
+
+    Widget row(String label, String value) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label, style: labelStyle),
+            const SizedBox(height: 4),
+            Text(value, style: valueStyle),
+          ],
+        ),
+      );
+    }
+
+    final rows = <Widget>[];
+
+    if (item.details.isNotEmpty) {
+      rows.add(Text('Jenis sampah', style: labelStyle));
+      rows.add(const SizedBox(height: 4));
+      for (final detail in item.details) {
+        final nama = detail.kategoriNama.isNotEmpty
+            ? detail.kategoriNama
+            : 'Sampah';
+        rows.add(
+          Padding(
+            padding: const EdgeInsets.only(bottom: 2),
+            child: Text(
+              '$nama — ${detail.beratKg} kg',
+              style: valueStyle,
+            ),
+          ),
+        );
+      }
+      rows.add(const SizedBox(height: 12));
+
+      final totalBerat = item.details.fold<double>(
+        0,
+        (sum, d) => sum + d.beratKgAsDouble,
+      );
+      rows.add(row(
+        'Berat',
+        '${totalBerat.toStringAsFixed(2)} kg',
+      ));
+    }
+
+    final petugas = item.petugasNama?.trim();
+    if (petugas != null && petugas.isNotEmpty) {
+      rows.add(row('Petugas', petugas));
+    }
+
+    if (item.tanggalJemput != null) {
+      rows.add(row(
+        'Tanggal jemput',
+        '${dateFormat.format(item.tanggalJemput!)} ${timeFormat.format(item.tanggalJemput!)}',
+      ));
+    }
+
+    rows.add(row(
+      'Tanggal/jam proses',
+      '${dateFormat.format(item.tanggal)} ${timeFormat.format(item.tanggal)}',
+    ));
+
+    return rows;
   }
 
   String _statusLabel(String status) {

@@ -5,16 +5,22 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../config/theme.dart';
-import '../../models/deposit.dart';
+import '../../models/activity_item.dart';
+import '../../providers/auth_provider.dart';
 import '../../providers/auth_session.dart';
 import '../../providers/edukasi_provider.dart';
 import '../../providers/home_provider.dart';
 import '../../providers/notification_provider.dart';
 import '../../providers/pengumuman_provider.dart';
+import '../../providers/launch_experience.dart';
 import '../../widgets/empty_state.dart';
+import '../../widgets/harga_berlaku_banner.dart';
+import '../../widgets/home_qr_button.dart';
 import '../../widgets/miru_logo.dart';
 import '../../widgets/bottom_nav_scaffold.dart';
 import '../../widgets/shimmer_loading.dart';
+import '../../widgets/waste_invite_modal.dart';
+import '../../widgets/welcome_back_modal.dart';
 import '../edukasi/edukasi_card.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -32,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _saldoVisible = true;
   bool? _wasLoggedIn;
   late final AuthSession _authSession;
+  bool _showingLaunchModals = false;
 
   @override
   void initState() {
@@ -41,6 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _wasLoggedIn = _authSession.isLoggedIn;
     _authSession.addListener(_onAuthChanged);
     _loadData();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _maybeShowLaunchModals());
   }
 
   @override
@@ -57,10 +65,11 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_wasLoggedIn == loggedIn) return;
     _wasLoggedIn = loggedIn;
     if (!loggedIn) {
-      context.read<NotificationProvider>().stopPolling();
-      context.read<NotificationProvider>().clearCache();
+      // Cache + polling are owned by MiruApp._onAuthChanged.
+      return;
     }
     _loadData();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _maybeShowLaunchModals());
   }
 
   void _onHeaderScroll() {
@@ -88,10 +97,31 @@ class _HomeScreenState extends State<HomeScreen> {
     if (pengumuman.announcements.isEmpty && !pengumuman.isLoading) {
       pengumuman.loadPengumuman();
     }
-    // Notifikasi: load awal; polling dikelola di MiruApp
-    final notif = context.read<NotificationProvider>();
-    notif.loadNotifications();
-    notif.startPolling();
+  }
+
+  Future<void> _maybeShowLaunchModals() async {
+    if (!mounted || _showingLaunchModals) return;
+    if (!TickerMode.valuesOf(context).enabled) return;
+    final launch = context.read<LaunchExperience>();
+    final showWelcome = launch.consumeWelcomeBack();
+    final showWaste = launch.consumeWasteInvite();
+    if (!showWelcome && !showWaste) return;
+
+    _showingLaunchModals = true;
+    try {
+      if (showWelcome) {
+        await showWelcomeBackModal(
+          context,
+          namaLengkap: context.read<AuthProvider>().user?.namaLengkap,
+        );
+      }
+      if (!mounted) return;
+      if (showWaste) {
+        await showWasteInviteModal(context);
+      }
+    } finally {
+      _showingLaunchModals = false;
+    }
   }
 
   /// Shared home shell for guest and logged-in users.
@@ -183,6 +213,8 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 _buildQuickActions(context),
                 const SizedBox(height: 24),
+                const HargaBerlakuBanner(),
+                const SizedBox(height: 8),
                 _buildServiceHoursBanner(context),
                 const SizedBox(height: 8),
                 if (isLoggedIn) ...[
@@ -353,63 +385,74 @@ class _HomeScreenState extends State<HomeScreen> {
         : '••• poin';
 
     return _wrapSaldoHeaderContent(
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            'Saldo Anda',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: Colors.white.withValues(alpha: 0.9),
-            ),
-          ),
-          const SizedBox(height: 4),
-          Row(
-            children: [
-              Flexible(
-                child: Text(
-                  saldoText,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                    letterSpacing: -0.5,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Saldo Anda',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: Colors.white.withValues(alpha: 0.9),
                   ),
                 ),
-              ),
-              IconButton(
-                tooltip: _saldoVisible ? 'Sembunyikan saldo' : 'Tampilkan saldo',
-                visualDensity: VisualDensity.compact,
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-                icon: Icon(
-                  _saldoVisible
-                      ? Icons.visibility_outlined
-                      : Icons.visibility_off_outlined,
-                  color: Colors.white.withValues(alpha: 0.95),
-                  size: 22,
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        saldoText,
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      tooltip:
+                          _saldoVisible ? 'Sembunyikan saldo' : 'Tampilkan saldo',
+                      visualDensity: VisualDensity.compact,
+                      padding: EdgeInsets.zero,
+                      constraints:
+                          const BoxConstraints(minWidth: 36, minHeight: 36),
+                      icon: Icon(
+                        _saldoVisible
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
+                        color: Colors.white.withValues(alpha: 0.95),
+                        size: 22,
+                      ),
+                      onPressed: () =>
+                          setState(() => _saldoVisible = !_saldoVisible),
+                    ),
+                  ],
                 ),
-                onPressed: () =>
-                    setState(() => _saldoVisible = !_saldoVisible),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Row(
-            children: [
-              Icon(
-                Icons.stars_rounded,
-                size: 18,
-                color: Colors.white.withValues(alpha: 0.9),
-              ),
-              const SizedBox(width: 6),
-              Text(
-                poinText,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  color: Colors.white.withValues(alpha: 0.95),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.stars_rounded,
+                      size: 18,
+                      color: Colors.white.withValues(alpha: 0.9),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      poinText,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        color: Colors.white.withValues(alpha: 0.95),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
+          const SizedBox(width: 8),
+          const HomeQrButton(),
         ],
       ),
     );
@@ -1096,7 +1139,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildRecentActivity(BuildContext context, HomeProvider home) {
     final theme = Theme.of(context);
-    final deposits = home.recentDeposits;
+    final items = home.recentActivity;
     final isLoadingActivity = home.isLoading && home.user == null;
 
     return Column(
@@ -1112,7 +1155,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             TextButton.icon(
-              onPressed: () => context.push('/riwayat'),
+              onPressed: () => context.go('/riwayat'),
               icon: const Icon(Icons.open_in_new, size: 14),
               label: const Text('Semua'),
               style: TextButton.styleFrom(
@@ -1158,10 +1201,10 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           )
-        else if (deposits.isEmpty)
+        else if (items.isEmpty)
           _buildEmptyActivity()
         else
-          ...deposits.map((deposit) => _ActivityItemWidget(deposit: deposit)),
+          ...items.map((item) => _ActivityItemWidget(item: item)),
         const SizedBox(height: 8),
         Row(
           children: [
@@ -1215,7 +1258,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: const EmptyState(
         icon: Icons.receipt_long_outlined,
         title: 'Belum ada aktivitas',
-        description: 'Setelah Anda melakukan setoran, riwayat akan muncul di sini.',
+        description: 'Setoran, penarikan, dan penukaran poin akan muncul di sini.',
         expand: false,
       ),
     );
@@ -1372,9 +1415,9 @@ class _QuickAction {
 }
 
 class _ActivityItemWidget extends StatelessWidget {
-  const _ActivityItemWidget({required this.deposit});
+  const _ActivityItemWidget({required this.item});
 
-  final Deposit deposit;
+  final ActivityItem item;
 
   @override
   Widget build(BuildContext context) {
@@ -1384,7 +1427,25 @@ class _ActivityItemWidget extends StatelessWidget {
       symbol: 'Rp',
       decimalDigits: 0,
     );
-    final dateStr = DateFormat('d MMM', 'id_ID').format(deposit.tanggal);
+    final dateStr = DateFormat('d MMM', 'id_ID').format(item.tanggal);
+
+    final (icon, color, bgColor) = switch (item.type) {
+      ActivityType.setoran => (
+          Icons.add_shopping_cart_outlined,
+          AppTheme.primaryColor,
+          AppTheme.primaryColor.withValues(alpha: 0.1),
+        ),
+      ActivityType.penarikan => (
+          Icons.account_balance_outlined,
+          const Color(0xFF2563EB),
+          const Color(0xFF2563EB).withValues(alpha: 0.1),
+        ),
+      ActivityType.penukaranPoin => (
+          Icons.card_giftcard_outlined,
+          const Color(0xFFD97706),
+          const Color(0xFFD97706).withValues(alpha: 0.1),
+        ),
+    };
 
     return Container(
       margin: const EdgeInsets.only(bottom: 6),
@@ -1400,14 +1461,10 @@ class _ActivityItemWidget extends StatelessWidget {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withValues(alpha: 0.1),
+              color: bgColor,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(
-              Icons.add_shopping_cart_outlined,
-              size: 18,
-              color: AppTheme.primaryColor,
-            ),
+            child: Icon(icon, size: 18, color: color),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -1415,7 +1472,7 @@ class _ActivityItemWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Setoran Sampah',
+                  item.type.displayLabel,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w500,
                   ),
@@ -1430,13 +1487,24 @@ class _ActivityItemWidget extends StatelessWidget {
               ],
             ),
           ),
-          Text(
-            '+${formatter.format(deposit.totalNilaiAsDouble)}',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: AppTheme.primaryColor,
+          if (item.nominalAsDouble != null)
+            Text(
+              '${item.isCredit ? '+' : '-'}${formatter.format(item.nominalAsDouble)}',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: item.isCredit
+                    ? AppTheme.primaryColor
+                    : const Color(0xFFDC2626),
+              ),
+            )
+          else if (item.poin != null)
+            Text(
+              '${item.poin} poin',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFFD97706),
+              ),
             ),
-          ),
         ],
       ),
     );

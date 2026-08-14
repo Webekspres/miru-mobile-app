@@ -6,12 +6,16 @@ class WasteCategory {
     required this.nama,
     required this.hargaBeliPerKg,
     required this.stokTerkiniKg,
+    this.tanggalBerlaku,
   });
 
   final int id;
   final String nama;
   final String hargaBeliPerKg;
   final String stokTerkiniKg;
+
+  /// Upcoming scheduled price date from list payload, if the API sends it.
+  final DateTime? tanggalBerlaku;
 
   double get hargaBeliPerKgAsDouble => parseDecimal(hargaBeliPerKg);
 
@@ -23,6 +27,7 @@ class WasteCategory {
       nama: json['nama'] as String,
       hargaBeliPerKg: json['harga_beli_per_kg']?.toString() ?? '0.00',
       stokTerkiniKg: json['stok_terkini_kg']?.toString() ?? '0.00',
+      tanggalBerlaku: parseOptionalDateTime(json['tanggal_berlaku']),
     );
   }
 
@@ -31,6 +36,8 @@ class WasteCategory {
         'nama': nama,
         'harga_beli_per_kg': hargaBeliPerKg,
         'stok_terkini_kg': stokTerkiniKg,
+        if (tanggalBerlaku != null)
+          'tanggal_berlaku': tanggalBerlaku!.toIso8601String(),
       };
 
   static List<WasteCategory> listFromJson(dynamic json) {

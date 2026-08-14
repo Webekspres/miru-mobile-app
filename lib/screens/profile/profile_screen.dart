@@ -8,9 +8,11 @@ import '../../config/theme.dart';
 import '../../models/user.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/auth_session.dart';
+import '../../providers/home_provider.dart';
 import '../../providers/profile_provider.dart';
 import '../../widgets/exit_dialog.dart';
 import '../../widgets/error_view.dart';
+import '../../widgets/load_when_visible.dart';
 import '../../widgets/login_prompt.dart';
 import '../../widgets/bottom_nav_scaffold.dart';
 import '../../services/avatar_picker.dart';
@@ -25,22 +27,22 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _loadProfile());
-  }
-
-  void _loadProfile() {
+  void _onVisible() {
     final profile = context.read<ProfileProvider>();
-    if (!profile.isLoading && profile.user == null) {
-      profile.loadProfile();
-    }
+    final seed = profile.user ??
+        context.read<AuthProvider>().user ??
+        context.read<HomeProvider>().user;
+    if (seed != null) profile.hydrateFrom(seed);
+    profile.ensureLoaded();
   }
 
   void _openEditProfile(ProfileProvider profile) {
-    if (profile.user == null) return;
-    context.push('/profile/edit', extra: profile.user!);
+    final user = profile.user ??
+        context.read<AuthProvider>().user ??
+        context.read<HomeProvider>().user;
+    if (user == null) return;
+    profile.hydrateFrom(user);
+    context.push('/profile/edit', extra: user);
   }
 
   @override
@@ -58,81 +60,76 @@ class _ProfileScreenState extends State<ProfileScreen> {
       );
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profil Saya'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings_outlined),
-            tooltip: 'Pengaturan',
-            onPressed: () => context.push('/settings'),
-          ),
-          Consumer<ProfileProvider>(
-            builder: (context, profile, _) {
-              if (profile.user == null) return const SizedBox.shrink();
-              return IconButton(
-                icon: const Icon(Icons.edit_outlined),
-                tooltip: 'Edit profil',
-                onPressed: () => _openEditProfile(profile),
-              );
-            },
-          ),
-        ],
-      ),
-      body: Consumer<ProfileProvider>(
-        builder: (context, profile, _) {
-          if (profile.isLoading) {
-            return _buildSkeleton(context);
-          }
+    return LoadWhenVisible(
+      onVisible: _onVisible,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Profil Saya'),
+          actions: [
+            Consumer<ProfileProvider>(
+              builder: (context, profile, _) {
+                final hasUser = profile.user != null ||
+                    context.watch<AuthProvider>().user != null ||
+                    context.watch<HomeProvider>().user != null;
+                if (!hasUser) return const SizedBox.shrink();
+                return IconButton(
+                  icon: const Icon(Icons.edit_outlined),
+                  tooltip: 'Edit profil',
+                  onPressed: () => _openEditProfile(profile),
+                );
+              },
+            ),
+          ],
+        ),
+        body: Consumer<ProfileProvider>(
+          builder: (context, profile, _) {
+            final user = profile.user ??
+                context.watch<AuthProvider>().user ??
+                context.watch<HomeProvider>().user;
 
-          if (profile.hasError && profile.user == null) {
+            if (user != null) {
+              return RefreshIndicator(
+                onRefresh: profile.loadProfile,
+                color: AppTheme.primaryColor,
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: EdgeInsets.fromLTRB(
+                    16,
+                    16,
+                    16,
+                    BottomNavScaffold.scrollBottomPadding(context),
+                  ),
+                  child: Column(
+                    children: [
+                      _buildAvatarSection(context, profile, user),
+                      const SizedBox(height: 24),
+                      _buildQRCard(context),
+                      const SizedBox(height: 20),
+                      _buildEditProfileTile(context, profile),
+                      const SizedBox(height: 20),
+                      _buildSaldoSection(context, user),
+                      const SizedBox(height: 24),
+                      _buildInfoSection(context),
+                      const SizedBox(height: 24),
+                      _buildLogoutSection(context),
+                      const SizedBox(height: 32),
+                    ],
+                  ),
+                ),
+              );
+            }
+
+            if (profile.isLoading || !profile.hasError) {
+              return _buildSkeleton(context);
+            }
+
             return ErrorView(
               title: 'Gagal memuat profil',
               message: profile.error!,
-              onRetry: () => profile.loadProfile(),
+              onRetry: _onVisible,
             );
-          }
-
-          final user = profile.user;
-          if (user == null) {
-            return const ErrorView(
-              title: 'Data tidak tersedia',
-              message: 'Silakan coba kembali.',
-            );
-          }
-
-          return RefreshIndicator(
-            onRefresh: profile.loadProfile,
-            color: AppTheme.primaryColor,
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: EdgeInsets.fromLTRB(
-                16,
-                16,
-                16,
-                BottomNavScaffold.scrollBottomPadding(context),
-              ),
-              child: Column(
-                children: [
-                  // Ringkas: foto + nama
-                  _buildAvatarSection(context, profile, user),
-                  const SizedBox(height: 24),
-                  // Entry kartu digital
-                  _buildQRCard(context),
-                  const SizedBox(height: 20),
-                  // Edit data lewat tile / ikon pencil AppBar
-                  _buildEditProfileTile(context, profile),
-                  const SizedBox(height: 20),
-                  // Saldo & poin (berguna, di bawah)
-                  _buildSaldoSection(context, user),
-                  const SizedBox(height: 24),
-                  _buildLogoutSection(context),
-                  const SizedBox(height: 32),
-                ],
-              ),
-            ),
-          );
-        },
+          },
+        ),
       ),
     );
   }
@@ -399,6 +396,60 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Widget _buildInfoSection(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: 12),
+          child: Text(
+            'Informasi',
+            style: theme.textTheme.titleSmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ),
+        Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: theme.colorScheme.outlineVariant),
+          ),
+          child: Column(
+            children: [
+              _InfoLinkTile(
+                icon: Icons.description_outlined,
+                iconBgColor: const Color(0xFFFEF3C7),
+                iconColor: const Color(0xFFD97706),
+                label: 'Kebijakan Data',
+                subtitle: 'Kebijakan perlindungan data pribadi',
+                onTap: () => context.push('/settings/kebijakan-data'),
+              ),
+              Divider(
+                height: 1,
+                thickness: 1,
+                indent: 56,
+                color: theme.colorScheme.outlineVariant,
+              ),
+              _InfoLinkTile(
+                icon: Icons.info_outline,
+                iconBgColor: const Color(0xFFF3E8FF),
+                iconColor: const Color(0xFF7C3AED),
+                label: 'Tentang ${AppConstants.appName}',
+                subtitle: 'Informasi aplikasi dan institusi',
+                onTap: () => context.push('/settings/tentang'),
+              ),
+              // Fase 8: preferensi notifikasi (FCM) — belum diimplementasi.
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildLogoutSection(BuildContext context) {
     final theme = Theme.of(context);
 
@@ -464,6 +515,77 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (confirmed && mounted) {
       await context.read<AuthProvider>().logout();
     }
+  }
+}
+
+class _InfoLinkTile extends StatelessWidget {
+  const _InfoLinkTile({
+    required this.icon,
+    required this.iconBgColor,
+    required this.iconColor,
+    required this.label,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final Color iconBgColor;
+  final Color iconColor;
+  final String label;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: iconBgColor,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, size: 18, color: iconColor),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 

@@ -10,13 +10,14 @@ class User {
     required this.poin,
     required this.isActive,
     this.phoneVerified = true,
-    this.nik = '',
     this.noHp = '',
     this.alamat = '',
     this.rt = '',
     this.rw = '',
     this.kelurahanId,
     this.kelurahanNama = '',
+    this.latitude,
+    this.longitude,
     this.dateJoined,
     this.qr,
     this.avatarUrl,
@@ -26,7 +27,6 @@ class User {
   final String username;
   final String role;
   final String namaLengkap;
-  final String nik;
   final String noHp;
   final String alamat;
   final String rt;
@@ -37,6 +37,10 @@ class User {
 
   /// Nama kelurahan (read-only dari API).
   final String kelurahanNama;
+
+  /// Koordinat profil (opsional) untuk prefill titik jemput.
+  final double? latitude;
+  final double? longitude;
 
   /// Raw saldo string from API, e.g. `"125000.00"`.
   final String saldo;
@@ -81,13 +85,14 @@ class User {
       username: json['username'] as String,
       role: json['role'] as String? ?? 'nasabah',
       namaLengkap: json['nama_lengkap'] as String? ?? '',
-      nik: json['nik'] as String? ?? '',
       noHp: json['no_hp'] as String? ?? '',
       alamat: json['alamat'] as String? ?? '',
       rt: json['rt'] as String? ?? '',
       rw: json['rw'] as String? ?? '',
       kelurahanId: json['kelurahan'] as int?,
       kelurahanNama: json['kelurahan_nama'] as String? ?? '',
+      latitude: parseOptionalDecimal(json['latitude']),
+      longitude: parseOptionalDecimal(json['longitude']),
       saldo: json['saldo']?.toString() ?? '0.00',
       poin: json['poin'] as int? ?? 0,
       isActive: json['is_active'] as bool? ?? true,
@@ -105,12 +110,13 @@ class User {
         'username': username,
         'role': role,
         'nama_lengkap': namaLengkap,
-        'nik': nik,
         'no_hp': noHp,
         'alamat': alamat,
         'rt': rt,
         'rw': rw,
         if (kelurahanId != null) 'kelurahan': kelurahanId,
+        if (latitude != null) 'latitude': latitude,
+        if (longitude != null) 'longitude': longitude,
         'saldo': saldo,
         'poin': poin,
         'is_active': isActive,
@@ -130,13 +136,14 @@ class User {
       username: username,
       role: role,
       namaLengkap: namaLengkap,
-      nik: nik,
       noHp: noHp ?? this.noHp,
       alamat: alamat,
       rt: rt,
       rw: rw,
       kelurahanId: kelurahanId,
       kelurahanNama: kelurahanNama,
+      latitude: latitude,
+      longitude: longitude,
       saldo: saldo,
       poin: poin,
       isActive: isActive,
