@@ -14,6 +14,26 @@
       "norm_label": "build.gradle.kts"
     },
     {
+      "label": "requireSigningProperty()",
+      "file_type": "code",
+      "source_file": "android/app/build.gradle.kts",
+      "source_location": "L17",
+      "_origin": "ast",
+      "id": "app_build_gradle_requiresigningproperty",
+      "community": 103,
+      "norm_label": "requiresigningproperty()"
+    },
+    {
+      "label": "String",
+      "file_type": "code",
+      "source_file": "android/app/build.gradle.kts",
+      "source_location": "L17",
+      "_origin": "ast",
+      "id": "android_app_build_gradle_kts_string",
+      "community": 103,
+      "norm_label": "string"
+    },
+    {
       "label": "GeneratedPluginRegistrant.java",
       "file_type": "code",
       "source_file": "android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java",
@@ -56,20 +76,20 @@
     {
       "label": "MainActivity.kt",
       "file_type": "code",
-      "source_file": "android/app/src/main/kotlin/com/example/mirumobileapp/MainActivity.kt",
+      "source_file": "android/app/src/main/kotlin/com/mirubanksampah/app/MainActivity.kt",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "mirumobileapp_mainactivity",
+      "id": "app_mainactivity",
       "community": 28,
       "norm_label": "mainactivity.kt"
     },
     {
       "label": "MainActivity",
       "file_type": "code",
-      "source_file": "android/app/src/main/kotlin/com/example/mirumobileapp/MainActivity.kt",
+      "source_file": "android/app/src/main/kotlin/com/mirubanksampah/app/MainActivity.kt",
       "source_location": "L7",
       "_origin": "ast",
-      "id": "mirumobileapp_mainactivity_mainactivity",
+      "id": "app_mainactivity_mainactivity",
       "community": 28,
       "norm_label": "mainactivity"
     },
@@ -86,17 +106,17 @@
     {
       "label": ".onCreate()",
       "file_type": "code",
-      "source_file": "android/app/src/main/kotlin/com/example/mirumobileapp/MainActivity.kt",
+      "source_file": "android/app/src/main/kotlin/com/mirubanksampah/app/MainActivity.kt",
       "source_location": "L8",
       "_origin": "ast",
-      "id": "mirumobileapp_mainactivity_mainactivity_oncreate",
+      "id": "app_mainactivity_mainactivity_oncreate",
       "community": 28,
       "norm_label": ".oncreate()"
     },
     {
       "label": "Bundle",
       "file_type": "code",
-      "source_file": "android/app/src/main/kotlin/com/example/mirumobileapp/MainActivity.kt",
+      "source_file": "android/app/src/main/kotlin/com/mirubanksampah/app/MainActivity.kt",
       "source_location": "L8",
       "_origin": "ast",
       "id": "bundle",
@@ -112,6 +132,26 @@
       "id": "c_users_pc_projects_projects_miru_mirumobileapp_android_build_gradle_kts",
       "community": 104,
       "norm_label": "build.gradle.kts"
+    },
+    {
+      "label": "setup-release-signing.ps1",
+      "file_type": "code",
+      "source_file": "android/scripts/setup-release-signing.ps1",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "scripts_setup_release_signing",
+      "community": 123,
+      "norm_label": "setup-release-signing.ps1"
+    },
+    {
+      "label": "Resolve-KeytoolPath()",
+      "file_type": "code",
+      "source_file": "android/scripts/setup-release-signing.ps1",
+      "source_location": "L7",
+      "_origin": "ast",
+      "id": "scripts_setup_release_signing_resolve_keytoolpath",
+      "community": 123,
+      "norm_label": "resolve-keytoolpath()"
     },
     {
       "label": "settings.gradle.kts",
@@ -213,8 +253,8 @@
         "kind": "file"
       },
       "_origin": "ast",
-      "id": "c_users_pc_projects_projects_miru_mirumobileapp_ios_flutter_flutter_export_environment_sh",
-      "community": 31,
+      "id": "flutter_flutter_export_environment",
+      "community": 121,
       "norm_label": "flutter_export_environment.sh"
     },
     {
@@ -227,8 +267,8 @@
         "kind": "bash_entrypoint"
       },
       "_origin": "ast",
-      "id": "c_users_pc_projects_projects_miru_mirumobileapp_ios_flutter_flutter_export_environment_sh__entry",
-      "community": 31,
+      "id": "c_users_pc_projects_miru_mirumobileapp_ios_flutter_flutter_export_environment_sh__entry",
+      "community": 121,
       "norm_label": "flutter_export_environment.sh script"
     },
     {
@@ -478,7 +518,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "statefulwidget",
-      "community": 44,
+      "community": 111,
       "norm_label": "statefulwidget"
     },
     {
@@ -628,7 +668,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "notificationprovider",
-      "community": 116,
+      "community": 43,
       "norm_label": "notificationprovider"
     },
     {
@@ -708,7 +748,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "penjemputanprovider",
-      "community": 116,
+      "community": 41,
       "norm_label": "penjemputanprovider"
     },
     {
@@ -928,7 +968,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_go_router_go_router_dart",
-      "community": 102,
+      "community": 119,
       "norm_label": "package:go_router/go_router.dart"
     },
     {
@@ -938,7 +978,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_provider_provider_dart",
-      "community": 101,
+      "community": 85,
       "norm_label": "package:provider/provider.dart"
     },
     {
@@ -968,7 +1008,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "config_theme_dart",
-      "community": 102,
+      "community": 113,
       "norm_label": "../config/theme.dart"
     },
     {
@@ -998,7 +1038,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "providers_edukasi_provider_dart",
-      "community": 101,
+      "community": 85,
       "norm_label": "../../providers/edukasi_provider.dart"
     },
     {
@@ -1278,7 +1318,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_notification_dart",
-      "community": 43,
+      "community": 114,
       "norm_label": "../../models/notification.dart"
     },
     {
@@ -1578,7 +1618,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_announcement_dart",
-      "community": 83,
+      "community": 93,
       "norm_label": "../models/announcement.dart"
     },
     {
@@ -1880,16 +1920,6 @@
       "id": "models_activity_item_nominal",
       "community": 50,
       "norm_label": "nominal"
-    },
-    {
-      "label": "String?",
-      "file_type": "code",
-      "source_file": null,
-      "source_location": null,
-      "_origin": "ast",
-      "id": "string",
-      "community": 122,
-      "norm_label": "string?"
     },
     {
       "label": "poin",
@@ -2518,7 +2548,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_dio_dio_dart",
-      "community": 93,
+      "community": 77,
       "norm_label": "package:dio/dio.dart"
     },
     {
@@ -3388,7 +3418,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_konten_edukasi_kontenedukasi",
-      "community": 111,
+      "community": 85,
       "norm_label": "kontenedukasi"
     },
     {
@@ -3478,7 +3508,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_notification",
-      "community": 24,
+      "community": 101,
       "norm_label": "notification.dart"
     },
     {
@@ -3488,7 +3518,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_notification_appnotification",
-      "community": 24,
+      "community": 114,
       "norm_label": "appnotification"
     },
     {
@@ -3498,7 +3528,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_notification_id",
-      "community": 24,
+      "community": 101,
       "norm_label": "id"
     },
     {
@@ -3508,7 +3538,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_notification_judul",
-      "community": 24,
+      "community": 101,
       "norm_label": "judul"
     },
     {
@@ -3518,7 +3548,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_notification_deskripsi",
-      "community": 24,
+      "community": 101,
       "norm_label": "deskripsi"
     },
     {
@@ -3528,7 +3558,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_notification_kategori",
-      "community": 24,
+      "community": 101,
       "norm_label": "kategori"
     },
     {
@@ -3538,7 +3568,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_notification_createdat",
-      "community": 24,
+      "community": 101,
       "norm_label": "createdat"
     },
     {
@@ -3548,7 +3578,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_notification_isread",
-      "community": 24,
+      "community": 101,
       "norm_label": "isread"
     },
     {
@@ -3558,7 +3588,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_notification_fromjson",
-      "community": 24,
+      "community": 101,
       "norm_label": "fromjson"
     },
     {
@@ -3568,7 +3598,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_notification_listfromjson",
-      "community": 24,
+      "community": 101,
       "norm_label": "listfromjson"
     },
     {
@@ -3578,7 +3608,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_notification_copywith",
-      "community": 24,
+      "community": 101,
       "norm_label": "copywith"
     },
     {
@@ -4898,7 +4928,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "user",
-      "community": 53,
+      "community": 100,
       "norm_label": "user"
     },
     {
@@ -5128,7 +5158,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_api_exception_dart",
-      "community": 93,
+      "community": 77,
       "norm_label": "../models/api_exception.dart"
     },
     {
@@ -5358,7 +5388,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_konten_edukasi_dart",
-      "community": 111,
+      "community": 85,
       "norm_label": "../../models/konten_edukasi.dart"
     },
     {
@@ -7538,7 +7568,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "auth_forgot_password_screen_build",
-      "community": 74,
+      "community": 31,
       "norm_label": "build"
     },
     {
@@ -7548,7 +7578,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_login",
-      "community": 74,
+      "community": 31,
       "norm_label": "route /login"
     },
     {
@@ -7558,7 +7588,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_flutter_services_dart",
-      "community": 90,
+      "community": 61,
       "norm_label": "package:flutter/services.dart"
     },
     {
@@ -7748,7 +7778,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "auth_login_screen_build",
-      "community": 74,
+      "community": 31,
       "norm_label": "build"
     },
     {
@@ -7758,7 +7788,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_forgot_password",
-      "community": 74,
+      "community": 31,
       "norm_label": "route /forgot-password"
     },
     {
@@ -7768,7 +7798,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_register",
-      "community": 74,
+      "community": 31,
       "norm_label": "route /register"
     },
     {
@@ -7958,7 +7988,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "auth_phone_verify_screen_logout",
-      "community": 74,
+      "community": 31,
       "norm_label": "_logout"
     },
     {
@@ -8358,7 +8388,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "auth_register_screen_build",
-      "community": 36,
+      "community": 31,
       "norm_label": "build"
     },
     {
@@ -8368,7 +8398,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "auth_register_screen_buildstep1",
-      "community": 36,
+      "community": 31,
       "norm_label": "_buildstep1"
     },
     {
@@ -8378,7 +8408,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_settings_kebijakan_data",
-      "community": 36,
+      "community": 31,
       "norm_label": "route /settings/kebijakan-data"
     },
     {
@@ -8588,7 +8618,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "auth_reset_password_screen_handlereset",
-      "community": 74,
+      "community": 31,
       "norm_label": "_handlereset"
     },
     {
@@ -8608,7 +8638,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "auth_reset_password_screen_build",
-      "community": 74,
+      "community": 31,
       "norm_label": "build"
     },
     {
@@ -8618,7 +8648,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "auth_reset_password_screen_missingtoken",
-      "community": 74,
+      "community": 31,
       "norm_label": "_missingtoken"
     },
     {
@@ -8628,7 +8658,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "edukasi_edukasi_card",
-      "community": 111,
+      "community": 85,
       "norm_label": "edukasi_card.dart"
     },
     {
@@ -8638,7 +8668,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "edukasi_edukasi_card_edukasicard",
-      "community": 111,
+      "community": 85,
       "norm_label": "edukasicard"
     },
     {
@@ -8658,7 +8688,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "edukasi_edukasi_card_edukasicoverfallback",
-      "community": 111,
+      "community": 85,
       "norm_label": "_edukasicoverfallback"
     },
     {
@@ -8668,7 +8698,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "edukasi_edukasi_card_item",
-      "community": 111,
+      "community": 85,
       "norm_label": "item"
     },
     {
@@ -8678,7 +8708,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "edukasi_edukasi_card_ontap",
-      "community": 111,
+      "community": 85,
       "norm_label": "ontap"
     },
     {
@@ -8698,7 +8728,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "edukasi_edukasi_card_build",
-      "community": 111,
+      "community": 85,
       "norm_label": "build"
     },
     {
@@ -8708,7 +8738,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_cached_network_image_cached_network_image_dart",
-      "community": 114,
+      "community": 85,
       "norm_label": "package:cached_network_image/cached_network_image.dart"
     },
     {
@@ -8718,7 +8748,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_intl_intl_dart",
-      "community": 43,
+      "community": 114,
       "norm_label": "package:intl/intl.dart"
     },
     {
@@ -8888,7 +8918,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "edukasi_edukasi_list_screen",
-      "community": 101,
+      "community": 85,
       "norm_label": "edukasi_list_screen.dart"
     },
     {
@@ -8898,7 +8928,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "edukasi_edukasi_list_screen_edukasilistscreen",
-      "community": 101,
+      "community": 85,
       "norm_label": "edukasilistscreen"
     },
     {
@@ -8908,7 +8938,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "edukasi_edukasi_list_screen_edukasilistscreenstate",
-      "community": 101,
+      "community": 85,
       "norm_label": "_edukasilistscreenstate"
     },
     {
@@ -8918,7 +8948,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "edukasi_edukasi_list_screen_createstate",
-      "community": 101,
+      "community": 85,
       "norm_label": "createstate"
     },
     {
@@ -8938,7 +8968,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "edukasi_edukasi_list_screen_build",
-      "community": 101,
+      "community": 85,
       "norm_label": "build"
     },
     {
@@ -8948,7 +8978,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_shimmer_loading_dart",
-      "community": 101,
+      "community": 83,
       "norm_label": "../../widgets/shimmer_loading.dart"
     },
     {
@@ -8958,7 +8988,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "edukasi_card_dart",
-      "community": 101,
+      "community": 85,
       "norm_label": "edukasi_card.dart"
     },
     {
@@ -8978,7 +9008,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "home_home_screen_homescreen",
-      "community": 44,
+      "community": 111,
       "norm_label": "homescreen"
     },
     {
@@ -9128,7 +9158,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "icondata",
-      "community": 99,
+      "community": 102,
       "norm_label": "icondata"
     },
     {
@@ -9158,7 +9188,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "color",
-      "community": 13,
+      "community": 99,
       "norm_label": "color"
     },
     {
@@ -9208,7 +9238,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "home_home_screen_onauthchanged",
-      "community": 116,
+      "community": 43,
       "norm_label": "_onauthchanged"
     },
     {
@@ -9328,7 +9358,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "home_home_screen_buildedukasisection",
-      "community": 102,
+      "community": 119,
       "norm_label": "_buildedukasisection"
     },
     {
@@ -9338,7 +9368,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_home_edukasi",
-      "community": 102,
+      "community": 119,
       "norm_label": "route /home/edukasi"
     },
     {
@@ -9358,7 +9388,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "home_home_screen_shownotifpopup",
-      "community": 67,
+      "community": 120,
       "norm_label": "_shownotifpopup"
     },
     {
@@ -9368,7 +9398,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_notifikasi_detail",
-      "community": 43,
+      "community": 120,
       "norm_label": "route /notifikasi/detail"
     },
     {
@@ -9378,7 +9408,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_notifikasi",
-      "community": 67,
+      "community": 120,
       "norm_label": "route /notifikasi"
     },
     {
@@ -9488,7 +9518,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_empty_state_dart",
-      "community": 41,
+      "community": 40,
       "norm_label": "../../widgets/empty_state.dart"
     },
     {
@@ -9558,7 +9588,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "notifikasi_detail_notifikasi_screen",
-      "community": 43,
+      "community": 114,
       "norm_label": "detail_notifikasi_screen.dart"
     },
     {
@@ -9568,7 +9598,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "notifikasi_detail_notifikasi_screen_detailnotifikasiscreen",
-      "community": 43,
+      "community": 114,
       "norm_label": "detailnotifikasiscreen"
     },
     {
@@ -9578,7 +9608,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "notifikasi_detail_notifikasi_screen_notification",
-      "community": 43,
+      "community": 114,
       "norm_label": "notification"
     },
     {
@@ -9588,7 +9618,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "notifikasi_detail_notifikasi_screen_build",
-      "community": 43,
+      "community": 114,
       "norm_label": "build"
     },
     {
@@ -9678,7 +9708,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "notifikasi_notifikasi_screen_loaddata",
-      "community": 116,
+      "community": 43,
       "norm_label": "_loaddata"
     },
     {
@@ -9688,7 +9718,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "notifikasi_notifikasi_screen_build",
-      "community": 43,
+      "community": 120,
       "norm_label": "build"
     },
     {
@@ -9718,7 +9748,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_login_prompt_dart",
-      "community": 79,
+      "community": 40,
       "norm_label": "../../widgets/login_prompt.dart"
     },
     {
@@ -10358,7 +10388,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "profile_edit_profile_screen_saveprofile",
-      "community": 116,
+      "community": 53,
       "norm_label": "_saveprofile"
     },
     {
@@ -10368,7 +10398,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "profile_edit_profile_screen_build",
-      "community": 116,
+      "community": 53,
       "norm_label": "build"
     },
     {
@@ -10418,7 +10448,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "profile_profile_screen_profilescreen",
-      "community": 44,
+      "community": 111,
       "norm_label": "profilescreen"
     },
     {
@@ -10648,7 +10678,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "profile_profile_screen_buildinfosection",
-      "community": 36,
+      "community": 31,
       "norm_label": "_buildinfosection"
     },
     {
@@ -10658,7 +10688,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_settings_tentang",
-      "community": 36,
+      "community": 31,
       "norm_label": "route /settings/tentang"
     },
     {
@@ -10708,7 +10738,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "profile_qrcode_screen_qrcodescreen",
-      "community": 44,
+      "community": 111,
       "norm_label": "qrcodescreen"
     },
     {
@@ -10818,7 +10848,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "profile_qrcode_screen_build",
-      "community": 116,
+      "community": 15,
       "norm_label": "build"
     },
     {
@@ -11228,7 +11258,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "reward_tukar_poin_screen_build",
-      "community": 40,
+      "community": 116,
       "norm_label": "build"
     },
     {
@@ -11298,7 +11328,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "saldo_riwayat_screen_riwayatscreen",
-      "community": 44,
+      "community": 111,
       "norm_label": "riwayatscreen"
     },
     {
@@ -11438,7 +11468,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "saldo_riwayat_screen_loaddata",
-      "community": 62,
+      "community": 116,
       "norm_label": "_loaddata"
     },
     {
@@ -11498,7 +11528,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "saldo_tarik_saldo_screen_tariksaldoscreen",
-      "community": 44,
+      "community": 111,
       "norm_label": "tariksaldoscreen"
     },
     {
@@ -11508,7 +11538,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "saldo_tarik_saldo_screen_tariksaldoscreenstate",
-      "community": 62,
+      "community": 111,
       "norm_label": "_tariksaldoscreenstate"
     },
     {
@@ -11848,7 +11878,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "saldo_tarik_saldo_screen_getsaldo",
-      "community": 116,
+      "community": 33,
       "norm_label": "_getsaldo"
     },
     {
@@ -11968,7 +11998,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "setoran_ajukan_penjemputan_screen_ajukanpenjemputanscreen",
-      "community": 44,
+      "community": 111,
       "norm_label": "ajukanpenjemputanscreen"
     },
     {
@@ -12418,7 +12448,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "setoran_ajukan_penjemputan_screen_submit",
-      "community": 116,
+      "community": 41,
       "norm_label": "_submit"
     },
     {
@@ -12478,7 +12508,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "setoran_info_sampah_screen_infosampahscreen",
-      "community": 44,
+      "community": 111,
       "norm_label": "infosampahscreen"
     },
     {
@@ -12498,7 +12528,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "setoran_info_sampah_screen_detailsection",
-      "community": 71,
+      "community": 44,
       "norm_label": "_detailsection"
     },
     {
@@ -12518,7 +12548,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "setoran_info_sampah_screen_categorycard",
-      "community": 71,
+      "community": 44,
       "norm_label": "_categorycard"
     },
     {
@@ -12708,7 +12738,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "setoran_penjemputan_screen_penjemputanscreenstate",
-      "community": 116,
+      "community": 41,
       "norm_label": "_penjemputanscreenstate"
     },
     {
@@ -12788,7 +12818,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "setoran_penjemputan_screen_loaddata",
-      "community": 116,
+      "community": 41,
       "norm_label": "_loaddata"
     },
     {
@@ -13128,7 +13158,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "splash_splash_screen_initstate",
-      "community": 96,
+      "community": 91,
       "norm_label": "initstate"
     },
     {
@@ -13658,7 +13688,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "c_users_pc_projects_projects_miru_mirumobileapp_lib_services_interceptors_envelope_interceptor_dart",
-      "community": 93,
+      "community": 77,
       "norm_label": "envelope_interceptor.dart"
     },
     {
@@ -13668,7 +13698,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "interceptors_envelope_interceptor_envelopeinterceptor",
-      "community": 93,
+      "community": 77,
       "norm_label": "envelopeinterceptor"
     },
     {
@@ -13678,7 +13708,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "interceptor",
-      "community": 93,
+      "community": 77,
       "norm_label": "interceptor"
     },
     {
@@ -13688,7 +13718,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "interceptors_envelope_interceptor_onresponse",
-      "community": 93,
+      "community": 77,
       "norm_label": "onresponse"
     },
     {
@@ -13698,7 +13728,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "interceptors_envelope_interceptor_onerror",
-      "community": 93,
+      "community": 77,
       "norm_label": "onerror"
     },
     {
@@ -13708,7 +13738,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "interceptors_envelope_interceptor_envelopeexception",
-      "community": 93,
+      "community": 77,
       "norm_label": "_envelopeexception"
     },
     {
@@ -13718,7 +13748,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_api_envelope_dart",
-      "community": 93,
+      "community": 77,
       "norm_label": "../../models/api_envelope.dart"
     },
     {
@@ -14438,7 +14468,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_complete_profile_dialog_guardtransactionrequiresaddress",
-      "community": 76,
+      "community": 116,
       "norm_label": "guardtransactionrequiresaddress"
     },
     {
@@ -15248,7 +15278,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_login_prompt_build",
-      "community": 74,
+      "community": 31,
       "norm_label": "build"
     },
     {
@@ -15258,7 +15288,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_markdown_document",
-      "community": 114,
+      "community": 85,
       "norm_label": "markdown_document.dart"
     },
     {
@@ -15268,7 +15298,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_markdown_document_markdowndocument",
-      "community": 114,
+      "community": 85,
       "norm_label": "markdowndocument"
     },
     {
@@ -15278,7 +15308,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_markdown_document_data",
-      "community": 114,
+      "community": 85,
       "norm_label": "data"
     },
     {
@@ -15288,7 +15318,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_markdown_document_build",
-      "community": 114,
+      "community": 85,
       "norm_label": "build"
     },
     {
@@ -15298,7 +15328,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_flutter_markdown_plus_flutter_markdown_plus_dart",
-      "community": 114,
+      "community": 85,
       "norm_label": "package:flutter_markdown_plus/flutter_markdown_plus.dart"
     },
     {
@@ -16118,7 +16148,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_user_avatar",
-      "community": 122,
+      "community": 85,
       "norm_label": "user_avatar.dart"
     },
     {
@@ -16128,7 +16158,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_user_avatar_useravatar",
-      "community": 122,
+      "community": 85,
       "norm_label": "useravatar"
     },
     {
@@ -16138,7 +16168,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_user_avatar_name",
-      "community": 122,
+      "community": 85,
       "norm_label": "name"
     },
     {
@@ -16148,7 +16178,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_user_avatar_imageurl",
-      "community": 122,
+      "community": 85,
       "norm_label": "imageurl"
     },
     {
@@ -16158,7 +16188,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_user_avatar_radius",
-      "community": 122,
+      "community": 85,
       "norm_label": "radius"
     },
     {
@@ -16168,7 +16198,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_user_avatar_build",
-      "community": 122,
+      "community": 85,
       "norm_label": "build"
     },
     {
@@ -16178,7 +16208,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_waste_invite_modal",
-      "community": 102,
+      "community": 119,
       "norm_label": "waste_invite_modal.dart"
     },
     {
@@ -16188,7 +16218,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_waste_invite_modal_showwasteinvitemodal",
-      "community": 102,
+      "community": 119,
       "norm_label": "showwasteinvitemodal"
     },
     {
@@ -16198,7 +16228,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_welcome_back_modal",
-      "community": 96,
+      "community": 113,
       "norm_label": "welcome_back_modal.dart"
     },
     {
@@ -16208,7 +16238,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_welcome_back_modal_name",
-      "community": 96,
+      "community": 113,
       "norm_label": "name"
     },
     {
@@ -16218,7 +16248,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_welcome_back_modal_title",
-      "community": 96,
+      "community": 113,
       "norm_label": "title"
     },
     {
@@ -16228,7 +16258,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_welcome_back_modal_showwelcomebackmodal",
-      "community": 96,
+      "community": 113,
       "norm_label": "showwelcomebackmodal"
     },
     {
@@ -19334,6 +19364,27 @@
   ],
   "links": [
     {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "android/app/build.gradle.kts",
+      "source_location": "L17",
+      "weight": 1.0,
+      "source": "app_build_gradle",
+      "target": "app_build_gradle_requiresigningproperty",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "android/app/build.gradle.kts",
+      "source_location": "L17",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "app_build_gradle_requiresigningproperty",
+      "target": "android_app_build_gradle_kts_string",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
@@ -19378,43 +19429,53 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "android/app/src/main/kotlin/com/example/mirumobileapp/MainActivity.kt",
+      "source_file": "android/app/src/main/kotlin/com/mirubanksampah/app/MainActivity.kt",
       "source_location": "L7",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "mirumobileapp_mainactivity",
-      "target": "mirumobileapp_mainactivity_mainactivity"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "android/app/src/main/kotlin/com/example/mirumobileapp/MainActivity.kt",
-      "source_location": "L5",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "mirumobileapp_mainactivity_mainactivity",
-      "target": "flutteractivity"
+      "source": "app_mainactivity",
+      "target": "app_mainactivity_mainactivity",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
       "confidence": "EXTRACTED",
-      "source_file": "android/app/src/main/kotlin/com/example/mirumobileapp/MainActivity.kt",
+      "source_file": "android/app/src/main/kotlin/com/mirubanksampah/app/MainActivity.kt",
       "source_location": "L8",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "mirumobileapp_mainactivity_mainactivity",
-      "target": "mirumobileapp_mainactivity_mainactivity_oncreate"
+      "source": "app_mainactivity_mainactivity",
+      "target": "app_mainactivity_mainactivity_oncreate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "android/app/src/main/kotlin/com/mirubanksampah/app/MainActivity.kt",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "app_mainactivity_mainactivity",
+      "target": "flutteractivity",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
       "confidence": "EXTRACTED",
-      "source_file": "android/app/src/main/kotlin/com/example/mirumobileapp/MainActivity.kt",
+      "source_file": "android/app/src/main/kotlin/com/mirubanksampah/app/MainActivity.kt",
       "source_location": "L8",
       "weight": 1.0,
       "context": "parameter_type",
-      "confidence_score": 1.0,
-      "source": "mirumobileapp_mainactivity_mainactivity_oncreate",
-      "target": "bundle"
+      "source": "app_mainactivity_mainactivity_oncreate",
+      "target": "bundle",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "android/scripts/setup-release-signing.ps1",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "scripts_setup_release_signing",
+      "target": "scripts_setup_release_signing_resolve_keytoolpath",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -19474,9 +19535,9 @@
       "source_file": "ios/Flutter/flutter_export_environment.sh",
       "source_location": "L1",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "c_users_pc_projects_projects_miru_mirumobileapp_ios_flutter_flutter_export_environment_sh",
-      "target": "c_users_pc_projects_projects_miru_mirumobileapp_ios_flutter_flutter_export_environment_sh__entry"
+      "source": "flutter_flutter_export_environment",
+      "target": "c_users_pc_projects_miru_mirumobileapp_ios_flutter_flutter_export_environment_sh__entry",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -27278,17 +27339,6 @@
       "weight": 1.0,
       "context": "variable_type",
       "source": "models_activity_item",
-      "target": "string"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/models/activity_item.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "source": "models_activity_item",
       "target": "string_get"
     },
     {
@@ -27609,303 +27659,6 @@
       "context": "variable_type",
       "source": "widgets_harga_berlaku_banner",
       "target": "datetime"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/screens/auth/forgot_password_screen.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "source": "auth_forgot_password_screen",
-      "target": "string"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/screens/auth/phone_verify_screen.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "source": "auth_phone_verify_screen",
-      "target": "string"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/screens/auth/register_screen.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "source": "auth_register_screen",
-      "target": "string"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/screens/auth/reset_password_screen.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "source": "auth_reset_password_screen",
-      "target": "string"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/models/api_envelope.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "source": "c_users_pc_projects_projects_miru_mirumobileapp_lib_models_api_envelope_dart",
-      "target": "string"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/models/deposit.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "source": "c_users_pc_projects_projects_miru_mirumobileapp_lib_models_deposit_dart",
-      "target": "string"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/models/withdrawal.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "source": "c_users_pc_projects_projects_miru_mirumobileapp_lib_models_withdrawal_dart",
-      "target": "string"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/models/api_exception.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "source": "models_api_exception",
-      "target": "string"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/models/institution_settings.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "source": "models_institution_settings",
-      "target": "string"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/models/konten_edukasi.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "source": "models_konten_edukasi",
-      "target": "string"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/models/notification.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "source": "models_notification",
-      "target": "string"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/models/pickup.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "source": "models_pickup",
-      "target": "string"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/models/user.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "source": "models_user",
-      "target": "string"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/providers/auth_provider.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "source": "providers_auth_provider",
-      "target": "string"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/providers/edukasi_provider.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "source": "providers_edukasi_provider",
-      "target": "string"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/providers/home_provider.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "source": "providers_home_provider",
-      "target": "string"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/providers/notification_provider.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "source": "providers_notification_provider",
-      "target": "string"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/providers/pengaduan_provider.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "source": "providers_pengaduan_provider",
-      "target": "string"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/providers/pengumuman_provider.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "source": "providers_pengumuman_provider",
-      "target": "string"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/providers/penjemputan_provider.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "source": "providers_penjemputan_provider",
-      "target": "string"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/providers/profile_provider.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "source": "providers_profile_provider",
-      "target": "string"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/providers/reward_provider.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "source": "providers_reward_provider",
-      "target": "string"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/providers/saldo_provider.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "source": "providers_saldo_provider",
-      "target": "string"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/providers/settings_provider.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "source": "providers_settings_provider",
-      "target": "string"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/screens/saldo/riwayat_screen.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "source": "saldo_riwayat_screen",
-      "target": "string"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/screens/saldo/tarik_saldo_screen.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "source": "saldo_tarik_saldo_screen",
-      "target": "string"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/widgets/user_avatar.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "source": "widgets_user_avatar",
-      "target": "string"
     },
     {
       "relation": "references",
@@ -48662,5 +48415,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "985ac6f03efa982060cb6e77161f4e0431250d65"
+  "built_at_commit": "9b7a9ca60d45ed031c07be395ea6485f64b04130"
 }

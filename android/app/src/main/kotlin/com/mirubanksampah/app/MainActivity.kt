@@ -1,4 +1,4 @@
-package com.example.mirumobileapp
+package com.mirubanksampah.app
 
 import android.os.Build
 import android.os.Bundle

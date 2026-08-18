@@ -179,6 +179,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() => _isSubmitting = true);
 
     final auth = context.read<AuthProvider>();
+    final launch = context.read<LaunchExperience>();
     final username = _usernameController.text.trim();
     final password = _passwordController.text;
 
@@ -188,7 +189,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         username: username,
         noHp: _noHpController.text.trim(),
       );
-      final launch = context.read<LaunchExperience>();
       launch.markRegistered();
       await auth.login(username: username, password: password);
       if (!mounted) return;
@@ -198,7 +198,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         context.go('/onboarding');
       }
     } on ApiException catch (e) {
-      context.read<LaunchExperience>().consumeOnboarding();
+      launch.consumeOnboarding();
       if (!mounted) return;
       if (e.fieldErrors != null && e.fieldErrors!.isNotEmpty) {
         _applyFieldErrors(e.fieldErrors);
@@ -206,7 +206,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       }
       _showError(e.message);
     } catch (_) {
-      context.read<LaunchExperience>().consumeOnboarding();
+      launch.consumeOnboarding();
       if (!mounted) return;
       _showError('Terjadi kesalahan. Silakan coba lagi.');
     } finally {

@@ -5,18 +5,13 @@
     "semantic_hash": ""
   },
   "android/app/build.gradle.kts": {
-    "mtime": 1786700089.4401627,
-    "ast_hash": "e62a236b2a8448f35a0e4d9d5ad16a89",
+    "mtime": 1787033392.7799454,
+    "ast_hash": "26ce48ed3089d437e90c37c6f23c41c1",
     "semantic_hash": ""
   },
   "android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java": {
     "mtime": 1786670853.354592,
     "ast_hash": "534671c2ef2b9720a17d46aec83eebab",
-    "semantic_hash": ""
-  },
-  "android/app/src/main/kotlin/com/example/mirumobileapp/MainActivity.kt": {
-    "mtime": 1784704715.2211576,
-    "ast_hash": "74581de43297386297a5a28a866e4957",
     "semantic_hash": ""
   },
   "android/build.gradle.kts": {
@@ -35,23 +30,23 @@
     "semantic_hash": ""
   },
   "ios/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage/Package.swift": {
-    "mtime": 1786700113.407157,
+    "mtime": 1787033433.182807,
     "ast_hash": "63bc00d19466662a75b7492ac07d5a97",
     "semantic_hash": ""
   },
   "ios/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage/Sources/FlutterGeneratedPluginSwiftPackage/FlutterGeneratedPluginSwiftPackage.swift": {
-    "mtime": 1783059458.8040464,
+    "mtime": 1787033430.9924638,
     "ast_hash": "e6366d8685ad56268730656aa0a6e00c",
     "semantic_hash": ""
   },
   "ios/Flutter/ephemeral/flutter_lldb_helper.py": {
-    "mtime": 1783059458.719321,
+    "mtime": 1787033430.5145543,
     "ast_hash": "98fc75412162af387e2e3461e4e58094",
     "semantic_hash": ""
   },
   "ios/Flutter/flutter_export_environment.sh": {
-    "mtime": 1783059458.7300074,
-    "ast_hash": "c9a43231e0bba4724d3da32b4ac45ffb",
+    "mtime": 1787033430.5261426,
+    "ast_hash": "a19ddda3157567ea3b92bfd989d6ee58",
     "semantic_hash": ""
   },
   "ios/RunnerTests/RunnerTests.swift": {
@@ -852,6 +847,16 @@
   "lib/widgets/welcome_back_modal.dart": {
     "mtime": 1786677983.5577488,
     "ast_hash": "f290cb880df1b43576766ea99d4a7024",
+    "semantic_hash": ""
+  },
+  "android/app/src/main/kotlin/com/mirubanksampah/app/MainActivity.kt": {
+    "mtime": 1787033391.8463552,
+    "ast_hash": "59d1a7b75f4eaf324e45088f2e2fa521",
+    "semantic_hash": ""
+  },
+  "android/scripts/setup-release-signing.ps1": {
+    "mtime": 1787026577.205529,
+    "ast_hash": "6d8bf6e4c429e60abc9b8ee1141559a4",
     "semantic_hash": ""
   }
 }
