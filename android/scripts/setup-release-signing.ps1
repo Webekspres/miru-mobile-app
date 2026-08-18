@@ -79,6 +79,6 @@ Write-Host "  Config   : $keyPropsPath"
 Write-Host ""
 Write-Host "Build AAB (PowerShell):" -ForegroundColor Cyan
 Write-Host '  cd mirumobileapp'
-Write-Host '  flutter build appbundle --dart-define=API_BASE_URL=https://api.dev.mirubanksampah.id'
+Write-Host '  flutter build appbundle --dart-define=API_BASE_URL=https://api.dev.mirubanksampah.id/api'
 Write-Host ""
 Write-Host "Simpan password dan backup keystore di tempat aman. Jangan commit ke git." -ForegroundColor Yellow
