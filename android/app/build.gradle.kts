@@ -1,4 +1,3 @@
-import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
@@ -10,7 +9,16 @@ plugins {
 val keystoreProperties = Properties()
 val keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+    keystorePropertiesFile.inputStream().use { input ->
+        keystoreProperties.load(input)
+    }
+}
+
+fun Properties.requireSigningProperty(name: String): String {
+    val bomKey = "\uFEFF$name"
+    return getProperty(name)
+        ?: getProperty(bomKey)
+        ?: throw GradleException("Missing '$name' in ${keystorePropertiesFile.path}")
 }
 
 android {
@@ -37,10 +45,10 @@ android {
     signingConfigs {
         if (keystorePropertiesFile.exists()) {
             create("release") {
-                keyAlias = keystoreProperties["keyAlias"] as String
-                keyPassword = keystoreProperties["keyPassword"] as String
-                storeFile = keystoreProperties["storeFile"]?.let { file(it) }
-                storePassword = keystoreProperties["storePassword"] as String
+                keyAlias = keystoreProperties.requireSigningProperty("keyAlias")
+                keyPassword = keystoreProperties.requireSigningProperty("keyPassword")
+                storeFile = file(keystoreProperties.requireSigningProperty("storeFile"))
+                storePassword = keystoreProperties.requireSigningProperty("storePassword")
             }
         }
     }

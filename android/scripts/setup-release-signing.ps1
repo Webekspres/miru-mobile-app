@@ -70,7 +70,7 @@ storePassword=$storePassPlain
 keyPassword=$keyPassPlain
 keyAlias=upload
 storeFile=../upload-keystore.jks
-"@ | Set-Content -Path $keyPropsPath -Encoding UTF8
+"@ | Set-Content -Path $keyPropsPath -Encoding utf8NoBOM
 
 Write-Host ""
 Write-Host "Selesai." -ForegroundColor Green
