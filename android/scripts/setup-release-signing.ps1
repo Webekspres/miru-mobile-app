@@ -81,4 +81,4 @@ Write-Host "Build AAB (PowerShell):" -ForegroundColor Cyan
 Write-Host '  cd mirumobileapp'
 Write-Host '  flutter build appbundle --dart-define=API_BASE_URL=https://api.dev.mirubanksampah.id'
 Write-Host ""
-Write-Host "Simpan password & backup keystore di tempat aman — jangan commit ke git." -ForegroundColor Yellow
+Write-Host "Simpan password dan backup keystore di tempat aman. Jangan commit ke git." -ForegroundColor Yellow
