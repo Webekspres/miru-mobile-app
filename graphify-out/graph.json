@@ -9,7 +9,7 @@
       "source_file": "android/app/build.gradle.kts",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "c_users_pc_projects_projects_miru_mirumobileapp_android_app_build_gradle_kts",
+      "id": "app_build_gradle",
       "community": 103,
       "norm_label": "build.gradle.kts"
     },
@@ -548,7 +548,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "authsession",
-      "community": 43,
+      "community": 116,
       "norm_label": "authsession"
     },
     {
@@ -628,7 +628,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "notificationprovider",
-      "community": 43,
+      "community": 116,
       "norm_label": "notificationprovider"
     },
     {
@@ -8988,7 +8988,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "home_home_screen_homescreenstate",
-      "community": 43,
+      "community": 116,
       "norm_label": "_homescreenstate"
     },
     {
@@ -9208,7 +9208,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "home_home_screen_onauthchanged",
-      "community": 43,
+      "community": 116,
       "norm_label": "_onauthchanged"
     },
     {
@@ -9228,7 +9228,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "home_home_screen_loaddata",
-      "community": 43,
+      "community": 116,
       "norm_label": "_loaddata"
     },
     {
@@ -9678,7 +9678,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "notifikasi_notifikasi_screen_loaddata",
-      "community": 43,
+      "community": 116,
       "norm_label": "_loaddata"
     },
     {
@@ -10568,7 +10568,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "profile_profile_screen_build",
-      "community": 43,
+      "community": 116,
       "norm_label": "build"
     },
     {
@@ -10798,7 +10798,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "profile_qrcode_screen_ensuredataloaded",
-      "community": 43,
+      "community": 116,
       "norm_label": "_ensuredataloaded"
     },
     {
@@ -10818,7 +10818,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "profile_qrcode_screen_build",
-      "community": 43,
+      "community": 116,
       "norm_label": "build"
     },
     {
@@ -11448,7 +11448,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "saldo_riwayat_screen_build",
-      "community": 43,
+      "community": 116,
       "norm_label": "build"
     },
     {
@@ -11798,7 +11798,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "saldo_tarik_saldo_screen_initstate",
-      "community": 43,
+      "community": 116,
       "norm_label": "initstate"
     },
     {
@@ -11918,7 +11918,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "saldo_tarik_saldo_screen_build",
-      "community": 43,
+      "community": 116,
       "norm_label": "build"
     },
     {
@@ -13128,7 +13128,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "splash_splash_screen_initstate",
-      "community": 91,
+      "community": 96,
       "norm_label": "initstate"
     },
     {
@@ -48662,5 +48662,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "8744ba806f955aac0087bd932b1a602db4f846a2"
+  "built_at_commit": "985ac6f03efa982060cb6e77161f4e0431250d65"
 }

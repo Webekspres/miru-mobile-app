@@ -5,8 +5,8 @@
     "semantic_hash": ""
   },
   "android/app/build.gradle.kts": {
-    "mtime": 1783059426.7887855,
-    "ast_hash": "3738f579f939ce76f90d9e22b47729de",
+    "mtime": 1786700089.4401627,
+    "ast_hash": "e62a236b2a8448f35a0e4d9d5ad16a89",
     "semantic_hash": ""
   },
   "android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java": {
@@ -35,7 +35,7 @@
     "semantic_hash": ""
   },
   "ios/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage/Package.swift": {
-    "mtime": 1786678039.8326933,
+    "mtime": 1786700113.407157,
     "ast_hash": "63bc00d19466662a75b7492ac07d5a97",
     "semantic_hash": ""
   },

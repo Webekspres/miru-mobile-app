@@ -1,7 +1,7 @@
 # Graph Report - mirumobileapp  (2026-08-14)
 
 ## Corpus Check
-- 132 files · ~249,174 words
+- 132 files · ~249,195 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `8744ba80`
+- Built from commit: `985ac6f0`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -312,8 +312,8 @@ Cohesion: 0.10
 Nodes (19): alamat, email, fromJson, InstitutionSettings, isDiLuarJamKerja, jamBuka, jamBukaTime, jamOperasional (+11 more)
 
 ### Community 43 - "Community 43"
-Cohesion: 0.08
-Nodes (30): AuthSession, _HomeScreenState, _loadData, _onAuthChanged, ../../models/notification.dart, NotificationProvider, build, DetailNotifikasiScreen (+22 more)
+Cohesion: 0.11
+Nodes (18): ../../models/notification.dart, build, DetailNotifikasiScreen, notification, build, createState, isUnread, item (+10 more)
 
 ### Community 44 - "Community 44"
 Cohesion: 0.12
@@ -508,8 +508,8 @@ Cohesion: 0.10
 Nodes (20): exit_dialog.dart, package:flutter/services.dart, StatefulNavigationShell, static const double, badgeCount, _barHeight, BottomNavScaffold, _fabProtrude (+12 more)
 
 ### Community 91 - "Community 91"
-Cohesion: 0.15
-Nodes (20): _submitOtp, _submitPhone, _submitUsername, _handleLogin, build, _sendOtp, _verifyOtp, _handleRegister (+12 more)
+Cohesion: 0.16
+Nodes (19): _submitOtp, _submitPhone, _submitUsername, _handleLogin, build, _sendOtp, _verifyOtp, _handleRegister (+11 more)
 
 ### Community 92 - "Community 92"
 Cohesion: 0.25
@@ -528,8 +528,8 @@ Cohesion: 0.17
 Nodes (11): _apiClient, clearCache, _error, findById, hasError, _isLoading, _items, loadDetail (+3 more)
 
 ### Community 96 - "Community 96"
-Cohesion: 0.14
-Nodes (13): ../config/constants.dart, ../../providers/auth_provider.dart, build, createState, _minDisplay, previewMode, _splashAsset, SplashScreen (+5 more)
+Cohesion: 0.13
+Nodes (14): ../config/constants.dart, ../../providers/auth_provider.dart, build, createState, initState, _minDisplay, previewMode, _splashAsset (+6 more)
 
 ### Community 97 - "Community 97"
 Cohesion: 0.20
@@ -580,8 +580,8 @@ Cohesion: 0.13
 Nodes (14): EdgeInsetsGeometry?, List, actions, AppScaffold, body, bodyPadding, bottomNavigationBar, build (+6 more)
 
 ### Community 116 - "Community 116"
-Cohesion: 0.17
-Nodes (22): HomeProvider, _PengaduanScreenState, PenjemputanProvider, build, _saveProfile, _onVisible, _ProfileScreenState, _QRCodeScreenState (+14 more)
+Cohesion: 0.12
+Nodes (34): AuthSession, _HomeScreenState, _loadData, _onAuthChanged, HomeProvider, NotificationProvider, _loadData, _PengaduanScreenState (+26 more)
 
 ### Community 117 - "Community 117"
 Cohesion: 0.22
