@@ -201,10 +201,19 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      return await authService.requestPhoneOtp(
+      final data = await authService.requestPhoneOtp(
         noHp: phone,
         username: resolvedUsername,
       );
+
+      // Staging/testing: backend SKIP_PHONE_VERIFICATION auto-verifies on request.
+      if (data['phone_verified'] == true && _user != null) {
+        final userData = await authService.getMe();
+        _user = User.fromJson(userData);
+        authSession.setNeedsPhoneVerification(!_user!.phoneVerified);
+      }
+
+      return data;
     } on ApiException catch (e) {
       _error = e.message;
       rethrow;

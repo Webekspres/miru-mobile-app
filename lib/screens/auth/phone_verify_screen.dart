@@ -69,14 +69,23 @@ class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
       final data = await context.read<AuthProvider>().requestPhoneOtp();
       if (!mounted) return;
 
+      if (data['phone_verified'] == true) {
+        context.go('/home');
+        return;
+      }
+
       setState(() {
         _otpSent = true;
         _maskedPhone = data['masked_phone'] as String?;
       });
       _startResendCooldown(60);
-      _showInfo(
-        'Cek notifikasi WhatsApp untuk kode verifikasi.',
-      );
+
+      final devOtp = data['dev_otp'] as String?;
+      if (data['dev_otp_mode'] == true && devOtp != null && devOtp.isNotEmpty) {
+        _showInfo('Mode development: gunakan OTP $devOtp');
+      } else {
+        _showInfo('Cek notifikasi WhatsApp untuk kode verifikasi.');
+      }
     } on ApiException catch (e) {
       if (!mounted) return;
       _showError(e.message);
