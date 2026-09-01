@@ -1,6 +1,6 @@
 # 08 — Task List: Mobile App Development Roadmap
 
-> **Dokumen ini** adalah roadmap **mirumobileapp** (Android prioritas).
+> **Dokumen ini** adalah roadmap **mobile** (Flutter, Android prioritas).
 > **Urutan:** item **belum selesai di atas**; item **sudah selesai di bawah** (arsip).
 >
 > Item pengembangan lanjutan hanya dari dokumen persyaratan (Proposal, Jawaban,
@@ -34,15 +34,15 @@
 | —    | Out of Scope          | Larangan sistem / di luar 17 modul   | —                    | ⛔                     |
 
 
-> **Status proyek:** MVP mobile selesai. **Audit Temuan M0–M10 ✅.**
-> **Kerja aktif #1:** sisa Fase 8 (FCM, PDF, poin expire) + Fase 6 UAT + Fase 7 Play Store.
+> **Status proyek:** MVP mobile selesai. **Audit Temuan M0–M10 ✅.** Revisi UX klien (notif, tarik saldo, profil, dll.) sebagian besar ✅ — arsip BAGIAN B.
+> **Kerja aktif #1:** sisa Fase 8 (FCM, PDF, info poin, metode tarik) + Fase 6 UAT + Fase 7 Play Store + **riwayat filter scroll**.
 > Hanya item dari dokumen persyaratan; **tidak menambah modul** di luar cakupan nasabah di bawah.
 
 
 
 ### Cakupan Modul — Mobile (Nasabah)
 
-Dari 17 modul sistem, **sebagian** di mobile; sisanya staff-only di web-admin.
+Dari 17 modul sistem, **sebagian** di mobile; sisanya staff-only di `web/`.
 
 
 | No  | Modul           | Screen                    | Status MVP | Lanjutan (sisa)                                  |
@@ -52,8 +52,8 @@ Dari 17 modul sistem, **sebagian** di mobile; sisanya staff-only di web-admin.
 | 4   | Info & Edukasi  | InfoSampah + Edukasi      | ✅          | Render Markdown ✅                                |
 | 5   | Katalog Harga   | InfoSampah / Home         | ✅          | Banner harga H-3 ✅                               |
 | 7   | Penjemputan     | List + Ajukan             | ✅          | Form UX, maps, validasi jadwal ✅                 |
-| 9   | Saldo & Riwayat | Riwayat, Home, Notifikasi | ✅          | Link riwayat; aktivitas campur; detail setoran ✅ |
-| 10  | Tarik Saldo     | TarikSaldo                | ✅          | Keyboard UX ✅; lampiran KTP ≥1jt ✅; PDF/metode |
+| 9   | Saldo & Riwayat | Riwayat, Home, Notifikasi | ✅          | Filter riwayat scroll 🔲; detail setoran ✅ |
+| 10  | Tarik Saldo     | TarikSaldo                | ✅          | Quick amount ✅; lampiran KTP ✅; PDF/metode 🔲 |
 | 11  | Poin & Reward   | Reward, Tukar             | ✅          | UI polish; copy konfirmasi ✅                     |
 | 14  | Pengaduan       | List + Form               | ✅          | Jenis “Lainnya” ✅                                |
 | 15  | Dashboard       | Home                      | ✅          | QR cepat + brightness ✅                          |
@@ -68,10 +68,11 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 
 ## Urutan kerja disarankan (Mobile)
 
-1. ~~⛔ Sisa Audit Temuan mobile (M1–M10)~~ ✅ — arsip BAGIAN B.
-2. Sisa Fase 8 yang belum tertutup temuan (FCM, PDF, poin expire).
-3. Fase 6 UAT beriringan; Fase 7 Play Store saat API production HTTPS siap.
-4. iOS & opsional — belakangan.
+1. ~~⛔ Sisa Audit Temuan mobile (M0–M10)~~ ✅ — arsip BAGIAN B.
+2. **Revisi UX klien** — riwayat filter scroll (satu item tersisa).
+3. Sisa Fase 8: FCM, PDF bukti, info poin, metode pencairan lengkap.
+4. Fase 6 UAT beriringan; Fase 7 Play Store saat API production HTTPS siap.
+5. iOS & opsional — belakangan.
 
 ---
 
@@ -84,6 +85,21 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 ---
 
 
+
+## Revisi UX klien — sisa
+
+> **Sumber:** `revisi-atau-penambahan-task-list.md` (root monorepo). Item selesai di BAGIAN B § Revisi UX.
+
+- [ ] **Riwayat — filter horizontal scroll** (bukan tap TabBar atas)
+  - Ganti `TabBar` di `RiwayatScreen` dengan chip/menu scroll horizontal (Semua / Setoran / Penarikan / Poin)
+  - Perilaku filter tetap sama; UX selaras permintaan klien
+
+### Skeleton — sisa revisi
+
+- [ ] **Skeleton hanya di bagian dinamis** — audit konsisten di semua layar (Home, Riwayat, Notifikasi, dll.)
+  - Jangan skeleton full-page jika header/statik sudah bisa tampil; ikuti pola shimmer per section yang sudah ada di beberapa layar
+
+---
 
 ## Fase 8: Pengembangan Lanjutan
 
@@ -195,7 +211,7 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 - [ ] Registrasi akun baru → login → home
 - [ ] Login demo `nasabah001` / `nasabah123` (setelah `seed_data` backend)
 - [ ] Login akun staff ditolak dengan pesan benar
-- [ ] Ajukan penjemputan → status update dari web-admin terlihat setelah refresh/buka ulang
+- [ ] Ajukan penjemputan → status update dari web admin terlihat setelah refresh/buka ulang
 - [ ] Tarik saldo → approve admin → saldo berkurang di home
 - [ ] Tukar poin → approve admin → poin berkurang
 - [ ] Ajukan pengaduan → admin tindak lanjut → status ditutup
@@ -287,6 +303,22 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 ---
 
 
+
+## Revisi UX klien — selesai ✅
+
+> **Sumber:** `revisi-atau-penambahan-task-list.md`. Diterapkan di kode; lacak sisa di BAGIAN A § Revisi UX.
+
+- [x] **Menu Notifikasi** di bottom nav (setelah Riwayat, sebelum Profil) + badge unread
+- [x] **Halaman notifikasi** — list judul + deskripsi truncate (`…`); halaman detail notifikasi
+- [x] **Pengumuman** dipindah dari settings → banner carousel di Beranda
+- [x] **Bottom nav hilang** di halaman nested (tarik saldo, penjemputan, detail, dll.)
+- [x] **Tap tab bottom nav** selalu reset ke root tab (bukan sisa stack detail)
+- [x] **Tarik saldo** — quick amount 50k/100k/150k/200k; format `50.000`; validasi real-time min/saldo (server-side tetap otoritatif)
+- [x] **Profil UX** — edit via icon pensil → `/profile/edit`; pengumuman tidak di settings hub
+- [x] **Popup lonceng** — preview 5 notifikasi unread; badge total unread (bukan hanya 5) di AppBar + bottom nav
+- [x] **Empty state ke tengah** di halaman pengaduan & penjemputan
+
+---
 
 ## Audit Temuan — selesai ✅
 
@@ -394,6 +426,7 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 - [x] Batal rata tengah; keyboard dismiss tanpa auto-fokus ulang
 - [x] Dialog sukses SLA 1–2 hari; field error envelope di form
 - [x] **Lampiran foto KTP** jika nominal ≥ Rp1.000.000 (bukan disimpan di profil; server hapus setelah proses)
+- [x] **Quick amount + format titik + validasi real-time** min Rp50.000 & cek saldo (revisi klien)
 
 
 
@@ -479,7 +512,7 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 
 ## Fase 0: Scaffold ✅
 
-- [x] Flutter project (`mirumobileapp`, Dart ^3.12.2)
+- [x] Flutter project (`mobile/`, Dart ^3.12.2)
 - [x] Android/iOS folder structure; `flutter_lints`
 - [x] Dokumentasi `.ai-steering/` selaras backend
 
@@ -527,7 +560,7 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 
 ## Fase 4: Navigation & UX Polish ✅
 
-- [x] Bottom nav Home | Riwayat | Profil; StatefulShellRoute
+- [x] Bottom nav **Beranda | Riwayat | Notifikasi | Profil** + FAB jemput tengah; `StatefulShellRoute`
 - [x] Loading / error BI / empty / confirm dialogs / pull-to-refresh
 - [x] Format Rupiah & tanggal `id_ID`
 - [x] `ListView.builder` / Consumer scoped
@@ -580,9 +613,11 @@ Modul **tidak ada** di mobile: 1, 6, 8, 12, 13, 16 (staff/admin only).
 | 7   | Ajukan pengaduan      | Admin tindak lanjut          | ✅                |
 | 8   | Lihat pengumuman      | Admin publish                | ✅                |
 | 9   | Refresh riwayat       | —                            | ✅                |
-| 10  | Baca artikel edukasi  | Admin kelola konten (web 🔲) | API ✅ / mobile ✅ |
+| 10  | Baca artikel edukasi  | Admin kelola konten (web ✅) | API ✅ / mobile ✅ |
 | 11  | Lupa password         | —                            | API ✅ / mobile ✅ |
-| 12  | Banner harga H-3      | Set tanggal berlaku (web 🔲) | API ✅ / mobile ✅ |
+| 12  | Banner harga H-3      | Set tanggal berlaku (web ✅) | API ✅ / mobile ✅ |
+| 13  | Notifikasi in-app     | Lonceng web ✅               | API ✅ / mobile ✅ |
+| 14  | PDF bukti transaksi   | UI 🔲                        | API ✅ / mobile 🔲 |
 
 
 ---
@@ -627,7 +662,7 @@ Seed: `python manage.py seed_data` di backend → akun demo nasabah.
 | Repo              | Dokumen                                             |
 | ----------------- | --------------------------------------------------- |
 | Backend (kanonik) | `backend/.ai-steering/11-security-and-privacy.md`   |
-| Web Admin         | `web-admin/.ai-steering/11-security-and-privacy.md` |
+| Web Admin         | `web/.ai-steering/11-security-and-privacy.md`       |
 | Mobile            | `.ai-steering/11-security-and-privacy.md`           |
 
 
