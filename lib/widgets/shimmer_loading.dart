@@ -171,15 +171,22 @@ class SkeletonCard extends StatelessWidget {
 }
 
 /// Skeleton for list screens (Riwayat, Penjemputan, Pengaduan).
+/// Header/app bar stays visible; this only fills the dynamic list area.
 class ListSkeleton extends StatelessWidget {
-  const ListSkeleton({super.key, this.itemCount = 6});
+  const ListSkeleton({
+    super.key,
+    this.itemCount = 6,
+    this.padding,
+  });
 
   final int itemCount;
+  final EdgeInsetsGeometry? padding;
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       physics: const NeverScrollableScrollPhysics(),
+      padding: padding,
       child: Column(
         children: List.generate(
           itemCount,

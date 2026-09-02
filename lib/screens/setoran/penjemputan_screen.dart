@@ -86,11 +86,10 @@ class _PenjemputanScreenState extends State<PenjemputanScreen>
       ),
       body: Consumer<PenjemputanProvider>(
         builder: (context, penjemputan, _) {
-          if (penjemputan.isLoading) {
-            return const SingleChildScrollView(
-              physics: NeverScrollableScrollPhysics(),
+          if (penjemputan.isLoading && penjemputan.pickups.isEmpty) {
+            return const ListSkeleton(
+              itemCount: 4,
               padding: EdgeInsets.fromLTRB(0, 16, 0, 24),
-              child: ListSkeleton(itemCount: 4),
             );
           }
 

@@ -34,7 +34,7 @@ class _PengumumanScreenState extends State<PengumumanScreen> {
       ),
       body: Consumer<PengumumanProvider>(
         builder: (context, provider, _) {
-          if (provider.isLoading) {
+          if (provider.isLoading && provider.announcements.isEmpty) {
             return SingleChildScrollView(
               physics: const NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),

@@ -65,16 +65,15 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
       ),
       body: Consumer<NotificationProvider>(
         builder: (context, notif, _) {
-          if (notif.isLoading) {
-            return SingleChildScrollView(
-              physics: const NeverScrollableScrollPhysics(),
+          if (notif.isLoading && notif.notifications.isEmpty) {
+            return ListSkeleton(
+              itemCount: 6,
               padding: EdgeInsets.fromLTRB(
-                16,
-                12,
-                16,
+                0,
+                4,
+                0,
                 BottomNavScaffold.scrollBottomPadding(context),
               ),
-              child: const ListSkeleton(itemCount: 6),
             );
           }
 

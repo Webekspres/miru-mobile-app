@@ -106,6 +106,7 @@ class PenjemputanProvider extends ChangeNotifier {
     double? latitude,
     double? longitude,
   }) async {
+    if (_isSubmitting) return null;
     _isSubmitting = true;
     _error = null;
     notifyListeners();

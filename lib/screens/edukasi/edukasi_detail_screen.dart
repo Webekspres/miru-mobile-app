@@ -7,6 +7,7 @@ import '../../config/theme.dart';
 import '../../models/konten_edukasi.dart';
 import '../../providers/edukasi_provider.dart';
 import '../../widgets/markdown_document.dart';
+import '../../widgets/shimmer_loading.dart';
 
 class EdukasiDetailScreen extends StatefulWidget {
   const EdukasiDetailScreen({super.key, required this.edukasiId});
@@ -44,7 +45,27 @@ class _EdukasiDetailScreenState extends State<EdukasiDetailScreen> {
         title: const Text('Edukasi Sampah'),
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Padding(
+              padding: EdgeInsets.fromLTRB(16, 16, 16, 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SkeletonBlock(height: 22, width: 220),
+                  SizedBox(height: 12),
+                  SkeletonBlock(height: 12, width: 120),
+                  SizedBox(height: 20),
+                  SkeletonCard(height: 180),
+                  SizedBox(height: 20),
+                  SkeletonBlock(height: 14),
+                  SizedBox(height: 10),
+                  SkeletonBlock(height: 14),
+                  SizedBox(height: 10),
+                  SkeletonBlock(height: 14, width: 260),
+                  SizedBox(height: 10),
+                  SkeletonBlock(height: 14),
+                ],
+              ),
+            )
           : item == null
               ? _MissingArticle(onBack: () => Navigator.of(context).maybePop())
               : _ArticleBody(item: item, theme: theme),
@@ -135,10 +156,7 @@ class _ArticleBody extends StatelessWidget {
                 imageUrl: item.gambarUrl!,
                 width: double.infinity,
                 fit: BoxFit.cover,
-                placeholder: (context, url) => const SizedBox(
-                  height: 180,
-                  child: Center(child: CircularProgressIndicator()),
-                ),
+                placeholder: (context, url) => const SkeletonCard(height: 180),
                 errorWidget: (context, url, error) => const SizedBox.shrink(),
               ),
             ),

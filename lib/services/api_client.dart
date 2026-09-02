@@ -5,6 +5,7 @@ import '../config/constants.dart';
 import '../providers/auth_session.dart';
 import 'interceptors/auth_interceptor.dart';
 import 'interceptors/envelope_interceptor.dart';
+import 'interceptors/safe_log_interceptor.dart';
 import 'storage_service.dart';
 
 class ApiClient {
@@ -34,21 +35,33 @@ class ApiClient {
     final refreshDio = Dio(options)..interceptors.add(EnvelopeInterceptor());
 
     final dio = Dio(options);
-    dio.interceptors.addAll([
-      AuthInterceptor(
+    dio.interceptors.addAll(
+      buildInterceptors(
         storage: storageService,
         refreshDio: refreshDio,
         authSession: authSession,
       ),
-      EnvelopeInterceptor(),
-      if (kDebugMode)
-        LogInterceptor(
-          requestBody: true,
-          responseBody: true,
-        ),
-    ]);
+    );
 
     return dio;
+  }
+
+  /// [enableDebugLog] follows [kDebugMode] so release never logs bodies.
+  static List<Interceptor> buildInterceptors({
+    required StorageService storage,
+    required Dio refreshDio,
+    required AuthSession authSession,
+    bool enableDebugLog = kDebugMode,
+  }) {
+    return [
+      AuthInterceptor(
+        storage: storage,
+        refreshDio: refreshDio,
+        authSession: authSession,
+      ),
+      EnvelopeInterceptor(),
+      if (enableDebugLog) SafeLogInterceptor(),
+    ];
   }
 
   Future<T> get<T>(

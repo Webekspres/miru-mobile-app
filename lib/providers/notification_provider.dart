@@ -62,7 +62,7 @@ class NotificationProvider extends ChangeNotifier {
     if (_isFetching) return;
     _isFetching = true;
 
-    if (!silent) {
+    if (!silent && _notifications.isEmpty) {
       _isLoading = true;
       _error = null;
       notifyListeners();

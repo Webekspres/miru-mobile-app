@@ -20,6 +20,7 @@ import '../../providers/profile_provider.dart';
 import '../../widgets/error_view.dart';
 import '../../widgets/login_prompt.dart';
 import '../../widgets/miru_logo.dart';
+import '../../widgets/shimmer_loading.dart';
 
 class QRCodeScreen extends StatefulWidget {
   const QRCodeScreen({super.key});
@@ -107,7 +108,18 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
           final user = profile.user ?? home.user;
 
           if ((profile.isLoading || home.isLoading) && user == null) {
-            return const Center(child: CircularProgressIndicator());
+            return const Padding(
+              padding: EdgeInsets.all(24),
+              child: Column(
+                children: [
+                  SkeletonCard(height: 280),
+                  SizedBox(height: 20),
+                  SkeletonBlock(height: 16, width: 160),
+                  SizedBox(height: 12),
+                  SkeletonBlock(height: 48),
+                ],
+              ),
+            );
           }
 
           if (profile.hasError && user == null) {

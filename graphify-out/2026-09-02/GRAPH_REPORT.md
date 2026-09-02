@@ -1,11 +1,11 @@
 # Graph Report - mobile  (2026-09-02)
 
 ## Corpus Check
-- 137 files · ~248,788 words
+- 137 files · ~248,802 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1960 nodes · 2937 edges · 125 communities (117 shown, 3 thin omitted)
+- 1960 nodes · 2938 edges · 131 communities (122 shown, 4 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
@@ -47,7 +47,7 @@
 - harga_berlaku_banner.dart
 - pengaduan_provider.dart
 - reset_password_screen.dart
-- package:dio/dio.dart
+- auth_interceptor.dart
 - tarik_saldo_screen.dart
 - ajukan_penjemputan_screen.dart
 - shimmer_loading.dart
@@ -71,7 +71,7 @@
 - edit_profile_screen.dart
 - deposit_detail.dart
 - home_provider.dart
-- complete_profile_dialog.dart
+- api_client.dart
 - 11 — Security & Privacy (Mobile — mirumobileapp)
 - notification_provider.dart
 - reward_provider.dart
@@ -90,8 +90,8 @@
 - phone_verify_screen.dart
 - profile_provider.dart
 - reward.dart
-- avatar_picker.dart
-- _handleLogin
+- pengumuman_provider.dart
+- package:flutter/foundation.dart
 - ../models/api_exception.dart
 - profile_screen.dart
 - pengaduan_form_screen.dart
@@ -104,12 +104,13 @@
 - String?
 - 3. Alur User Journey Nasabah
 - onboarding_scaffold.dart
+- Route /login
 - bottom_nav_scaffold.dart
 - AuthProvider
 - saldo_card.dart
 - empty_state.dart
 - bool get
-- ../config/theme.dart
+- ../config/constants.dart
 - splash_screen.dart
 - konten_edukasi.dart
 - launch_experience.dart
@@ -117,24 +118,29 @@
 - home_qr_button.dart
 - onboarding_screen.dart
 - LaunchImage.imageset/README.md
+- _buildPublicPriceInfo
 - bool?
 - auth_provider_test.dart
 - pengumuman_screen.dart
 - tarik_saldo_screen_test.dart
-- login_screen_test.dart
+- package:flutter_test/flutter_test.dart
 - _buildRecentActivity
 - app_scaffold.dart
 - State
 - VoidCallback
+- login_screen_test.dart
 - package:go_router/go_router.dart
 - _showNotifPopup
 - parse_dio_error_test.dart
 - edukasi_list_screen.dart
+- package:intl/intl.dart
 - exit_dialog.dart
 - package:flutter/material.dart
 - markdown_document.dart
 - Local Development
+- ../config/theme.dart
 - edukasi_provider_test.dart
+- build
 
 ## God Nodes (most connected - your core abstractions)
 1. `AuthSession` - 47 edges
@@ -163,7 +169,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (125 total, 3 thin omitted)
+## Communities (131 total, 4 thin omitted)
 
 ### Community 0 - "package:provider/provider.dart"
 Cohesion: 0.18
@@ -223,7 +229,7 @@ Nodes (7): 07 — Modules & Features (Mobile), 14 Fitur Mobile — untuk Nasabah
 
 ### Community 15 - "AuthSession"
 Cohesion: 0.07
-Nodes (31): BoxDecoration get, dart:math, dart:ui, AuthSession, initState, build, _backRow, build (+23 more)
+Nodes (30): BoxDecoration get, dart:math, dart:ui, AuthSession, initState, _backRow, build, _buildActionButtons (+22 more)
 
 ### Community 16 - "02 — Architecture & Stack (Mobile)"
 Cohesion: 0.29
@@ -289,16 +295,16 @@ Cohesion: 0.12
 Nodes (16): _apiClient, clearCache, clearError, clearSubmitError, closedComplaints, _complaints, createComplaint, _error (+8 more)
 
 ### Community 31 - "reset_password_screen.dart"
-Cohesion: 0.09
-Nodes (22): build, _logout, build, build, _canSubmit, _confirmPasswordController, createState, dispose (+14 more)
+Cohesion: 0.12
+Nodes (16): _canSubmit, _confirmPasswordController, createState, dispose, _formKey, _hasToken, initialToken, initState (+8 more)
 
-### Community 32 - "package:dio/dio.dart"
-Cohesion: 0.07
-Nodes (30): Dio, Future, interceptors/auth_interceptor.dart, interceptors/envelope_interceptor.dart, interceptors/safe_log_interceptor.dart, buildInterceptors, _createDio, dio (+22 more)
+### Community 32 - "auth_interceptor.dart"
+Cohesion: 0.12
+Nodes (15): Future, AuthInterceptor, authSession, _clearSession, _doRefresh, _isPublicPath, onError, onRequest (+7 more)
 
 ### Community 33 - "tarik_saldo_screen.dart"
-Cohesion: 0.06
-Nodes (35): File?, _besarNominal, _buildQuickAmountChips, createState, dispose, _extractFieldError, _formatRupiah, formatter (+27 more)
+Cohesion: 0.05
+Nodes (41): dart:io, File?, _besarNominal, _buildQuickAmountChips, createState, dispose, _extractFieldError, _formatRupiah (+33 more)
 
 ### Community 34 - "ajukan_penjemputan_screen.dart"
 Cohesion: 0.05
@@ -337,8 +343,8 @@ Cohesion: 0.10
 Nodes (19): alamat, email, fromJson, InstitutionSettings, isDiLuarJamKerja, jamBuka, jamBukaTime, jamOperasional (+11 more)
 
 ### Community 43 - "notifikasi_screen.dart"
-Cohesion: 0.12
-Nodes (19): AppNotification, NotificationProvider, build, DetailNotifikasiScreen, notification, createState, isUnread, item (+11 more)
+Cohesion: 0.18
+Nodes (13): NotificationProvider, createState, isUnread, item, _loadData, _NotifCard, NotifikasiScreen, _NotifikasiScreenState (+5 more)
 
 ### Community 44 - "StatelessWidget"
 Cohesion: 0.12
@@ -391,9 +397,9 @@ Nodes (13): beratKg, beratKgAsDouble, DepositDetail, fromJson, hargaSaatItu, har
 Cohesion: 0.08
 Nodes (24): _apiClient, _categories, clearCache, _error, _fetchDashboard, fetchEarliestUpcomingTanggalBerlaku, _fetchGeneration, _fetchRecentActivity (+16 more)
 
-### Community 56 - "complete_profile_dialog.dart"
-Cohesion: 0.14
-Nodes (13): editUser, false, goEdit, home, profile, showCompleteProfileDialog, theme, updated (+5 more)
+### Community 56 - "api_client.dart"
+Cohesion: 0.18
+Nodes (10): Dio, interceptors/auth_interceptor.dart, interceptors/envelope_interceptor.dart, interceptors/safe_log_interceptor.dart, ApiClient, buildInterceptors, _createDio, dio (+2 more)
 
 ### Community 57 - "11 — Security & Privacy (Mobile — mirumobileapp)"
 Cohesion: 0.11
@@ -416,8 +422,8 @@ Cohesion: 0.13
 Nodes (15): Complaint, build, _buildTabContent, complaint, _ComplaintCard, createState, dispose, initState (+7 more)
 
 ### Community 62 - "riwayat_screen.dart"
-Cohesion: 0.13
-Nodes (18): SaldoProvider, _buildFilterBar, createState, filter, _FilterTab, item, label, _loadData (+10 more)
+Cohesion: 0.12
+Nodes (19): SaldoProvider, _buildFilterBar, createState, filter, _FilterTab, item, label, _loadData (+11 more)
 
 ### Community 63 - "test_http.dart"
 Cohesion: 0.08
@@ -433,20 +439,20 @@ Cohesion: 0.14
 Nodes (14): _canSubmit, createState, dispose, _formKey, initState, _isSubmitting, LoginScreen, _LoginScreenState (+6 more)
 
 ### Community 66 - "HomeProvider"
-Cohesion: 0.22
-Nodes (14): HomeProvider, PenjemputanProvider, ProfileProvider, build, _saveProfile, AjukanPenjemputanScreen, _AjukanPenjemputanScreenState, _prefillAlamat (+6 more)
+Cohesion: 0.11
+Nodes (27): ChangeNotifier, HomeProvider, PenjemputanProvider, ProfileProvider, build, _saveProfile, _onVisible, _AjukanPenjemputanScreenState (+19 more)
 
 ### Community 67 - "home_screen.dart"
-Cohesion: 0.05
-Nodes (36): ../edukasi/edukasi_card.dart, _authSession, _buildAnnouncementBanners, _buildEmptyActivity, _buildHomeShell, _buildNotifBell, _buildPublicPriceInfo, _buildQuickActions (+28 more)
+Cohesion: 0.06
+Nodes (34): ../edukasi/edukasi_card.dart, _authSession, _buildAnnouncementBanners, _buildEmptyActivity, _buildHomeShell, _buildNotifBell, _buildQuickActions, _buildSaldoHeader (+26 more)
 
 ### Community 68 - "Selesai"
 Cohesion: 0.22
 Nodes (9): Fase 0 — Scaffold, Fase 1 — Foundation, Fase 2 — Auth, Fase 3 — Layar MVP, Fase 4 — Navigasi & UX, Fase 5 — Settings & informasi, Fase 6 (sebagian), Fase 8 (sebagian) (+1 more)
 
 ### Community 69 - "edukasi_provider.dart"
-Cohesion: 0.09
-Nodes (21): _apiClient, clearCache, _error, findById, hasError, _isLoading, _items, loadDetail (+13 more)
+Cohesion: 0.17
+Nodes (11): _apiClient, clearCache, _error, findById, hasError, _isLoading, _items, loadDetail (+3 more)
 
 ### Community 70 - "notification.dart"
 Cohesion: 0.20
@@ -468,17 +474,17 @@ Nodes (22): _apiClient, clearCache, clearError, disableEditMode, enableEditMode,
 Cohesion: 0.20
 Nodes (9): fromJson, id, isAffordable, listFromJson, nama, poinDibutuhkan, Reward, stok (+1 more)
 
-### Community 75 - "avatar_picker.dart"
-Cohesion: 0.29
-Nodes (6): dart:io, cropped, pickAndCropAvatar, picked, package:image_cropper/image_cropper.dart, package:image_picker/image_picker.dart
+### Community 75 - "pengumuman_provider.dart"
+Cohesion: 0.20
+Nodes (9): _announcements, _apiClient, clearCache, _error, hasError, _isLoading, loadPengumuman, refresh (+1 more)
 
-### Community 76 - "_handleLogin"
+### Community 76 - "package:flutter/foundation.dart"
 Cohesion: 0.33
-Nodes (7): _handleLogin, _sendOtp, _verifyOtp, _finish, _bootstrap, Route /home, Route /verify-phone
+Nodes (5): keys, out, redactSensitiveLog, package:flutter/foundation.dart, return
 
 ### Community 77 - "../models/api_exception.dart"
-Cohesion: 0.25
-Nodes (7): Interceptor, _envelopeException, EnvelopeInterceptor, onError, onResponse, ../../models/api_envelope.dart, ../models/api_exception.dart
+Cohesion: 0.22
+Nodes (8): Interceptor, _envelopeException, EnvelopeInterceptor, onError, onResponse, ../../models/api_envelope.dart, ../models/api_exception.dart, package:dio/dio.dart
 
 ### Community 78 - "profile_screen.dart"
 Cohesion: 0.09
@@ -524,13 +530,17 @@ Nodes (6): 3.1 Onboarding, 3.2 Setor Sampah (Langsung ke Bank), 3.3 Penjemputan 
 Cohesion: 0.12
 Nodes (15): asset, body, build, buttonLabel, _IllustrationHero, imageAsset, OnboardingScaffold, onButton (+7 more)
 
+### Community 89 - "Route /login"
+Cohesion: 0.33
+Nodes (6): build, _logout, build, build, _handleReset, Route /login
+
 ### Community 90 - "bottom_nav_scaffold.dart"
 Cohesion: 0.10
 Nodes (20): exit_dialog.dart, badgeCount, _barHeight, BottomNavScaffold, _fabProtrude, _fabSize, icon, _JemputCenterButton (+12 more)
 
 ### Community 91 - "AuthProvider"
-Cohesion: 0.16
-Nodes (16): ChangeNotifier, AuthProvider, LaunchExperience, _submitOtp, _submitUsername, _handleRegister, RegisterScreen, _RegisterScreenState (+8 more)
+Cohesion: 0.13
+Nodes (22): AuthProvider, LaunchExperience, _submitOtp, _submitUsername, _handleLogin, _sendOtp, _verifyOtp, _handleRegister (+14 more)
 
 ### Community 92 - "saldo_card.dart"
 Cohesion: 0.25
@@ -544,9 +554,9 @@ Nodes (9): IconData, action, build, description, EmptyState, expand, icon, title
 Cohesion: 0.15
 Nodes (12): bool get, clearSession, consumeSessionMessage, _isLoggedIn, markSessionExpired, _needsPhoneVerification, refresh, _sessionMessage (+4 more)
 
-### Community 95 - "../config/theme.dart"
-Cohesion: 0.20
-Nodes (8): ../config/constants.dart, ../config/theme.dart, _buildEdukasiSection, showWasteInviteModal, name, showWelcomeBackModal, title, Route /home/edukasi
+### Community 95 - "../config/constants.dart"
+Cohesion: 0.40
+Nodes (4): ../config/constants.dart, name, showWelcomeBackModal, title
 
 ### Community 96 - "splash_screen.dart"
 Cohesion: 0.22
@@ -577,16 +587,16 @@ Cohesion: 0.14
 Nodes (13): Exception, ApiException, package:mirumobileapp/models/api_envelope.dart, package:mirumobileapp/models/api_exception.dart, package:mirumobileapp/services/auth_service.dart, package:mirumobileapp/services/interceptors/envelope_interceptor.dart, api, _build (+5 more)
 
 ### Community 111 - "pengumuman_screen.dart"
-Cohesion: 0.13
-Nodes (17): PengumumanProvider, build, _loadData, _AnnouncementCard, build, createState, initState, item (+9 more)
+Cohesion: 0.16
+Nodes (14): PengumumanProvider, _loadData, _AnnouncementCard, build, createState, initState, item, onTap (+6 more)
 
 ### Community 112 - "tarik_saldo_screen_test.dart"
 Cohesion: 0.19
 Nodes (11): ElevatedButton, ../helpers/test_http.dart, package:flutter_secure_storage/flutter_secure_storage.dart, package:mirumobileapp/models/user.dart, package:mirumobileapp/providers/home_provider.dart, package:mirumobileapp/providers/profile_provider.dart, package:mirumobileapp/providers/saldo_provider.dart, package:mirumobileapp/screens/saldo/tarik_saldo_screen.dart (+3 more)
 
-### Community 113 - "login_screen_test.dart"
-Cohesion: 0.13
-Nodes (13): package:flutter_test/flutter_test.dart, package:flutter/widgets.dart, package:mirumobileapp/app.dart, package:mirumobileapp/providers/auth_provider.dart, package:mirumobileapp/providers/launch_experience.dart, package:mirumobileapp/screens/auth/login_screen.dart, main, api (+5 more)
+### Community 113 - "package:flutter_test/flutter_test.dart"
+Cohesion: 0.17
+Nodes (9): package:flutter_test/flutter_test.dart, package:flutter/widgets.dart, package:mirumobileapp/app.dart, package:mirumobileapp/providers/launch_experience.dart, package:mirumobileapp/providers/notification_provider.dart, main, _items, main (+1 more)
 
 ### Community 114 - "_buildRecentActivity"
 Cohesion: 0.40
@@ -597,12 +607,16 @@ Cohesion: 0.14
 Nodes (13): EdgeInsetsGeometry?, actions, AppScaffold, body, bodyPadding, bottomNavigationBar, build, floatingActionButton (+5 more)
 
 ### Community 116 - "State"
-Cohesion: 0.15
-Nodes (19): ForgotPasswordScreen, _ForgotPasswordScreenState, PhoneVerifyScreen, _PhoneVerifyScreenState, ResetPasswordScreen, _ResetPasswordScreenState, _TukarPoinContent, _TukarPoinContentState (+11 more)
+Cohesion: 0.14
+Nodes (20): ForgotPasswordScreen, _ForgotPasswordScreenState, PhoneVerifyScreen, _PhoneVerifyScreenState, ResetPasswordScreen, _ResetPasswordScreenState, _TukarPoinContent, _TukarPoinContentState (+12 more)
 
 ### Community 117 - "VoidCallback"
 Cohesion: 0.22
 Nodes (8): build, ErrorView, expand, message, onRetry, retryLabel, title, VoidCallback
+
+### Community 118 - "login_screen_test.dart"
+Cohesion: 0.18
+Nodes (10): package:mirumobileapp/providers/auth_provider.dart, package:mirumobileapp/providers/auth_session.dart, package:mirumobileapp/screens/auth/login_screen.dart, package:mirumobileapp/services/storage_service.dart, main, api, _loginApp, main (+2 more)
 
 ### Community 119 - "package:go_router/go_router.dart"
 Cohesion: 0.17
@@ -613,12 +627,16 @@ Cohesion: 0.50
 Nodes (4): _showNotifPopup, build, Route /notifikasi, Route /notifikasi/detail
 
 ### Community 121 - "parse_dio_error_test.dart"
-Cohesion: 0.17
-Nodes (11): DioExceptionType, SafeLogInterceptor, LogInterceptor, package:mirumobileapp/providers/auth_session.dart, package:mirumobileapp/services/api_client.dart, package:mirumobileapp/services/interceptors/safe_log_interceptor.dart, package:mirumobileapp/services/storage_service.dart, main (+3 more)
+Cohesion: 0.22
+Nodes (8): DioExceptionType, SafeLogInterceptor, LogInterceptor, package:mirumobileapp/services/api_client.dart, package:mirumobileapp/services/interceptors/safe_log_interceptor.dart, _dio, main, type
 
 ### Community 122 - "edukasi_list_screen.dart"
 Cohesion: 0.33
 Nodes (6): edukasi_card.dart, build, createState, EdukasiListScreen, _EdukasiListScreenState, ../../providers/edukasi_provider.dart
+
+### Community 123 - "package:intl/intl.dart"
+Cohesion: 0.29
+Nodes (6): AppNotification, build, DetailNotifikasiScreen, notification, ../../models/notification.dart, package:intl/intl.dart
 
 ### Community 124 - "exit_dialog.dart"
 Cohesion: 0.20
@@ -637,23 +655,31 @@ Nodes (5): build, data, MarkdownDocument, package:cached_network_image/cached_ne
 Cohesion: 0.33
 Nodes (6): 1. Install Dependencies, 2. Konfigurasi API URL, 3. Jalankan Backend & Seed Data, 4. Run App, 5. Akun Demo (Registrasi atau Seed Full), Local Development
 
+### Community 128 - "../config/theme.dart"
+Cohesion: 0.40
+Nodes (4): ../config/theme.dart, _buildEdukasiSection, showWasteInviteModal, Route /home/edukasi
+
 ### Community 129 - "edukasi_provider_test.dart"
-Cohesion: 0.19
-Nodes (7): package:mirumobileapp/models/konten_edukasi.dart, package:mirumobileapp/providers/edukasi_provider.dart, package:mirumobileapp/providers/notification_provider.dart, _artikel, main, _items, main
+Cohesion: 0.40
+Nodes (4): package:mirumobileapp/models/konten_edukasi.dart, package:mirumobileapp/providers/edukasi_provider.dart, _artikel, main
+
+### Community 130 - "build"
+Cohesion: 0.67
+Nodes (3): build, _showDetail, Route /pengumuman/detail
 
 ## Knowledge Gaps
 - **1286 isolated node(s):** `XCTest`, `_storageService`, `_authSession`, `_authProvider`, `_homeProvider` (+1281 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1433 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **3 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **4 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `AuthSession` connect `AuthSession` to `package:provider/provider.dart`, `auth_service.dart`, `package:dio/dio.dart`, `tarik_saldo_screen.dart`, `ajukan_penjemputan_screen.dart`, `app.dart`, `auth_provider.dart`, `reward_screen.dart`, `penjemputan_screen.dart`, `notifikasi_screen.dart`, `tukar_poin_screen.dart`, `pengaduan_screen.dart`, `riwayat_screen.dart`, `HomeProvider`, `home_screen.dart`, `profile_screen.dart`, `pengaduan_form_screen.dart`, `AuthProvider`, `bool get`, `pengumuman_screen.dart`, `State`, `_showNotifPopup`?**
+- **Why does `AuthSession` connect `AuthSession` to `package:provider/provider.dart`, `build`, `auth_service.dart`, `auth_interceptor.dart`, `tarik_saldo_screen.dart`, `ajukan_penjemputan_screen.dart`, `app.dart`, `auth_provider.dart`, `reward_screen.dart`, `penjemputan_screen.dart`, `notifikasi_screen.dart`, `tukar_poin_screen.dart`, `pengaduan_screen.dart`, `riwayat_screen.dart`, `HomeProvider`, `home_screen.dart`, `profile_screen.dart`, `pengaduan_form_screen.dart`, `AuthProvider`, `bool get`, `pengumuman_screen.dart`, `State`, `_showNotifPopup`?**
   _High betweenness centrality (0.027) - this node is a cross-community bridge._
-- **Why does `HomeProvider` connect `HomeProvider` to `AuthSession`, `harga_berlaku_banner.dart`, `tarik_saldo_screen.dart`, `ajukan_penjemputan_screen.dart`, `app.dart`, `penjemputan_screen.dart`, `tukar_poin_screen.dart`, `home_provider.dart`, `complete_profile_dialog.dart`, `pengaduan_screen.dart`, `riwayat_screen.dart`, `home_screen.dart`, `info_sampah_screen.dart`, `profile_screen.dart`, `pengaduan_form_screen.dart`, `AuthProvider`, `home_qr_button.dart`, `pengumuman_screen.dart`, `State`?**
+- **Why does `HomeProvider` connect `HomeProvider` to `tarik_saldo_screen.dart`, `ajukan_penjemputan_screen.dart`, `home_screen.dart`, `home_qr_button.dart`, `app.dart`, `info_sampah_screen.dart`, `penjemputan_screen.dart`, `profile_screen.dart`, `pengumuman_screen.dart`, `pengaduan_form_screen.dart`, `AuthSession`, `harga_berlaku_banner.dart`, `tukar_poin_screen.dart`, `State`, `home_provider.dart`, `AuthProvider`, `pengaduan_screen.dart`, `riwayat_screen.dart`?**
   _High betweenness centrality (0.024) - this node is a cross-community bridge._
-- **Why does `AuthProvider` connect `AuthProvider` to `splash_screen.dart`, `login_screen.dart`, `home_screen.dart`, `register_screen.dart`, `app.dart`, `auth_provider.dart`, `phone_verify_screen.dart`, `_handleLogin`, `profile_screen.dart`, `AuthSession`, `State`, `forgot_password_screen.dart`, `riwayat_screen.dart`, `reset_password_screen.dart`?**
+- **Why does `AuthProvider` connect `AuthProvider` to `Route /login`, `login_screen.dart`, `HomeProvider`, `home_screen.dart`, `register_screen.dart`, `app.dart`, `splash_screen.dart`, `auth_provider.dart`, `phone_verify_screen.dart`, `profile_screen.dart`, `State`, `forgot_password_screen.dart`, `riwayat_screen.dart`, `reset_password_screen.dart`?**
   _High betweenness centrality (0.018) - this node is a cross-community bridge._
 - **What connects `XCTest`, `_storageService`, `_authSession` to the rest of the system?**
   _1286 weakly-connected nodes found - possible documentation gaps or missing edges._

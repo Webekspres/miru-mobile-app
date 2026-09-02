@@ -164,6 +164,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           if (value == null || value.isEmpty) {
                             return 'Password tidak boleh kosong';
                           }
+                          if (value.length < 6) {
+                            return 'Password minimal 6 karakter';
+                          }
                           return null;
                         },
                       ),

@@ -309,6 +309,8 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
   }
 
   Future<void> _submit() async {
+    final penjemputan = context.read<PenjemputanProvider>();
+    if (penjemputan.isSubmitting) return;
     if (!_formKey.currentState!.validate()) return;
 
     if (_selectedCategory == null) {
@@ -329,7 +331,6 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
     }
 
     final jadwal = WitDateTime.combine(_selectedDate, _selectedTime);
-    final penjemputan = context.read<PenjemputanProvider>();
 
     final result = await penjemputan.createPickup(
       estimasiBerat: berat,
@@ -433,15 +434,9 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
       ),
       body: Consumer3<HomeProvider, PenjemputanProvider, SettingsProvider>(
         builder: (context, home, penjemputan, settingsProv, _) {
-          if (_isLoadingCategories && home.categories.isEmpty) {
-            return const SingleChildScrollView(
-              physics: NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.fromLTRB(16, 60, 16, 24),
-              child: ListSkeleton(itemCount: 4),
-            );
-          }
-
           final categories = home.categories;
+          final loadingCategories =
+              _isLoadingCategories && categories.isEmpty;
           final settings = settingsProv.settings;
           final diLuarJam = settings?.isDiLuarJamKerja(_selectedTime) ?? false;
           final jamLabel = settings?.jamKerjaLabel ?? '';
@@ -463,11 +458,14 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  _CategoryPickerTile(
-                    category: _selectedCategory,
-                    rpFormat: _rpFormat,
-                    onTap: () => _openCategoryPicker(categories),
-                  ),
+                  if (loadingCategories)
+                    const SkeletonCard(height: 56)
+                  else
+                    _CategoryPickerTile(
+                      category: _selectedCategory,
+                      rpFormat: _rpFormat,
+                      onTap: () => _openCategoryPicker(categories),
+                    ),
                   const SizedBox(height: 6),
                   Text(
                     'Pilih satu jenis. Nilai akhir mengikuti timbangan petugas.',

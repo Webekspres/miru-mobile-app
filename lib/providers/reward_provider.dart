@@ -95,6 +95,7 @@ class RewardProvider extends ChangeNotifier {
   Future<RewardRedemption?> createRedemption({
     required int rewardId,
   }) async {
+    if (_isSubmitting) return null;
     _isSubmitting = true;
     _submitError = null;
     notifyListeners();

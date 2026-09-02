@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 
+import '../../models/api_exception.dart';
 import '../../providers/auth_session.dart';
 import '../storage_service.dart';
 
@@ -50,7 +51,7 @@ class AuthInterceptor extends QueuedInterceptor {
     try {
       final refreshed = await _refreshAccessToken();
       if (!refreshed) {
-        await _clearSession();
+        await _clearSession(expired: true);
         handler.next(err);
         return;
       }
@@ -61,8 +62,15 @@ class AuthInterceptor extends QueuedInterceptor {
 
       final response = await refreshDio.fetch<dynamic>(requestOptions);
       handler.resolve(response);
+    } on DioException catch (e) {
+      if (isTransientNetworkError(e)) {
+        handler.next(e);
+        return;
+      }
+      await _clearSession(expired: true);
+      handler.next(err);
     } catch (_) {
-      await _clearSession();
+      await _clearSession(expired: true);
       handler.next(err);
     }
   }
@@ -105,8 +113,12 @@ class AuthInterceptor extends QueuedInterceptor {
     return true;
   }
 
-  Future<void> _clearSession() async {
+  Future<void> _clearSession({bool expired = false}) async {
     await storage.clearTokens();
-    authSession.setLoggedIn(false);
+    if (expired) {
+      authSession.markSessionExpired();
+    } else {
+      authSession.setLoggedIn(false);
+    }
   }
 }

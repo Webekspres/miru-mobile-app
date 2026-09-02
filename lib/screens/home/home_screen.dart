@@ -638,7 +638,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
             const SizedBox(height: 8),
-            if (edukasi.isLoading)
+            if (edukasi.isLoading && preview.isEmpty)
               const Column(
                 children: [
                   SkeletonCard(height: 220),
@@ -800,8 +800,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 8),
                     if (liveNotif.isLoading && latest.isEmpty)
                       const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 32),
-                        child: Center(child: CircularProgressIndicator()),
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        child: ListSkeleton(itemCount: 3),
                       )
                     else if (latest.isEmpty)
                       Padding(
@@ -959,7 +959,7 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (context, pengumuman, _) {
         final items = pengumuman.announcements;
 
-        if (pengumuman.isLoading) {
+        if (pengumuman.isLoading && items.isEmpty) {
           final bannerWidth = MediaQuery.sizeOf(context).width * 0.82;
           return SizedBox(
             height: 160,

@@ -213,6 +213,14 @@ class HomeProvider extends ChangeNotifier {
   // Load Categories Only (public, no auth required)
   // ──────────────────────────────────────────────
 
+  /// Seed from login / splash so screens can render without waiting on /me/.
+  void hydrateFrom(User user) {
+    if (_user != null) return;
+    _user = user;
+    _error = null;
+    notifyListeners();
+  }
+
   /// Fetches ONLY waste categories (public endpoint).
   /// No auth required — used by InfoSampahScreen for unauthenticated users.
   Future<void> loadCategoriesOnly() async {

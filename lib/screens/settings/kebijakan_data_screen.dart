@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../providers/settings_provider.dart';
 import '../../widgets/markdown_document.dart';
+import '../../widgets/shimmer_loading.dart';
 
 class KebijakanDataScreen extends StatefulWidget {
   const KebijakanDataScreen({super.key});
@@ -27,7 +28,25 @@ class _KebijakanDataScreenState extends State<KebijakanDataScreen> {
       body: Consumer<SettingsProvider>(
         builder: (context, provider, _) {
           if (provider.isLoading && provider.settings == null) {
-            return const Center(child: CircularProgressIndicator());
+            return const Padding(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SkeletonBlock(height: 18, width: 180),
+                  SizedBox(height: 16),
+                  SkeletonBlock(height: 14),
+                  SizedBox(height: 10),
+                  SkeletonBlock(height: 14),
+                  SizedBox(height: 10),
+                  SkeletonBlock(height: 14, width: 280),
+                  SizedBox(height: 10),
+                  SkeletonBlock(height: 14),
+                  SizedBox(height: 10),
+                  SkeletonBlock(height: 14),
+                ],
+              ),
+            );
           }
           if (provider.hasError && provider.settings == null) {
             return Center(

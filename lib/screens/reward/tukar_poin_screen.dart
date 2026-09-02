@@ -77,6 +77,7 @@ class _TukarPoinBodyState extends State<_TukarPoinBody> {
   }
 
   Future<void> _confirmRedemption() async {
+    if (_isProcessing) return;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) {

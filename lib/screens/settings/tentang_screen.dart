@@ -6,6 +6,7 @@ import '../../config/theme.dart';
 import '../../providers/settings_provider.dart';
 import '../../widgets/markdown_document.dart';
 import '../../widgets/miru_logo.dart';
+import '../../widgets/shimmer_loading.dart';
 
 class TentangScreen extends StatefulWidget {
   const TentangScreen({super.key});
@@ -48,7 +49,15 @@ class _TentangScreenState extends State<TentangScreen> {
               ),
               const SizedBox(height: 24),
               if (provider.isLoading && settings == null)
-                const Center(child: CircularProgressIndicator())
+                const Column(
+                  children: [
+                    SkeletonBlock(height: 14),
+                    SizedBox(height: 10),
+                    SkeletonBlock(height: 14),
+                    SizedBox(height: 10),
+                    SkeletonBlock(height: 14, width: 240),
+                  ],
+                )
               else
                 MarkdownDocument(data: settings?.tentang ?? ''),
               const SizedBox(height: 24),

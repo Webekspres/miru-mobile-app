@@ -167,6 +167,14 @@ class AuthProvider extends ChangeNotifier {
       authSession.setLoggedIn(true);
       authSession.setNeedsPhoneVerification(!user.phoneVerified);
       return true;
+    } on DioException catch (e) {
+      if (isTransientNetworkError(e) &&
+          await storageService.hasAccessToken()) {
+        authSession.setLoggedIn(true);
+        return false;
+      }
+      await _clearSession();
+      return false;
     } catch (_) {
       await _clearSession();
       return false;

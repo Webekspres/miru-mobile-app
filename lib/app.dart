@@ -47,6 +47,7 @@ class _MiruAppState extends State<MiruApp> with WidgetsBindingObserver {
   late final ApiClient _apiClient;
   late final AuthService _authService;
   late final GoRouter _router;
+  final _messengerKey = GlobalKey<ScaffoldMessengerState>();
 
   @override
   void initState() {
@@ -99,8 +100,9 @@ class _MiruAppState extends State<MiruApp> with WidgetsBindingObserver {
     if (state == AppLifecycleState.resumed && _authSession.isLoggedIn) {
       _notificationProvider.refreshSilent();
       _notificationProvider.startPolling();
+      // Keep the session; refresh fails stay cached (HomeProvider).
+      _homeProvider.refresh();
     } else if (state == AppLifecycleState.paused) {
-      // Hemat baterai saat app di background
       _notificationProvider.stopPolling();
     }
   }
@@ -119,12 +121,23 @@ class _MiruAppState extends State<MiruApp> with WidgetsBindingObserver {
       _pengumumanProvider.clearCache();
       _notificationProvider.clearCache();
       _settingsProvider.clearCache();
+      _showSessionMessage();
       return;
     }
 
     // Login / session restore → mulai poll notifikasi
     _notificationProvider.loadNotifications();
     _notificationProvider.startPolling();
+  }
+
+  void _showSessionMessage() {
+    final message = _authSession.consumeSessionMessage();
+    if (message == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _messengerKey.currentState?.showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+    });
   }
 
   @override
@@ -151,6 +164,7 @@ class _MiruAppState extends State<MiruApp> with WidgetsBindingObserver {
       child: MaterialApp.router(
         title: AppConstants.appName,
         theme: AppTheme.light,
+        scaffoldMessengerKey: _messengerKey,
         routerConfig: _router,
       ),
     );

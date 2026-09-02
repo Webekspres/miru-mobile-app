@@ -81,7 +81,7 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'] as int,
+      id: parseInt(json['id']),
       username: json['username'] as String,
       role: json['role'] as String? ?? 'nasabah',
       namaLengkap: json['nama_lengkap'] as String? ?? '',
@@ -89,12 +89,12 @@ class User {
       alamat: json['alamat'] as String? ?? '',
       rt: json['rt'] as String? ?? '',
       rw: json['rw'] as String? ?? '',
-      kelurahanId: json['kelurahan'] as int?,
+      kelurahanId: json['kelurahan'] == null ? null : parseInt(json['kelurahan']),
       kelurahanNama: json['kelurahan_nama'] as String? ?? '',
       latitude: parseOptionalDecimal(json['latitude']),
       longitude: parseOptionalDecimal(json['longitude']),
       saldo: json['saldo']?.toString() ?? '0.00',
-      poin: json['poin'] as int? ?? 0,
+      poin: parseInt(json['poin']),
       isActive: json['is_active'] as bool? ?? true,
       phoneVerified: json['phone_verified'] as bool? ?? true,
       dateJoined: parseOptionalDateTime(json['date_joined']),

@@ -54,34 +54,23 @@ class _RewardScreenState extends State<RewardScreen> {
       ),
       body: Consumer2<HomeProvider, RewardProvider>(
         builder: (context, home, reward, _) {
-          if (reward.isLoading) {
-            return SingleChildScrollView(
-              physics: const NeverScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(16),
-              child: const Column(
-                children: [
-                  SkeletonCard(height: 100),
-                  SizedBox(height: 16),
-                  SkeletonBlock(height: 14, width: 120),
-                  SizedBox(height: 12),
-                  _RewardSkeletonItem(),
-                  _RewardSkeletonItem(),
-                  _RewardSkeletonItem(),
-                  _RewardSkeletonItem(),
-                ],
-              ),
-            );
-          }
-
           if (reward.hasError && reward.rewards.isEmpty) {
-            return ErrorView(
-              title: 'Gagal memuat data',
-              message: reward.error!,
-              onRetry: () => reward.loadRewards(),
+            return Column(
+              children: [
+                _PoinHeaderCard(poin: home.poin, theme: theme),
+                Expanded(
+                  child: ErrorView(
+                    title: 'Gagal memuat data',
+                    message: reward.error!,
+                    onRetry: () => reward.loadRewards(),
+                  ),
+                ),
+              ],
             );
           }
 
           final userPoin = home.poin;
+          final loadingList = reward.isLoading && reward.rewards.isEmpty;
 
           return RefreshIndicator(
             onRefresh: reward.refresh,
@@ -98,8 +87,21 @@ class _RewardScreenState extends State<RewardScreen> {
                 ),
                 const SliverToBoxAdapter(child: SizedBox(height: 12)),
 
-                // ── Reward List ──
-                if (reward.rewards.isEmpty)
+                if (loadingList)
+                  const SliverPadding(
+                    padding: EdgeInsets.fromLTRB(16, 0, 16, 20),
+                    sliver: SliverToBoxAdapter(
+                      child: Column(
+                        children: [
+                          _RewardSkeletonItem(),
+                          _RewardSkeletonItem(),
+                          _RewardSkeletonItem(),
+                          _RewardSkeletonItem(),
+                        ],
+                      ),
+                    ),
+                  )
+                else if (reward.rewards.isEmpty)
                   const SliverFillRemaining(
                     hasScrollBody: false,
                     child: EmptyState(

@@ -12,8 +12,16 @@ class AuthSession extends ChangeNotifier {
 
   bool _isLoggedIn = false;
   bool _needsPhoneVerification = false;
+  String? _sessionMessage;
 
   bool get isLoggedIn => _isLoggedIn;
+
+  /// One-shot copy after forced logout (expired refresh). Null if none.
+  String? consumeSessionMessage() {
+    final message = _sessionMessage;
+    _sessionMessage = null;
+    return message;
+  }
 
   /// True jika user login tapi `phone_verified=false` (harus ke layar OTP).
   bool get needsPhoneVerification => _needsPhoneVerification;
@@ -41,6 +49,13 @@ class AuthSession extends ChangeNotifier {
     _isLoggedIn = false;
     _needsPhoneVerification = false;
     notifyListeners();
+  }
+
+  /// Refresh failed: drop the session and queue a Bahasa Indonesia snackbar.
+  void markSessionExpired() {
+    _sessionMessage =
+        'Sesi Anda telah berakhir. Silakan masuk kembali.';
+    clearSession();
   }
 
   void setNeedsPhoneVerification(bool value) {

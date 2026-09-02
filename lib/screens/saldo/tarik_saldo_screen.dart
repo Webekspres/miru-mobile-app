@@ -328,6 +328,7 @@ class _TarikSaldoScreenState extends State<TarikSaldoScreen> {
     required String metode,
   }) async {
     final saldo = context.read<SaldoProvider>();
+    if (saldo.isSubmitting) return;
     final result = await saldo.createWithdrawal(
       nominal: nominal,
       metode: metode,

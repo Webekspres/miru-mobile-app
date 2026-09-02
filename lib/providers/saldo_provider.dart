@@ -231,6 +231,7 @@ class SaldoProvider extends ChangeNotifier {
     required String metode,
     File? lampiranKtp,
   }) async {
+    if (_isSubmitting) return null;
     _isSubmitting = true;
     _submitError = null;
     _submitFieldErrors = null;

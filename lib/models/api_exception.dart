@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 
 class ApiException implements Exception {
@@ -81,18 +83,48 @@ String parseDioError(DioException error) {
     }
   }
 
+  final status = error.response?.statusCode;
+  if (status != null && status >= 500) {
+    return 'Server sedang bermasalah. Silakan coba lagi nanti.';
+  }
+  if (status == 401) {
+    return 'Sesi Anda telah berakhir. Silakan masuk kembali.';
+  }
+
   switch (error.type) {
     case DioExceptionType.connectionTimeout:
     case DioExceptionType.sendTimeout:
     case DioExceptionType.receiveTimeout:
       return 'Koneksi timeout. Periksa jaringan Anda.';
     case DioExceptionType.connectionError:
-      return 'Tidak dapat terhubung ke server. Pastikan backend berjalan.';
+      return 'Tidak ada koneksi internet. Periksa jaringan Anda, lalu coba lagi.';
     case DioExceptionType.cancel:
       return 'Permintaan dibatalkan.';
+    case DioExceptionType.unknown:
+      if (error.error is SocketException) {
+        return 'Tidak ada koneksi internet. Periksa jaringan Anda, lalu coba lagi.';
+      }
+      return 'Terjadi kesalahan. Silakan coba lagi.';
     default:
-      return error.message ?? 'Terjadi kesalahan. Silakan coba lagi.';
+      return 'Terjadi kesalahan. Silakan coba lagi.';
   }
+}
+
+/// Network blip or 5xx — keep the session; do not treat as logout.
+bool isTransientNetworkError(DioException error) {
+  switch (error.type) {
+    case DioExceptionType.connectionTimeout:
+    case DioExceptionType.sendTimeout:
+    case DioExceptionType.receiveTimeout:
+    case DioExceptionType.connectionError:
+      return true;
+    case DioExceptionType.unknown:
+      return error.error is SocketException;
+    default:
+      break;
+  }
+  final status = error.response?.statusCode;
+  return status != null && status >= 500;
 }
 
 String _localizeAuthMessage(ApiException exception) {
