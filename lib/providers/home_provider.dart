@@ -116,7 +116,7 @@ class HomeProvider extends ChangeNotifier {
     } catch (_) {
       if (gen != _fetchGeneration) return;
       if (!_hasCachedUser) {
-        _error = 'Terjadi kesalahan. Silakan coba lagi.';
+        _error = kGenericErrorMessage;
       }
     } finally {
       if (gen == _fetchGeneration) {
@@ -249,7 +249,7 @@ class HomeProvider extends ChangeNotifier {
     } catch (_) {
       if (gen != _fetchGeneration) return;
       if (_categories.isEmpty) {
-        _error = 'Terjadi kesalahan. Silakan coba lagi.';
+        _error = kGenericErrorMessage;
       }
     } finally {
       if (gen == _fetchGeneration) {

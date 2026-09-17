@@ -119,7 +119,7 @@ class ProfileProvider extends ChangeNotifier {
     } catch (_) {
       if (gen != _generation) return;
       if (_user == null) {
-        _error = 'Terjadi kesalahan. Silakan coba lagi.';
+        _error = kGenericErrorMessage;
       }
     } finally {
       if (gen == _generation) {

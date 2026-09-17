@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../config/theme.dart';
+import '../../models/api_exception.dart';
 import '../../models/activity_item.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/auth_session.dart';
@@ -499,7 +500,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 4),
           Text(
-            home.error ?? 'Terjadi kesalahan',
+            home.error ?? kGenericErrorMessage,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: theme.textTheme.bodySmall?.copyWith(

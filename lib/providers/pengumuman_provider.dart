@@ -58,7 +58,7 @@ class PengumumanProvider extends ChangeNotifier {
       }
     } catch (e) {
       if (_announcements.isEmpty) {
-        _error = 'Terjadi kesalahan. Silakan coba lagi.';
+        _error = kGenericErrorMessage;
       }
     }
 

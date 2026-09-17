@@ -72,7 +72,7 @@ class RewardProvider extends ChangeNotifier {
       }
     } catch (_) {
       if (_rewards.isEmpty) {
-        _error = 'Terjadi kesalahan. Silakan coba lagi.';
+        _error = kGenericErrorMessage;
       }
     } finally {
       if (_isLoading) _isLoading = false;
@@ -130,7 +130,7 @@ class RewardProvider extends ChangeNotifier {
       notifyListeners();
       return null;
     } catch (_) {
-      _submitError = 'Terjadi kesalahan. Silakan coba lagi.';
+      _submitError = kGenericErrorMessage;
       _isSubmitting = false;
       notifyListeners();
       return null;

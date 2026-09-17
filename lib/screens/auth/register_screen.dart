@@ -129,7 +129,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _showError(e.message);
     } catch (_) {
       if (!mounted) return;
-      _showError('Terjadi kesalahan. Silakan coba lagi.');
+      _showError(kGenericErrorMessage);
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -208,7 +208,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     } catch (_) {
       launch.consumeOnboarding();
       if (!mounted) return;
-      _showError('Terjadi kesalahan. Silakan coba lagi.');
+      _showError(kGenericErrorMessage);
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }

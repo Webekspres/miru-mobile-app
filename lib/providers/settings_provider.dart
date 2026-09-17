@@ -55,7 +55,7 @@ class SettingsProvider extends ChangeNotifier {
       }
     } catch (e) {
       if (_settings == null) {
-        _error = 'Terjadi kesalahan. Silakan coba lagi.';
+        _error = kGenericErrorMessage;
       }
     }
 

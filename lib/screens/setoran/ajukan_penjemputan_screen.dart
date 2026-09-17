@@ -820,11 +820,16 @@ class _LokasiPinCard extends StatelessWidget {
 
   bool get _hasPin => latitude != null && longitude != null;
 
+  // Thumbnail pratinjau ini dikirim ke pihak ketiga (staticmap.openstreetmap.de)
+  // yang tidak terikat perjanjian pemrosesan data dengan Miru. Presisi
+  // dipangkas ke 3 desimal (~100 m) agar area terlihat untuk konfirmasi
+  // visual tanpa membocorkan koordinat rumah nasabah secara presisi. Data
+  // lat/lng asli (presisi penuh) yang dikirim ke backend Miru tidak terpengaruh.
   String get _osmUrl {
-    final lat = latitude!.toStringAsFixed(6);
-    final lng = longitude!.toStringAsFixed(6);
+    final lat = latitude!.toStringAsFixed(3);
+    final lng = longitude!.toStringAsFixed(3);
     return 'https://staticmap.openstreetmap.de/staticmap.php'
-        '?center=$lat,$lng&zoom=16&size=600x240&markers=$lat,$lng,ol-marker';
+        '?center=$lat,$lng&zoom=15&size=600x240&markers=$lat,$lng,ol-marker';
   }
 
   @override

@@ -44,7 +44,7 @@ class EdukasiProvider extends ChangeNotifier {
       }
     } catch (_) {
       if (_items.isEmpty) {
-        _error = 'Terjadi kesalahan. Silakan coba lagi.';
+        _error = kGenericErrorMessage;
       }
     }
 

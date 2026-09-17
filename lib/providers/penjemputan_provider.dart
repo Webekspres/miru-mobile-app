@@ -78,7 +78,7 @@ class PenjemputanProvider extends ChangeNotifier {
       }
     } catch (_) {
       if (_pickups.isEmpty) {
-        _error = 'Terjadi kesalahan. Silakan coba lagi.';
+        _error = kGenericErrorMessage;
       }
     } finally {
       if (_isLoading) _isLoading = false;

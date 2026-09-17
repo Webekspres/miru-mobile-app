@@ -90,7 +90,7 @@ class AuthProvider extends ChangeNotifier {
       _error = apiError.message;
       throw apiError;
     } catch (e) {
-      _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      _error = kGenericErrorMessage;
       throw ApiException(_error!);
     } finally {
       _isLoading = false;
@@ -129,7 +129,7 @@ class AuthProvider extends ChangeNotifier {
       _error = apiError.message;
       throw apiError;
     } catch (e) {
-      _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      _error = kGenericErrorMessage;
       throw ApiException(_error!);
     } finally {
       _isLoading = false;
@@ -230,7 +230,7 @@ class AuthProvider extends ChangeNotifier {
       _error = apiError.message;
       throw apiError;
     } catch (e) {
-      _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      _error = kGenericErrorMessage;
       throw ApiException(_error!);
     } finally {
       _isLoading = false;
@@ -273,7 +273,7 @@ class AuthProvider extends ChangeNotifier {
       _error = apiError.message;
       throw apiError;
     } catch (e) {
-      _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      _error = kGenericErrorMessage;
       throw ApiException(_error!);
     } finally {
       _isLoading = false;
@@ -303,7 +303,7 @@ class AuthProvider extends ChangeNotifier {
       _error = apiError.message;
       throw apiError;
     } catch (e) {
-      _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      _error = kGenericErrorMessage;
       throw ApiException(_error!);
     } finally {
       _isLoading = false;
@@ -333,7 +333,7 @@ class AuthProvider extends ChangeNotifier {
       _error = apiError.message;
       throw apiError;
     } catch (e) {
-      _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      _error = kGenericErrorMessage;
       throw ApiException(_error!);
     } finally {
       _isLoading = false;
@@ -368,7 +368,7 @@ class AuthProvider extends ChangeNotifier {
       _error = apiError.message;
       throw apiError;
     } catch (e) {
-      _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      _error = kGenericErrorMessage;
       throw ApiException(_error!);
     } finally {
       _isLoading = false;
@@ -404,7 +404,7 @@ class AuthProvider extends ChangeNotifier {
       _error = apiError.message;
       throw apiError;
     } catch (e) {
-      _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      _error = kGenericErrorMessage;
       throw ApiException(_error!);
     } finally {
       _isLoading = false;

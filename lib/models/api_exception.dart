@@ -2,6 +2,13 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 
+/// Pesan ramah untuk kegagalan server — selaras dengan web (SERVER_UNAVAILABLE_MESSAGE).
+const kServerUnavailableMessage =
+    'Maaf, sistem kami sedang mengalami gangguan. Silakan coba beberapa saat lagi.';
+
+/// Fallback generik untuk error yang tidak spesifik.
+const kGenericErrorMessage = 'Maaf, terjadi kesalahan. Silakan coba lagi.';
+
 class ApiException implements Exception {
   const ApiException(
     this.message, {
@@ -85,7 +92,7 @@ String parseDioError(DioException error) {
 
   final status = error.response?.statusCode;
   if (status != null && status >= 500) {
-    return 'Server sedang bermasalah. Silakan coba lagi nanti.';
+    return kServerUnavailableMessage;
   }
   if (status == 401) {
     return 'Sesi Anda telah berakhir. Silakan masuk kembali.';
@@ -95,7 +102,7 @@ String parseDioError(DioException error) {
     case DioExceptionType.connectionTimeout:
     case DioExceptionType.sendTimeout:
     case DioExceptionType.receiveTimeout:
-      return 'Koneksi timeout. Periksa jaringan Anda.';
+      return kServerUnavailableMessage;
     case DioExceptionType.connectionError:
       return 'Tidak ada koneksi internet. Periksa jaringan Anda, lalu coba lagi.';
     case DioExceptionType.cancel:
@@ -104,9 +111,9 @@ String parseDioError(DioException error) {
       if (error.error is SocketException) {
         return 'Tidak ada koneksi internet. Periksa jaringan Anda, lalu coba lagi.';
       }
-      return 'Terjadi kesalahan. Silakan coba lagi.';
+      return kGenericErrorMessage;
     default:
-      return 'Terjadi kesalahan. Silakan coba lagi.';
+      return kGenericErrorMessage;
   }
 }
 
@@ -156,6 +163,6 @@ String _localizeAuthMessage(ApiException exception) {
     case 'PERMISSION_DENIED':
       return 'Anda tidak memiliki akses untuk masuk.';
     default:
-      return 'Terjadi kesalahan. Silakan coba lagi.';
+      return kGenericErrorMessage;
   }
 }

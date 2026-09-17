@@ -94,7 +94,7 @@ class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
       _showError('Gagal mengirim kode. Silakan coba lagi.');
     } catch (_) {
       if (!mounted) return;
-      _showError('Terjadi kesalahan. Silakan coba lagi.');
+      _showError(kGenericErrorMessage);
     } finally {
       if (mounted) setState(() => _isSending = false);
     }
@@ -119,7 +119,7 @@ class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
       _showError('Verifikasi gagal. Silakan coba lagi.');
     } catch (_) {
       if (!mounted) return;
-      _showError('Terjadi kesalahan. Silakan coba lagi.');
+      _showError(kGenericErrorMessage);
     } finally {
       if (mounted) setState(() => _isVerifying = false);
     }

@@ -88,7 +88,7 @@ class NotificationProvider extends ChangeNotifier {
       }
     } catch (_) {
       if (_notifications.isEmpty) {
-        _error = 'Terjadi kesalahan. Silakan coba lagi.';
+        _error = kGenericErrorMessage;
         if (!silent) notifyListeners();
       }
     } finally {

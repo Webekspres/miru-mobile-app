@@ -32,7 +32,7 @@ void main() {
   test('HTTP 500 becomes a Bahasa Indonesia message', () {
     expect(
       parseDioError(_dio(status: 500, message: 'Http status error [500]')),
-      'Server sedang bermasalah. Silakan coba lagi nanti.',
+      kServerUnavailableMessage,
     );
   });
 

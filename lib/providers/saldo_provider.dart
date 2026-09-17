@@ -95,7 +95,7 @@ class SaldoProvider extends ChangeNotifier {
     } catch (_) {
       if (gen != _generation) return;
       if (_items.isEmpty) {
-        _error = 'Terjadi kesalahan. Silakan coba lagi.';
+        _error = kGenericErrorMessage;
       }
     } finally {
       if (gen == _generation) {
@@ -290,7 +290,7 @@ class SaldoProvider extends ChangeNotifier {
       notifyListeners();
       return null;
     } catch (_) {
-      _submitError = 'Terjadi kesalahan. Silakan coba lagi.';
+      _submitError = kGenericErrorMessage;
       _submitFieldErrors = null;
       _isSubmitting = false;
       notifyListeners();
