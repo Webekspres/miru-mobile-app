@@ -81,7 +81,8 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
     if (user == null) {
       await context.read<HomeProvider>().loadData();
       if (!mounted) return;
-      user = context.read<ProfileProvider>().user ??
+      user =
+          context.read<ProfileProvider>().user ??
           context.read<HomeProvider>().user;
     }
     if (user == null) return;
@@ -113,11 +114,8 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
     });
   }
 
-  NumberFormat get _rpFormat => NumberFormat.currency(
-        locale: 'id_ID',
-        symbol: 'Rp',
-        decimalDigits: 0,
-      );
+  NumberFormat get _rpFormat =>
+      NumberFormat.currency(locale: 'id_ID', symbol: 'Rp', decimalDigits: 0);
 
   double? get _estimasiNilai {
     final category = _selectedCategory;
@@ -156,9 +154,9 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: Theme.of(context).colorScheme.copyWith(
-                  primary: AppTheme.primaryColor,
-                ),
+            colorScheme: Theme.of(
+              context,
+            ).colorScheme.copyWith(primary: AppTheme.primaryColor),
           ),
           child: child!,
         );
@@ -177,9 +175,9 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: Theme.of(context).colorScheme.copyWith(
-                  primary: AppTheme.primaryColor,
-                ),
+            colorScheme: Theme.of(
+              context,
+            ).colorScheme.copyWith(primary: AppTheme.primaryColor),
           ),
           child: child!,
         );
@@ -216,10 +214,7 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
                         : theme.colorScheme.outlineVariant,
                   ),
                 ),
-                leading: Icon(
-                  Icons.eco_outlined,
-                  color: AppTheme.primaryColor,
-                ),
+                leading: Icon(Icons.eco_outlined, color: AppTheme.primaryColor),
                 title: Text(cat.nama),
                 subtitle: Text(
                   '${_rpFormat.format(cat.hargaBeliPerKgAsDouble)}/kg',
@@ -229,7 +224,10 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
                   ),
                 ),
                 trailing: selected
-                    ? const Icon(Icons.check_circle, color: AppTheme.primaryColor)
+                    ? const Icon(
+                        Icons.check_circle,
+                        color: AppTheme.primaryColor,
+                      )
                     : null,
                 onTap: () => Navigator.of(ctx).pop(cat),
               );
@@ -349,8 +347,35 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
       if (!mounted) return;
       context.pop();
     } else if (penjemputan.hasError) {
-      _showMessage(penjemputan.error!);
+      if (penjemputan.submitRejectedByRule) {
+        await _showRejectedDialog(penjemputan.error!);
+      } else {
+        _showMessage(penjemputan.error!);
+      }
     }
+  }
+
+  /// Kuota 2×/minggu atau wilayah belum dilayani — pesan panjang dari
+  /// server, tampilkan di dialog agar tidak hilang seperti snackbar.
+  Future<void> _showRejectedDialog(String message) {
+    return showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        icon: const Icon(
+          Icons.event_busy_rounded,
+          color: AppTheme.errorColor,
+          size: 36,
+        ),
+        title: const Text('Penjemputan belum bisa diajukan'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Mengerti'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _showSuccessDialog() {
@@ -429,14 +454,11 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Ajukan Penjemputan'),
-      ),
+      appBar: AppBar(title: const Text('Ajukan Penjemputan')),
       body: Consumer3<HomeProvider, PenjemputanProvider, SettingsProvider>(
         builder: (context, home, penjemputan, settingsProv, _) {
           final categories = home.categories;
-          final loadingCategories =
-              _isLoadingCategories && categories.isEmpty;
+          final loadingCategories = _isLoadingCategories && categories.isEmpty;
           final settings = settingsProv.settings;
           final diLuarJam = settings?.isDiLuarJamKerja(_selectedTime) ?? false;
           final jamLabel = settings?.jamKerjaLabel ?? '';
@@ -484,8 +506,9 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
                   const SizedBox(height: 8),
                   TextFormField(
                     controller: _beratController,
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     decoration: InputDecoration(
                       hintText: 'Contoh: 10',
                       suffixText: 'kg',
@@ -636,9 +659,7 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
       decoration: BoxDecoration(
         color: AppTheme.primaryColor.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppTheme.primaryColor.withValues(alpha: 0.2),
-        ),
+        border: Border.all(color: AppTheme.primaryColor.withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [
@@ -853,17 +874,12 @@ class _LokasiPinCard extends StatelessWidget {
               child: Image.network(
                 _osmUrl,
                 fit: BoxFit.cover,
-                errorBuilder: (_, _, _) => _PinFallback(
-                  latitude: latitude!,
-                  longitude: longitude!,
-                ),
+                errorBuilder: (_, _, _) =>
+                    _PinFallback(latitude: latitude!, longitude: longitude!),
               ),
             )
           else
-            const SizedBox(
-              height: 88,
-              child: _PinFallback.empty(),
-            ),
+            const SizedBox(height: 88, child: _PinFallback.empty()),
           Padding(
             padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
             child: Column(
@@ -917,15 +933,10 @@ class _LokasiPinCard extends StatelessWidget {
 }
 
 class _PinFallback extends StatelessWidget {
-  const _PinFallback({
-    required this.latitude,
-    required this.longitude,
-  }) : empty = false;
+  const _PinFallback({required this.latitude, required this.longitude})
+    : empty = false;
 
-  const _PinFallback.empty()
-      : latitude = 0,
-        longitude = 0,
-        empty = true;
+  const _PinFallback.empty() : latitude = 0, longitude = 0, empty = true;
 
   final double latitude;
   final double longitude;
@@ -948,9 +959,9 @@ class _PinFallback extends StatelessWidget {
               const SizedBox(height: 6),
               Text(
                 '${latitude.toStringAsFixed(5)}, ${longitude.toStringAsFixed(5)}',
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: AppTheme.primaryDark,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.labelSmall?.copyWith(color: AppTheme.primaryDark),
               ),
             ],
           ],

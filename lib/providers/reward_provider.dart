@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
 import '../models/api_exception.dart';
+import '../models/poin_info.dart';
 import '../models/reward.dart';
 import '../models/reward_redemption.dart';
 import '../services/api_client.dart';
@@ -11,6 +12,7 @@ import '../services/api_client.dart';
 /// Handles:
 /// - Fetching reward catalog from `/api/rewards/`
 /// - Creating reward redemptions via `POST /api/reward-redemptions/`
+/// - Masa berlaku poin via `GET /api/auth/poin-info/`
 class RewardProvider extends ChangeNotifier {
   RewardProvider({required this._apiClient});
 
@@ -31,6 +33,8 @@ class RewardProvider extends ChangeNotifier {
   bool _isSubmitting = false;
   String? _submitError;
 
+  PoinInfo? _poinInfo;
+
   // ──────────────────────────────────────────────
   // Getters
   // ──────────────────────────────────────────────
@@ -42,6 +46,7 @@ class RewardProvider extends ChangeNotifier {
   bool get isSubmitting => _isSubmitting;
   String? get submitError => _submitError;
   bool get hasSubmitError => _submitError != null;
+  PoinInfo? get poinInfo => _poinInfo;
 
   // ──────────────────────────────────────────────
   // Load Rewards
@@ -80,9 +85,23 @@ class RewardProvider extends ChangeNotifier {
     }
   }
 
+  /// Info masa berlaku poin. Gagal = diam (info tambahan, bukan blocker).
+  Future<void> loadPoinInfo() async {
+    try {
+      final data = await _apiClient.get<Map<String, dynamic>>(
+        '/auth/poin-info/',
+        fromJson: (json) => Map<String, dynamic>.from(json as Map),
+      );
+      _poinInfo = PoinInfo.fromJson(data);
+      notifyListeners();
+    } catch (_) {
+      // Biarkan info lama (atau kosong) tetap tampil.
+    }
+  }
+
   /// Pull-to-refresh.
   Future<void> refresh() async {
-    await loadRewards();
+    await Future.wait([loadRewards(), loadPoinInfo()]);
   }
 
   // ──────────────────────────────────────────────
@@ -92,9 +111,7 @@ class RewardProvider extends ChangeNotifier {
   /// Creates a new reward redemption.
   ///
   /// Returns the created [RewardRedemption] on success, `null` on error.
-  Future<RewardRedemption?> createRedemption({
-    required int rewardId,
-  }) async {
+  Future<RewardRedemption?> createRedemption({required int rewardId}) async {
     if (_isSubmitting) return null;
     _isSubmitting = true;
     _submitError = null;
@@ -161,6 +178,7 @@ class RewardProvider extends ChangeNotifier {
 
   void clearCache() {
     _rewards = [];
+    _poinInfo = null;
     _error = null;
     _submitError = null;
     _isLoading = false;

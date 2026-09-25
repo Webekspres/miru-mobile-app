@@ -23,6 +23,9 @@ class PenjemputanProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool _isSubmitting = false;
   String? _error;
+
+  /// Pengajuan ditolak aturan layanan (kuota 2×/minggu / wilayah nonaktif).
+  bool _submitRejectedByRule = false;
   int _currentUserId = 0;
 
   // ──────────────────────────────────────────────
@@ -42,6 +45,7 @@ class PenjemputanProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get isSubmitting => _isSubmitting;
   String? get error => _error;
+  bool get submitRejectedByRule => _submitRejectedByRule;
   bool get hasError => _error != null;
 
   // ──────────────────────────────────────────────
@@ -63,10 +67,7 @@ class PenjemputanProvider extends ChangeNotifier {
     try {
       final data = await _apiClient.get<List<dynamic>>(
         '/pickups/',
-        queryParameters: {
-          'nasabah': userId.toString(),
-          'ordering': '-jadwal',
-        },
+        queryParameters: {'nasabah': userId.toString(), 'ordering': '-jadwal'},
         fromJson: (json) => json as List<dynamic>,
       );
 
@@ -109,6 +110,7 @@ class PenjemputanProvider extends ChangeNotifier {
     if (_isSubmitting) return null;
     _isSubmitting = true;
     _error = null;
+    _submitRejectedByRule = false;
     notifyListeners();
 
     try {
@@ -136,6 +138,9 @@ class PenjemputanProvider extends ChangeNotifier {
       return pickup;
     } on DioException catch (e) {
       _error = parseDioError(e);
+      final fields = apiExceptionFromDio(e).fieldErrors?.keys ?? const [];
+      _submitRejectedByRule =
+          fields.contains('jadwal') || fields.contains('alamat_jemput');
       _isSubmitting = false;
       notifyListeners();
       return null;

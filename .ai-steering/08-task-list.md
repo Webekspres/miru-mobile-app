@@ -75,10 +75,10 @@ Prosedur Play Internal: `12-play-internal-testing.md`.
 
 ### Bisa langsung (API sudah ✅)
 
-- [ ] Info masa berlaku / sisa poin di Home dan/atau Reward (`PoinInfoView`); teks BI poin hangus 1 tahun
+- [x] Info masa berlaku / sisa poin di Reward (`PoinInfoView`); teks BI poin hangus 1 tahun (2026-09-25)
 - [ ] Unduh atau share PDF bukti setoran / penarikan (role-gated, milik sendiri)
 - [ ] UI metode pencairan di TarikSaldo (tunai / transfer / e-wallet metadata; tanpa gateway; konfirmasi + SLA 1–2 hari)
-- [ ] Pesan error wilayah & kuota 2×/minggu dari envelope BI saat ajukan jemput gagal
+- [x] Pesan error wilayah & kuota 2×/minggu dari envelope BI saat ajukan jemput gagal — dialog (2026-09-25)
 
 ### Perlu integrasi
 

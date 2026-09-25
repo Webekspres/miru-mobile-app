@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../config/theme.dart';
+import '../../models/poin_info.dart';
 import '../../models/reward.dart';
 import '../../providers/auth_session.dart';
 import '../../providers/home_provider.dart';
@@ -31,6 +33,7 @@ class _RewardScreenState extends State<RewardScreen> {
     if (reward.rewards.isEmpty && !reward.isLoading) {
       reward.loadRewards();
     }
+    reward.loadPoinInfo();
   }
 
   @override
@@ -43,15 +46,14 @@ class _RewardScreenState extends State<RewardScreen> {
         appBar: AppBar(title: const Text('Tukar Poin')),
         body: const LoginPrompt(
           title: 'Tukar Poin',
-          message: 'Masuk untuk menukarkan poin Anda dengan berbagai reward menarik.',
+          message:
+              'Masuk untuk menukarkan poin Anda dengan berbagai reward menarik.',
         ),
       );
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tukar Poin'),
-      ),
+      appBar: AppBar(title: const Text('Tukar Poin')),
       body: Consumer2<HomeProvider, RewardProvider>(
         builder: (context, home, reward, _) {
           if (reward.hasError && reward.rewards.isEmpty) {
@@ -80,10 +82,10 @@ class _RewardScreenState extends State<RewardScreen> {
               slivers: [
                 // ── Poin Header ──
                 SliverToBoxAdapter(
-                  child: _PoinHeaderCard(
-                    poin: userPoin,
-                    theme: theme,
-                  ),
+                  child: _PoinHeaderCard(poin: userPoin, theme: theme),
+                ),
+                SliverToBoxAdapter(
+                  child: _PoinExpiryInfo(info: reward.poinInfo, theme: theme),
                 ),
                 const SliverToBoxAdapter(child: SizedBox(height: 12)),
 
@@ -217,6 +219,76 @@ class _PoinHeaderCard extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────
+// Masa berlaku poin
+// ─────────────────────────────────────────────
+
+class _PoinExpiryInfo extends StatelessWidget {
+  const _PoinExpiryInfo({required this.info, required this.theme});
+
+  final PoinInfo? info;
+  final ThemeData theme;
+
+  /// Tanggal kedaluwarsa dalam kalender WIT (UTC+9).
+  static String _formatWit(DateTime utc) => DateFormat(
+    'd MMMM yyyy',
+    'id_ID',
+  ).format(utc.toUtc().add(const Duration(hours: 9)));
+
+  @override
+  Widget build(BuildContext context) {
+    final info = this.info;
+    final expiring = info != null && info.hasExpiringPoin;
+    final color = expiring
+        ? const Color(0xFFB45309)
+        : theme.colorScheme.onSurfaceVariant;
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: expiring
+            ? const Color(0xFFFEF3C7)
+            : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            expiring ? Icons.schedule_rounded : Icons.info_outline_rounded,
+            size: 18,
+            color: color,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (expiring) ...[
+                  Text(
+                    '${info.poinHangusTerdekat} poin akan hangus pada '
+                    '${_formatWit(info.tanggalKedaluwarsaTerdekat!)}',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: color,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                ],
+                Text(
+                  info?.catatan ?? PoinInfo.defaultCatatan,
+                  style: theme.textTheme.bodySmall?.copyWith(color: color),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
 // Reward Card
 // ─────────────────────────────────────────────
 
@@ -316,9 +388,7 @@ class _RewardCard extends StatelessWidget {
                     Icon(
                       Icons.stars_rounded,
                       size: 14,
-                      color: canRedeem
-                          ? const Color(0xFFD97706)
-                          : Colors.grey,
+                      color: canRedeem ? const Color(0xFFD97706) : Colors.grey,
                     ),
                     const SizedBox(width: 4),
                     Text(
@@ -354,8 +424,8 @@ class _RewardCard extends StatelessWidget {
                 canRedeem
                     ? 'Tukar'
                     : userPoin < reward.poinDibutuhkan
-                        ? 'Poin tidak cukup'
-                        : 'Stok habis',
+                    ? 'Poin tidak cukup'
+                    : 'Stok habis',
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
