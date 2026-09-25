@@ -5,13 +5,12 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../config/theme.dart';
+import '../../models/jadwal_jemput.dart';
 import '../../models/waste_category.dart';
 import '../../providers/auth_session.dart';
 import '../../providers/home_provider.dart';
 import '../../providers/penjemputan_provider.dart';
 import '../../providers/profile_provider.dart';
-import '../../providers/settings_provider.dart';
-import '../../utils/wit_datetime.dart';
 import '../../widgets/complete_profile_dialog.dart';
 import '../../widgets/login_prompt.dart';
 import '../../widgets/shimmer_loading.dart';
@@ -29,35 +28,26 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
   final _beratController = TextEditingController();
   final _alamatController = TextEditingController();
 
-  late DateTime _selectedDate;
-  late TimeOfDay _selectedTime;
+  int? _selectedJadwalId;
   bool _isLoadingCategories = true;
   bool _isFetchingLocation = false;
   WasteCategory? _selectedCategory;
   double? _latitude;
   double? _longitude;
 
-  String get _formattedTime {
-    final hour = _selectedTime.hour.toString().padLeft(2, '0');
-    final minute = _selectedTime.minute.toString().padLeft(2, '0');
-    return '$hour:$minute';
-  }
-
   @override
   void initState() {
     super.initState();
-    final minJadwal = WitDateTime.now().add(const Duration(hours: 1));
-    _selectedDate = WitDateTime.dateOnly(minJadwal);
-    _selectedTime = TimeOfDay(hour: minJadwal.hour, minute: minJadwal.minute);
     _beratController.addListener(_onBeratChanged);
     _loadCategories();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
       if (!context.read<AuthSession>().isLoggedIn) return;
-      context.read<SettingsProvider>().loadSettings(silent: true);
       final allowed = await guardTransactionRequiresAddress(context);
       if (!mounted || !allowed) return;
       await _prefillAlamat();
+      if (!mounted) return;
+      await context.read<PenjemputanProvider>().loadJadwal();
     });
   }
 
@@ -123,70 +113,6 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
     final berat = double.tryParse(_beratController.text.trim());
     if (berat == null || berat <= 0) return null;
     return category.hargaBeliPerKgAsDouble * berat;
-  }
-
-  String? _validateJadwal() {
-    final jadwal = WitDateTime.combine(_selectedDate, _selectedTime);
-    final nowWit = WitDateTime.now();
-    if (!jadwal.isAfter(nowWit)) {
-      return 'Jadwal penjemputan tidak boleh di masa lalu.';
-    }
-    if (jadwal.isBefore(nowWit.add(const Duration(hours: 1)))) {
-      return 'Jadwal penjemputan minimal 1 jam dari sekarang.';
-    }
-    return null;
-  }
-
-  Future<void> _selectDate() async {
-    final nowWit = WitDateTime.now();
-    final firstDate = WitDateTime.dateOnly(nowWit);
-    final lastDate = firstDate.add(const Duration(days: 30));
-    var initial = WitDateTime.dateOnly(_selectedDate);
-    if (initial.isBefore(firstDate)) initial = firstDate;
-    if (initial.isAfter(lastDate)) initial = lastDate;
-
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: initial,
-      firstDate: firstDate,
-      lastDate: lastDate,
-      locale: const Locale('id', 'ID'),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: Theme.of(
-              context,
-            ).colorScheme.copyWith(primary: AppTheme.primaryColor),
-          ),
-          child: child!,
-        );
-      },
-    );
-
-    if (picked != null) {
-      setState(() => _selectedDate = WitDateTime.dateOnly(picked));
-    }
-  }
-
-  Future<void> _selectTime() async {
-    final picked = await showTimePicker(
-      context: context,
-      initialTime: _selectedTime,
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: Theme.of(
-              context,
-            ).colorScheme.copyWith(primary: AppTheme.primaryColor),
-          ),
-          child: child!,
-        );
-      },
-    );
-
-    if (picked != null) {
-      setState(() => _selectedTime = picked);
-    }
   }
 
   Future<void> _openCategoryPicker(List<WasteCategory> categories) async {
@@ -296,6 +222,16 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
     }
   }
 
+  Future<void> _lengkapiKelurahan() async {
+    final user =
+        context.read<ProfileProvider>().user ??
+        context.read<HomeProvider>().user;
+    if (user == null) return;
+    await context.push<void>('/profile/edit', extra: user);
+    if (!mounted) return;
+    await context.read<PenjemputanProvider>().loadJadwal();
+  }
+
   void _showMessage(String text, {bool error = true}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -316,9 +252,9 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
       return;
     }
 
-    final jadwalError = _validateJadwal();
-    if (jadwalError != null) {
-      _showMessage(jadwalError);
+    final jadwalId = _selectedJadwalId;
+    if (jadwalId == null) {
+      _showMessage('Pilih jadwal penjemputan terlebih dahulu.');
       return;
     }
 
@@ -328,12 +264,10 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
       return;
     }
 
-    final jadwal = WitDateTime.combine(_selectedDate, _selectedTime);
-
     final result = await penjemputan.createPickup(
       estimasiBerat: berat,
       alamatJemput: _alamatController.text.trim(),
-      jadwal: jadwal,
+      jadwalWilayahId: jadwalId,
       latitude: _latitude,
       longitude: _longitude,
     );
@@ -349,14 +283,17 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
     } else if (penjemputan.hasError) {
       if (penjemputan.submitRejectedByRule) {
         await _showRejectedDialog(penjemputan.error!);
+        if (!mounted) return;
+        setState(() => _selectedJadwalId = null);
+        await penjemputan.loadJadwal();
       } else {
         _showMessage(penjemputan.error!);
       }
     }
   }
 
-  /// Kuota 2×/minggu atau wilayah belum dilayani — pesan panjang dari
-  /// server, tampilkan di dialog agar tidak hilang seperti snackbar.
+  /// Jadwal sudah ditutup (H-1), sudah dipesan, atau wilayah belum dilayani —
+  /// pesan panjang dari server, tampilkan di dialog agar tidak hilang.
   Future<void> _showRejectedDialog(String message) {
     return showDialog<void>(
       context: context,
@@ -414,8 +351,8 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
             ],
           ),
           content: Text(
-            'Pengajuan Anda sudah diterima. Petugas akan meninjau jadwal '
-            'dan menghubungi Anda jika perlu penyesuaian.',
+            'Pengajuan Anda sudah diterima. Admin akan menugaskan petugas '
+            'untuk datang pada jadwal yang Anda pilih.',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
               height: 1.5,
@@ -440,7 +377,6 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final dateFormat = DateFormat('d MMMM yyyy', 'id_ID');
     final isLoggedIn = context.watch<AuthSession>().isLoggedIn;
 
     if (!isLoggedIn) {
@@ -455,13 +391,12 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Ajukan Penjemputan')),
-      body: Consumer3<HomeProvider, PenjemputanProvider, SettingsProvider>(
-        builder: (context, home, penjemputan, settingsProv, _) {
+      body: Consumer2<HomeProvider, PenjemputanProvider>(
+        builder: (context, home, penjemputan, _) {
           final categories = home.categories;
           final loadingCategories = _isLoadingCategories && categories.isEmpty;
-          final settings = settingsProv.settings;
-          final diLuarJam = settings?.isDiLuarJamKerja(_selectedTime) ?? false;
-          final jamLabel = settings?.jamKerjaLabel ?? '';
+          final user = context.watch<ProfileProvider>().user ?? home.user;
+          final hasKelurahan = user?.kelurahanId != null;
 
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
@@ -471,6 +406,22 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildInfoHeader(context),
+                  const SizedBox(height: 20),
+
+                  Text(
+                    'Pilih Jadwal Penjemputan',
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  _JadwalSection(
+                    penjemputan: penjemputan,
+                    hasKelurahan: hasKelurahan,
+                    selectedId: _selectedJadwalId,
+                    onSelect: (id) => setState(() => _selectedJadwalId = id),
+                    onLengkapiProfil: _lengkapiKelurahan,
+                  ),
                   const SizedBox(height: 20),
 
                   Text(
@@ -584,45 +535,6 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  Text(
-                    'Jadwal Penjemputan',
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _DatePickerTile(
-                          label: 'Tanggal',
-                          value: dateFormat.format(_selectedDate),
-                          icon: Icons.calendar_month_outlined,
-                          onTap: _selectDate,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _DatePickerTile(
-                          label: 'Waktu (WIT)',
-                          value: _formattedTime,
-                          icon: Icons.access_time_rounded,
-                          onTap: _selectTime,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Tidak boleh di masa lalu. Minimal 1 jam dari sekarang (waktu Papua).',
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  if (diLuarJam) ...[
-                    const SizedBox(height: 12),
-                    _JamKerjaWarning(jamLabel: jamLabel),
-                  ],
                   const SizedBox(height: 28),
 
                   SizedBox(
@@ -671,8 +583,9 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              'Petugas akan datang ke alamat Anda pada jadwal yang dipilih. '
-              'Sampah akan ditimbang dan dicatat oleh petugas.',
+              'Penjemputan dilakukan pada hari jemput wilayah Anda yang '
+              'ditetapkan admin (maks. 2 hari per minggu). Pesan paling lambat '
+              'H-1. Sampah ditimbang dan dicatat oleh petugas.',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: AppTheme.primaryDark,
                 height: 1.4,
@@ -971,92 +884,215 @@ class _PinFallback extends StatelessWidget {
   }
 }
 
-class _JamKerjaWarning extends StatelessWidget {
-  const _JamKerjaWarning({required this.jamLabel});
+class _JadwalSection extends StatelessWidget {
+  const _JadwalSection({
+    required this.penjemputan,
+    required this.hasKelurahan,
+    required this.selectedId,
+    required this.onSelect,
+    required this.onLengkapiProfil,
+  });
 
-  final String jamLabel;
+  final PenjemputanProvider penjemputan;
+  final bool hasKelurahan;
+  final int? selectedId;
+  final ValueChanged<int> onSelect;
+  final VoidCallback onLengkapiProfil;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final jam = jamLabel.isEmpty ? 'jam kerja' : '$jamLabel WIT';
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFFBEB),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFFDE68A)),
-      ),
-      child: Text(
-        'Jadwal di luar jam kerja ($jam). Pengajuan tetap bisa dikirim; '
-        'petugas memproses pada jam kerja.',
-        style: theme.textTheme.bodySmall?.copyWith(
-          color: const Color(0xFF92400E),
-          height: 1.4,
+    if (!hasKelurahan) {
+      return _JadwalInfoBox(
+        icon: Icons.location_city_outlined,
+        message:
+            'Lengkapi kelurahan/kampung di profil Anda untuk melihat '
+            'jadwal penjemputan di wilayah Anda.',
+        actionLabel: 'Lengkapi Profil',
+        onAction: onLengkapiProfil,
+      );
+    }
+    if (penjemputan.isLoadingJadwal && penjemputan.jadwal.isEmpty) {
+      return const Column(
+        children: [
+          SkeletonCard(height: 64),
+          SizedBox(height: 8),
+          SkeletonCard(height: 64),
+        ],
+      );
+    }
+    if (penjemputan.jadwalError != null && penjemputan.jadwal.isEmpty) {
+      return _JadwalInfoBox(
+        icon: Icons.wifi_off_rounded,
+        message: penjemputan.jadwalError!,
+        actionLabel: 'Coba Lagi',
+        onAction: penjemputan.loadJadwal,
+      );
+    }
+    if (penjemputan.jadwal.isEmpty) {
+      return const _JadwalInfoBox(
+        icon: Icons.event_busy_outlined,
+        message:
+            'Belum ada jadwal penjemputan untuk wilayah Anda. '
+            'Kami akan memberi tahu lewat notifikasi saat jadwal tersedia.',
+      );
+    }
+
+    return Column(
+      children: [
+        for (final j in penjemputan.jadwal) ...[
+          _JadwalTile(
+            jadwal: j,
+            selected: j.id == selectedId,
+            onTap: () => onSelect(j.id),
+          ),
+          const SizedBox(height: 8),
+        ],
+        Text(
+          'Pemesanan ditutup H-1 sebelum tanggal jemput.',
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
         ),
-      ),
+      ],
     );
   }
 }
 
-class _DatePickerTile extends StatelessWidget {
-  const _DatePickerTile({
-    required this.label,
-    required this.value,
-    required this.icon,
+class _JadwalTile extends StatelessWidget {
+  const _JadwalTile({
+    required this.jadwal,
+    required this.selected,
     required this.onTap,
   });
 
-  final String label;
-  final String value;
-  final IconData icon;
+  final JadwalJemput jadwal;
+  final bool selected;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
     return Material(
-      color: Colors.transparent,
+      color: selected
+          ? AppTheme.primaryColor.withValues(alpha: 0.08)
+          : Colors.white,
+      borderRadius: BorderRadius.circular(12),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: onTap,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(
-            color: Colors.white,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: theme.colorScheme.outlineVariant),
+            border: Border.all(
+              color: selected
+                  ? AppTheme.primaryColor
+                  : theme.colorScheme.outlineVariant,
+              width: selected ? 1.5 : 1,
+            ),
           ),
           child: Row(
             children: [
-              Icon(icon, size: 20, color: AppTheme.primaryColor),
-              const SizedBox(width: 10),
+              Icon(
+                selected
+                    ? Icons.radio_button_checked_rounded
+                    : Icons.radio_button_off_rounded,
+                color: selected
+                    ? AppTheme.primaryColor
+                    : theme.colorScheme.onSurfaceVariant,
+                size: 22,
+              ),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      label,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
+                      jadwal.tanggalLabel,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      value,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
+                      '${jadwal.jamLabel} · ${jadwal.wilayahNama}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
+                    if (jadwal.catatan.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        jadwal.catatan,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _JadwalInfoBox extends StatelessWidget {
+  const _JadwalInfoBox({
+    required this.icon,
+    required this.message,
+    this.actionLabel,
+    this.onAction,
+  });
+
+  final IconData icon;
+  final String message;
+  final String? actionLabel;
+  final VoidCallback? onAction;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFFBEB),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFFDE68A)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(icon, size: 20, color: const Color(0xFF92400E)),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  message,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: const Color(0xFF92400E),
+                    height: 1.4,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (actionLabel != null && onAction != null) ...[
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(onPressed: onAction, child: Text(actionLabel!)),
+            ),
+          ],
+        ],
       ),
     );
   }

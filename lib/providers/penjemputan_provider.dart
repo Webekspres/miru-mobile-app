@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
 import '../models/api_exception.dart';
+import '../models/jadwal_jemput.dart';
 import '../models/pickup.dart';
 import '../services/api_client.dart';
 
@@ -10,6 +11,7 @@ import '../services/api_client.dart';
 /// Handles:
 /// - Fetching pickups from `/api/pickups/?nasabah={id}`
 /// - Creating new pickups via `POST /api/pickups/`
+/// - Jadwal jemput wilayah nasabah via `GET /api/jadwal-jemput/`
 class PenjemputanProvider extends ChangeNotifier {
   PenjemputanProvider({required this._apiClient});
 
@@ -24,9 +26,14 @@ class PenjemputanProvider extends ChangeNotifier {
   bool _isSubmitting = false;
   String? _error;
 
-  /// Pengajuan ditolak aturan layanan (kuota 2×/minggu / wilayah nonaktif).
+  /// Pengajuan ditolak aturan jadwal (H-1 lewat / wilayah nonaktif / sudah pesan).
   bool _submitRejectedByRule = false;
   int _currentUserId = 0;
+
+  List<JadwalJemput> _jadwal = [];
+  bool _isLoadingJadwal = false;
+  bool _jadwalLoaded = false;
+  String? _jadwalError;
 
   // ──────────────────────────────────────────────
   // Getters
@@ -47,6 +54,39 @@ class PenjemputanProvider extends ChangeNotifier {
   String? get error => _error;
   bool get submitRejectedByRule => _submitRejectedByRule;
   bool get hasError => _error != null;
+
+  /// Jadwal jemput wilayah nasabah yang masih bisa dipesan (urut tanggal).
+  List<JadwalJemput> get jadwal => _jadwal;
+  bool get isLoadingJadwal => _isLoadingJadwal;
+  bool get jadwalLoaded => _jadwalLoaded;
+  String? get jadwalError => _jadwalError;
+
+  // ──────────────────────────────────────────────
+  // Jadwal jemput wilayah
+  // ──────────────────────────────────────────────
+
+  Future<void> loadJadwal() async {
+    _isLoadingJadwal = true;
+    _jadwalError = null;
+    notifyListeners();
+    try {
+      final data = await _apiClient.get<List<dynamic>>(
+        '/jadwal-jemput/',
+        fromJson: (json) => json as List<dynamic>,
+      );
+      _jadwal = JadwalJemput.listFromJson(
+        data,
+      ).where((j) => j.bisaDipesan).toList();
+      _jadwalLoaded = true;
+    } on DioException catch (e) {
+      _jadwalError = parseDioError(e);
+    } catch (_) {
+      _jadwalError = kGenericErrorMessage;
+    } finally {
+      _isLoadingJadwal = false;
+      notifyListeners();
+    }
+  }
 
   // ──────────────────────────────────────────────
   // Load Pickups
@@ -103,7 +143,7 @@ class PenjemputanProvider extends ChangeNotifier {
   Future<Pickup?> createPickup({
     required double estimasiBerat,
     required String alamatJemput,
-    required DateTime jadwal,
+    required int jadwalWilayahId,
     double? latitude,
     double? longitude,
   }) async {
@@ -114,16 +154,13 @@ class PenjemputanProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final payload = Pickup(
-        id: 0,
-        nasabah: 0,
-        estimasiBerat: estimasiBerat.toStringAsFixed(2),
-        alamatJemput: alamatJemput,
-        jadwal: jadwal,
-        status: PickupStatus.menunggu,
-        latitude: latitude,
-        longitude: longitude,
-      ).toCreateJson();
+      final payload = <String, dynamic>{
+        'estimasi_berat': estimasiBerat.toStringAsFixed(2),
+        'alamat_jemput': alamatJemput,
+        'jadwal_wilayah': jadwalWilayahId,
+        if (latitude != null) 'latitude': latitude.toStringAsFixed(6),
+        if (longitude != null) 'longitude': longitude.toStringAsFixed(6),
+      };
 
       final data = await _apiClient.post<Map<String, dynamic>>(
         '/pickups/',
@@ -139,8 +176,7 @@ class PenjemputanProvider extends ChangeNotifier {
     } on DioException catch (e) {
       _error = parseDioError(e);
       final fields = apiExceptionFromDio(e).fieldErrors?.keys ?? const [];
-      _submitRejectedByRule =
-          fields.contains('jadwal') || fields.contains('alamat_jemput');
+      _submitRejectedByRule = fields.contains('jadwal_wilayah');
       _isSubmitting = false;
       notifyListeners();
       return null;
@@ -169,6 +205,9 @@ class PenjemputanProvider extends ChangeNotifier {
 
   void clearCache() {
     _pickups = [];
+    _jadwal = [];
+    _jadwalLoaded = false;
+    _jadwalError = null;
     _error = null;
     _currentUserId = 0;
     _isLoading = false;

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../utils/wit_datetime.dart';
 import 'json_parsing.dart';
 
 enum PickupStatus {
@@ -115,14 +114,6 @@ class Pickup {
         'alamat_jemput': alamatJemput,
         'jadwal': jadwal.toIso8601String(),
         'status': status.apiValue,
-        if (latitude != null) 'latitude': latitude!.toStringAsFixed(6),
-        if (longitude != null) 'longitude': longitude!.toStringAsFixed(6),
-      };
-
-  Map<String, dynamic> toCreateJson() => {
-        'estimasi_berat': estimasiBeratAsDouble,
-        'alamat_jemput': alamatJemput,
-        'jadwal': WitDateTime.toIsoOffset(jadwal),
         if (latitude != null) 'latitude': latitude!.toStringAsFixed(6),
         if (longitude != null) 'longitude': longitude!.toStringAsFixed(6),
       };
