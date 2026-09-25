@@ -37,6 +37,9 @@ class AuthProvider extends ChangeNotifier {
   String? get error => _error;
   bool get hasError => _error != null;
 
+  /// Akun wajib verifikasi email (OTP email) sebelum memakai aplikasi.
+  bool get needsEmailVerification => _user?.emailRequired ?? false;
+
   double get saldo => _user?.saldoAsDouble ?? 0.0;
   int get poin => _user?.poin ?? 0;
 
@@ -77,14 +80,17 @@ class AuthProvider extends ChangeNotifier {
 
       _user = user;
       authSession.setLoggedIn(true);
-    } on ApiException {
+      authSession.setNeedsEmailVerification(user.emailRequired);
+    } on ApiException catch (e) {
+      _error = e.message;
       rethrow;
     } on DioException catch (e) {
-      _error = parseDioError(e);
-      rethrow;
+      final apiError = apiExceptionFromDio(e);
+      _error = apiError.message;
+      throw apiError;
     } catch (e) {
-      _error = 'Terjadi kesalahan. Silakan coba lagi.';
-      rethrow;
+      _error = kGenericErrorMessage;
+      throw ApiException(_error!);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -95,14 +101,12 @@ class AuthProvider extends ChangeNotifier {
   // Register
   // ──────────────────────────────────────────────
 
-  /// Register a new nasabah account, then auto-login.
+  /// Daftar nasabah singkat. Akun belum aktif sampai OTP email (langkah 2).
+  /// Jangan auto-login — user inactive sampai verifikasi email.
   Future<void> register({
     required String username,
     required String password,
     required String namaLengkap,
-    required String noHp,
-    required String alamat,
-    String? nik,
     bool setujuKebijakanData = true,
   }) async {
     _isLoading = true;
@@ -114,21 +118,18 @@ class AuthProvider extends ChangeNotifier {
         username: username,
         password: password,
         namaLengkap: namaLengkap,
-        noHp: noHp,
-        alamat: alamat,
         setujuKebijakanData: setujuKebijakanData,
       );
-
-      // Auto-login after successful registration
-      await login(username: username, password: password);
-    } on ApiException {
+    } on ApiException catch (e) {
+      _error = e.message;
       rethrow;
     } on DioException catch (e) {
-      _error = parseDioError(e);
-      rethrow;
+      final apiError = apiExceptionFromDio(e);
+      _error = apiError.message;
+      throw apiError;
     } catch (e) {
-      _error = 'Terjadi kesalahan. Silakan coba lagi.';
-      rethrow;
+      _error = kGenericErrorMessage;
+      throw ApiException(_error!);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -163,10 +164,224 @@ class AuthProvider extends ChangeNotifier {
 
       _user = user;
       authSession.setLoggedIn(true);
+      authSession.setNeedsEmailVerification(user.emailRequired);
       return true;
+    } on DioException catch (e) {
+      if (isTransientNetworkError(e) &&
+          await storageService.hasAccessToken()) {
+        authSession.setLoggedIn(true);
+        return false;
+      }
+      await _clearSession();
+      return false;
     } catch (_) {
       await _clearSession();
       return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // ──────────────────────────────────────────────
+  // Email OTP verification
+  // ──────────────────────────────────────────────
+
+  /// Kirim OTP ke [email].
+  /// Login (gate `/verify-email`): cukup email, sesi dipakai.
+  /// Registrasi langkah 2 (akun belum aktif): wajib [username] + [password].
+  Future<Map<String, dynamic>> requestEmailOtp({
+    required String email,
+    String? username,
+    String? password,
+  }) async {
+    if (email.trim().isEmpty) {
+      throw const ApiException('Email wajib diisi.');
+    }
+    return _run(() async {
+      final data = await authService.requestEmailOtp(
+        email: email.trim(),
+        username: _user == null ? username?.trim() : null,
+        password: _user == null ? password : null,
+      );
+      // Staging/testing: backend SKIP_OTP_VERIFICATION langsung memverifikasi.
+      if (data['email_verified'] == true && _user != null) {
+        _setUser(User.fromJson(await authService.getMe()));
+      }
+      return data;
+    });
+  }
+
+  /// Verifikasi OTP email. Setelah login: perbarui user. Saat daftar: tanpa sesi.
+  Future<void> verifyEmailOtp({
+    required String otp,
+    String? username,
+  }) async {
+    await _run(() async {
+      final data = await authService.verifyEmailOtp(
+        otp: otp.trim(),
+        username: _user == null ? username?.trim() : null,
+      );
+      final userData = data['user'];
+      if (_user != null && userData is Map) {
+        _setUser(User.fromJson(Map<String, dynamic>.from(userData)));
+      }
+    });
+  }
+
+  void _setUser(User user) {
+    _user = user;
+    authSession.setNeedsEmailVerification(user.emailRequired);
+  }
+
+  /// Loading/error wrapper yang sama dengan alur auth lainnya.
+  Future<T> _run<T>(Future<T> Function() action) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+    try {
+      return await action();
+    } on ApiException catch (e) {
+      _error = e.message;
+      rethrow;
+    } on DioException catch (e) {
+      final apiError = apiExceptionFromDio(e);
+      _error = apiError.message;
+      throw apiError;
+    } catch (e) {
+      _error = kGenericErrorMessage;
+      throw ApiException(_error!);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // ──────────────────────────────────────────────
+  // Forgot Password
+  // ──────────────────────────────────────────────
+
+  /// Langkah 1: username → data.masked_email.
+  Future<Map<String, dynamic>> forgotPassword({
+    required String username,
+  }) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      return await authService.forgotPassword(username: username);
+    } on ApiException catch (e) {
+      _error = e.message;
+      rethrow;
+    } on DioException catch (e) {
+      final apiError = apiExceptionFromDio(e);
+      _error = apiError.message;
+      throw apiError;
+    } catch (e) {
+      _error = kGenericErrorMessage;
+      throw ApiException(_error!);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Langkah 2: email harus cocok → kirim kode ke email.
+  Future<Map<String, dynamic>> requestResetPasswordOtp({
+    required String username,
+    required String email,
+  }) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      return await authService.requestResetPasswordOtp(
+        username: username,
+        email: email,
+      );
+    } on ApiException catch (e) {
+      _error = e.message;
+      rethrow;
+    } on DioException catch (e) {
+      final apiError = apiExceptionFromDio(e);
+      _error = apiError.message;
+      throw apiError;
+    } catch (e) {
+      _error = kGenericErrorMessage;
+      throw ApiException(_error!);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Langkah 3: verifikasi kode → reset_token untuk `/reset-password`.
+  Future<String> verifyResetPasswordOtp({
+    required String username,
+    required String otp,
+  }) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final data = await authService.verifyResetPasswordOtp(
+        username: username,
+        otp: otp,
+      );
+      final token = data['reset_token'] as String?;
+      if (token == null || token.isEmpty) {
+        throw const ApiException('Kode tidak valid. Silakan coba lagi.');
+      }
+      return token;
+    } on ApiException catch (e) {
+      _error = e.message;
+      rethrow;
+    } on DioException catch (e) {
+      final apiError = apiExceptionFromDio(e);
+      _error = apiError.message;
+      throw apiError;
+    } catch (e) {
+      _error = kGenericErrorMessage;
+      throw ApiException(_error!);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // ──────────────────────────────────────────────
+  // Reset Password
+  // ──────────────────────────────────────────────
+
+  /// Langkah 4: password + password_confirm (min 6).
+  Future<void> resetPassword({
+    required String token,
+    required String password,
+    required String passwordConfirm,
+  }) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await authService.resetPassword(
+        token: token,
+        password: password,
+        passwordConfirm: passwordConfirm,
+      );
+    } on ApiException catch (e) {
+      _error = e.message;
+      rethrow;
+    } on DioException catch (e) {
+      final apiError = apiExceptionFromDio(e);
+      _error = apiError.message;
+      throw apiError;
+    } catch (e) {
+      _error = kGenericErrorMessage;
+      throw ApiException(_error!);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -178,9 +393,11 @@ class AuthProvider extends ChangeNotifier {
   // ──────────────────────────────────────────────
 
   Future<void> logout() async {
+    // Clears tokens + AuthSession → MiruApp clears all session-scoped provider caches.
     await authService.logout();
     _user = null;
     _error = null;
+    _isLoading = false;
     notifyListeners();
   }
 
@@ -202,7 +419,6 @@ class AuthProvider extends ChangeNotifier {
   Future<void> _clearSession() async {
     _user = null;
     _error = null;
-    authSession.setLoggedIn(false);
     await authService.logout();
   }
 }

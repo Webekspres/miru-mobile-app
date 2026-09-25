@@ -26,7 +26,7 @@ class ApiEnvelope<T> {
     return ApiEnvelope(
       success: json['success'] as bool? ?? false,
       statusCode: json['status_code'] as int? ?? 0,
-      message: json['message'] as String? ?? 'Terjadi kesalahan',
+      message: json['message'] as String? ?? kGenericErrorMessage,
       data: json['data'] != null && fromJsonT != null
           ? fromJsonT(json['data'])
           : json['data'] as T?,

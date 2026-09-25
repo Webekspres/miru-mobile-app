@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -7,9 +8,10 @@ import '../../models/notification.dart';
 import '../../providers/auth_session.dart';
 import '../../providers/notification_provider.dart';
 import '../../widgets/error_view.dart';
+import '../../widgets/load_when_visible.dart';
 import '../../widgets/login_prompt.dart';
+import '../../widgets/bottom_nav_scaffold.dart';
 import '../../widgets/shimmer_loading.dart';
-import 'detail_notifikasi_screen.dart';
 
 class NotifikasiScreen extends StatefulWidget {
   const NotifikasiScreen({super.key});
@@ -19,17 +21,8 @@ class NotifikasiScreen extends StatefulWidget {
 }
 
 class _NotifikasiScreenState extends State<NotifikasiScreen> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _loadData());
-  }
-
   void _loadData() {
-    final notif = context.read<NotificationProvider>();
-    if (!notif.isLoading && notif.notifications.isEmpty) {
-      notif.loadNotifications();
-    }
+    context.read<NotificationProvider>().ensureLoaded();
   }
 
   @override
@@ -46,7 +39,9 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
       );
     }
 
-    return Scaffold(
+    return LoadWhenVisible(
+      onVisible: _loadData,
+      child: Scaffold(
       appBar: AppBar(
         title: const Text('Notifikasi'),
         actions: [
@@ -71,10 +66,14 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
       body: Consumer<NotificationProvider>(
         builder: (context, notif, _) {
           if (notif.isLoading && notif.notifications.isEmpty) {
-            return const SingleChildScrollView(
-              physics: NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.fromLTRB(16, 12, 16, 24),
-              child: ListSkeleton(itemCount: 6),
+            return ListSkeleton(
+              itemCount: 6,
+              padding: EdgeInsets.fromLTRB(
+                0,
+                4,
+                0,
+                BottomNavScaffold.scrollBottomPadding(context),
+              ),
             );
           }
 
@@ -136,7 +135,12 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
             onRefresh: () => notif.refresh(),
             color: AppTheme.primaryColor,
             child: ListView.builder(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+              padding: EdgeInsets.fromLTRB(
+                16,
+                12,
+                16,
+                BottomNavScaffold.scrollBottomPadding(context),
+              ),
               itemCount: notif.notifications.length,
               itemBuilder: (context, index) {
                 final item = notif.notifications[index];
@@ -148,12 +152,7 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
                     if (isUnread) {
                       notif.markAsRead(item.id);
                     }
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            DetailNotifikasiScreen(notification: item),
-                      ),
-                    );
+                    context.push('/notifikasi/detail', extra: item);
                   },
                 );
               },
@@ -161,6 +160,7 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
           );
         },
       ),
+    ),
     );
   }
 }

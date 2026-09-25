@@ -4,6 +4,11 @@ import 'package:provider/provider.dart';
 import '../../config/theme.dart';
 import '../../models/user.dart';
 import '../../providers/profile_provider.dart';
+import '../../providers/wilayah_provider.dart';
+import '../../services/avatar_picker.dart';
+import '../../widgets/alamat_bertingkat.dart';
+import '../../widgets/peta_pin_picker.dart';
+import '../../widgets/user_avatar.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key, required this.initialUser});
@@ -19,13 +24,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _namaController;
   late TextEditingController _noHpController;
   late TextEditingController _alamatController;
+  late TextEditingController _rtController;
+  late TextEditingController _rwController;
+  int? _kelurahanId;
+  double? _latitude;
+  double? _longitude;
 
   @override
   void initState() {
     super.initState();
+    _kelurahanId = widget.initialUser.kelurahanId;
+    _latitude = widget.initialUser.latitude;
+    _longitude = widget.initialUser.longitude;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) context.read<WilayahProvider>().load();
+    });
     _namaController = TextEditingController(text: widget.initialUser.namaLengkap);
     _noHpController = TextEditingController(text: widget.initialUser.noHp);
     _alamatController = TextEditingController(text: widget.initialUser.alamat);
+    _rtController = TextEditingController(text: widget.initialUser.rt);
+    _rwController = TextEditingController(text: widget.initialUser.rw);
   }
 
   @override
@@ -33,17 +51,81 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _namaController.dispose();
     _noHpController.dispose();
     _alamatController.dispose();
+    _rtController.dispose();
+    _rwController.dispose();
     super.dispose();
+  }
+
+  bool get _isDirty {
+    final u = widget.initialUser;
+    return _namaController.text.trim() != u.namaLengkap.trim() ||
+        _noHpController.text.trim() != u.noHp.trim() ||
+        _alamatController.text.trim() != u.alamat.trim() ||
+        _rtController.text.trim() != u.rt.trim() ||
+        _rwController.text.trim() != u.rw.trim() ||
+        _kelurahanId != u.kelurahanId ||
+        _latitude != u.latitude ||
+        _longitude != u.longitude;
+  }
+
+  /// Back (AppBar / tombol sistem) saat ada perubahan: tanya dulu.
+  Future<void> _onBack() async {
+    if (context.read<ProfileProvider>().isSaving) return;
+    if (!_isDirty) {
+      Navigator.of(context).pop();
+      return;
+    }
+    final pilihan = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Perubahan belum disimpan'),
+        content: const Text(
+          'Anda memiliki perubahan yang belum disimpan. '
+          'Simpan perubahan sebelum keluar?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Tidak'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Simpan'),
+          ),
+        ],
+      ),
+    );
+    if (!mounted || pilihan == null) return; // ditutup: tetap di halaman
+    if (pilihan) {
+      await _saveProfile(); // menutup layar bila berhasil
+    } else {
+      Navigator.of(context).pop();
+    }
   }
 
   Future<void> _saveProfile() async {
     if (!_formKey.currentState!.validate()) return;
+    final cakupan = context.read<WilayahProvider>().cakupan;
+    if (cakupan.kelurahanById(_kelurahanId) == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Pilih kelurahan/kampung di Distrik Mimika Baru.'),
+          backgroundColor: AppTheme.errorColor,
+        ),
+      );
+      return;
+    }
 
     final profile = context.read<ProfileProvider>();
     final success = await profile.updateProfile(
       namaLengkap: _namaController.text.trim(),
       noHp: _noHpController.text.trim(),
       alamat: _alamatController.text.trim(),
+      rt: _rtController.text.trim(),
+      rw: _rwController.text.trim(),
+      kelurahanId: _kelurahanId,
+      latitude: _latitude,
+      longitude: _longitude,
     );
 
     if (!mounted) return;
@@ -70,8 +152,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final profile = context.watch<ProfileProvider>();
+    final wilayah = context.watch<WilayahProvider>();
 
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _onBack();
+      },
+      child: Scaffold(
       appBar: AppBar(
         title: const Text('Edit Profil'),
         actions: [
@@ -101,26 +189,35 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               Center(
                 child: Column(
                   children: [
-                    CircleAvatar(
+                    UserAvatar(
+                      name: profile.user?.namaLengkap ?? widget.initialUser.namaLengkap,
+                      imageUrl: profile.user?.avatarUrl ?? widget.initialUser.avatarUrl,
                       radius: 40,
-                      backgroundColor:
-                          AppTheme.primaryColor.withValues(alpha: 0.15),
-                      child: Text(
-                        widget.initialUser.namaLengkap.isNotEmpty
-                            ? widget.initialUser.namaLengkap[0].toUpperCase()
-                            : 'U',
-                        style: theme.textTheme.headlineLarge?.copyWith(
-                          color: AppTheme.primaryColor,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      'Foto profil tidak dapat diubah',
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
+                    TextButton.icon(
+                      onPressed: profile.isSaving
+                          ? null
+                          : () async {
+                              final file = await pickAndCropAvatar(context);
+                              if (file == null || !context.mounted) return;
+                              final ok = await profile.updateAvatar(file);
+                              if (!context.mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    ok
+                                        ? 'Foto profil berhasil diperbarui'
+                                        : (profile.error ?? 'Gagal menyimpan foto'),
+                                  ),
+                                  backgroundColor: ok
+                                      ? AppTheme.primaryColor
+                                      : AppTheme.errorColor,
+                                ),
+                              );
+                            },
+                      icon: const Icon(Icons.camera_alt_outlined, size: 18),
+                      label: const Text('Ubah foto profil'),
                     ),
                   ],
                 ),
@@ -161,13 +258,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
               const SizedBox(height: 20),
 
-              _buildLabel(theme, 'Alamat'),
+              _buildLabel(theme, 'Wilayah'),
+              const SizedBox(height: 8),
+              AlamatBertingkat(
+                cakupan: wilayah.cakupan,
+                kelurahanId: _kelurahanId,
+                isLoading: wilayah.isLoading,
+                error: wilayah.error,
+                onRetry: () => wilayah.load(force: true),
+                onKelurahanChanged: (id) => setState(() => _kelurahanId = id),
+              ),
+              const SizedBox(height: 20),
+
+              _buildLabel(theme, 'Alamat Lengkap'),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _alamatController,
                 maxLines: 3,
                 decoration: InputDecoration(
-                  hintText: 'Masukkan alamat lengkap',
+                  hintText: 'Nama jalan, nomor rumah, patokan',
                   prefixIcon: const Padding(
                     padding: EdgeInsets.only(bottom: 48),
                     child: Icon(Icons.location_on_outlined, size: 20),
@@ -179,6 +288,49 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 validator: (v) =>
                     v == null || v.trim().isEmpty ? 'Alamat tidak boleh kosong' : null,
+              ),
+              const SizedBox(height: 20),
+
+              // ── RT (opsional) ──
+              _buildLabel(theme, 'RT (opsional)'),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: _rtController,
+                decoration: InputDecoration(
+                  hintText: 'Contoh: 001',
+                  prefixIcon: const Icon(Icons.signpost_outlined, size: 20),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // ── RW (opsional) ──
+              _buildLabel(theme, 'RW (opsional)'),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: _rwController,
+                decoration: InputDecoration(
+                  hintText: 'Contoh: 002',
+                  prefixIcon: const Icon(Icons.signpost_outlined, size: 20),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              _buildLabel(theme, 'Titik Lokasi Rumah (opsional)'),
+              const SizedBox(height: 8),
+              PetaPinPicker(
+                cakupan: wilayah.cakupan,
+                latitude: _latitude,
+                longitude: _longitude,
+                onChanged: (lat, lng) => setState(() {
+                  _latitude = lat;
+                  _longitude = lng;
+                }),
               ),
               const SizedBox(height: 20),
 
@@ -198,24 +350,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-
-              _buildLabel(theme, 'NIK'),
-              const SizedBox(height: 8),
-              TextFormField(
-                initialValue: widget.initialUser.nik.isNotEmpty
-                    ? widget.initialUser.nik
-                    : 'Belum diisi',
-                readOnly: true,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.badge_outlined, size: 20),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  filled: true,
-                  fillColor: theme.colorScheme.surfaceContainerHighest,
-                ),
-              ),
-              const SizedBox(height: 24),
 
               // ── Info ──
               Container(
@@ -271,6 +405,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ),
         ),
       ),
+    ),
     );
   }
 

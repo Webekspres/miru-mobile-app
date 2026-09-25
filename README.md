@@ -181,6 +181,7 @@ mirumobileapp/
 | [`.ai-steering/10-integration-and-roles.md`](.ai-steering/10-integration-and-roles.md) | Alur nasabah & batasan role |
 | [`.ai-steering/07-modules-and-features.md`](.ai-steering/07-modules-and-features.md) | Wireframe & modul mobile |
 | [`.ai-steering/08-task-list.md`](.ai-steering/08-task-list.md) | Roadmap pengembangan |
+| [`.ai-steering/12-play-internal-testing.md`](.ai-steering/12-play-internal-testing.md) | Play Internal testing (UAT stakeholder) |
 
 Repositori terkait (GitHub terpisah): **miru-backend-api** (API), **miru-web-admin** (panel staff).
 

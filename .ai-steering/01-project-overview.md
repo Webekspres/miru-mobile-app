@@ -6,7 +6,7 @@ Aplikasi mobile **MIRU Bank Sampah (Miru-G)** memungkinkan masyarakat Distrik Mi
 
 > **"Sampah Bernilai, Lingkungan Bersih, Warga Sejahtera"**
 
-Mobile app adalah **prioritas ketiga** setelah backend API dan web admin.
+Mobile app adalah klien **nasabah**; MVP layar utama selesai. Kerja aktif = UAT/Production + **Fase 8 lanjutan** (modul 2–5, 7, 9–11, 14–15, 17 saja).
 
 ## Posisi dalam Ekosistem
 

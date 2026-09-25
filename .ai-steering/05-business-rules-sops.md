@@ -7,7 +7,7 @@
 
 ### 1. Registrasi Nasabah
 - Field: Nama Lengkap, Username, Password, No HP, Alamat, RT/RW, Kelurahan
-- NIK opsional (tidak wajib)
+- **Tanpa NIK** (tidak dikumpulkan)
 - Password minimal 6 karakter
 - Setelah register → langsung login → masuk dashboard
 

@@ -1,12 +1,30 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+val keystoreProperties = Properties()
+val keystorePropertiesFile = rootProject.file("key.properties")
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.inputStream().use { input ->
+        keystoreProperties.load(input)
+    }
+}
+
+fun Properties.requireSigningProperty(name: String): String {
+    val bomKey = "\uFEFF$name"
+    return getProperty(name)
+        ?: getProperty(bomKey)
+        ?: throw GradleException("Missing '$name' in ${keystorePropertiesFile.path}")
+}
+
 android {
-    namespace = "com.example.mirumobileapp"
-    compileSdk = flutter.compileSdkVersion
+    namespace = "com.mirubanksampah.app"
+    // flutter_secure_storage 11 dikompilasi dengan SDK 37.
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -16,7 +34,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.mirumobileapp"
+        applicationId = "com.mirubanksampah.app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -25,13 +43,38 @@ android {
         versionName = flutter.versionName
     }
 
-    buildTypes {
-        release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+    signingConfigs {
+        if (keystorePropertiesFile.exists()) {
+            create("release") {
+                keyAlias = keystoreProperties.requireSigningProperty("keyAlias")
+                keyPassword = keystoreProperties.requireSigningProperty("keyPassword")
+                storeFile = file(keystoreProperties.requireSigningProperty("storeFile"))
+                storePassword = keystoreProperties.requireSigningProperty("storePassword")
+            }
         }
     }
+
+    buildTypes {
+        release {
+            signingConfig = if (keystorePropertiesFile.exists()) {
+                signingConfigs.getByName("release")
+            } else {
+                throw GradleException(
+                    "Release signing belum dikonfigurasi. " +
+                        "Jalankan: .\\android\\scripts\\setup-release-signing.ps1",
+                )
+            }
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
+        }
+    }
+}
+
+dependencies {
+    // uCrop (image_cropper) references OkHttp for remote URIs but does not bundle it
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }
 
 kotlin {

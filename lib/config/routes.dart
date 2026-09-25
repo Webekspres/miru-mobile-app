@@ -1,12 +1,21 @@
+import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 
 import '../providers/auth_session.dart';
+import '../providers/launch_experience.dart';
+import '../models/notification.dart';
+import '../models/user.dart';
+import '../screens/auth/forgot_password_screen.dart';
 import '../screens/auth/login_screen.dart';
+import '../screens/auth/email_verify_screen.dart';
 import '../screens/auth/register_screen.dart';
+import '../screens/auth/reset_password_screen.dart';
 import '../screens/home/home_screen.dart';
+import '../screens/notifikasi/detail_notifikasi_screen.dart';
 import '../screens/notifikasi/notifikasi_screen.dart';
 import '../screens/pengaduan/pengaduan_form_screen.dart';
 import '../screens/pengaduan/pengaduan_screen.dart';
+import '../screens/profile/edit_profile_screen.dart';
 import '../screens/profile/profile_screen.dart';
 import '../screens/profile/qrcode_screen.dart';
 import '../screens/reward/reward_screen.dart';
@@ -14,25 +23,55 @@ import '../screens/reward/tukar_poin_screen.dart';
 import '../screens/saldo/riwayat_screen.dart';
 import '../screens/saldo/tarik_saldo_screen.dart';
 import '../screens/setoran/ajukan_penjemputan_screen.dart';
+import '../screens/edukasi/edukasi_detail_screen.dart';
+import '../screens/edukasi/edukasi_list_screen.dart';
 import '../screens/setoran/info_sampah_screen.dart';
 import '../screens/setoran/penjemputan_screen.dart';
+import '../screens/onboarding/onboarding_screen.dart';
 import '../screens/splash/splash_screen.dart';
 import '../screens/settings/kebijakan_data_screen.dart';
-import '../screens/settings/settings_screen.dart';
+import '../screens/settings/pengumuman_screen.dart';
 import '../screens/settings/tentang_screen.dart';
 import '../widgets/bottom_nav_scaffold.dart';
+import '../models/announcement.dart';
 
-GoRouter createAppRouter(AuthSession authSession) {
+GoRouter createAppRouter(AuthSession authSession, LaunchExperience launch) {
   return GoRouter(
     initialLocation: '/splash',
-    refreshListenable: authSession,
+    refreshListenable: Listenable.merge([authSession, launch]),
     redirect: (context, state) {
       final location = state.matchedLocation;
       final isLoggedIn = authSession.isLoggedIn;
+      final needsEmail = authSession.needsEmailVerification;
 
-      // Hanya redirect jika sudah login mencoba akses login/register
-      if (isLoggedIn && (location == '/login' || location == '/register')) {
+      // Gate OTP email: login / session restore dengan email_required=true
+      // (kecuali splash — biarkan selesai bootstrap dulu)
+      if (isLoggedIn &&
+          needsEmail &&
+          location != '/splash' &&
+          location != '/splash-preview') {
+        if (location != '/verify-email') return '/verify-email';
+        return null;
+      }
+
+      // Sudah verifikasi → jangan tinggal di layar OTP
+      if (isLoggedIn && location == '/verify-email') {
+        if (launch.pendingOnboarding) return '/onboarding';
         return '/home';
+      }
+
+      // Redirect jika sudah login mencoba akses halaman auth
+      if (isLoggedIn &&
+          (location == '/login' ||
+              location == '/register' ||
+              location == '/forgot-password' ||
+              location == '/reset-password')) {
+        if (launch.pendingOnboarding) return '/onboarding';
+        return '/home';
+      }
+
+      if (!isLoggedIn && location == '/onboarding') {
+        return '/login';
       }
 
       return null;
@@ -43,13 +82,45 @@ GoRouter createAppRouter(AuthSession authSession) {
         path: '/splash',
         builder: (context, state) => const SplashScreen(),
       ),
+      // Preview route untuk development splash screen.
+      // Ubah `initialLocation` ke '/splash-preview' di atas
+      // untuk melihat splash screen tanpa auto-redirect.
+      GoRoute(
+        path: '/splash-preview',
+        builder: (context, state) =>
+            const SplashScreen(previewMode: true),
+      ),
       GoRoute(
         path: '/login',
         builder: (context, state) => const LoginScreen(),
       ),
       GoRoute(
         path: '/register',
-        builder: (context, state) => const RegisterScreen(),
+        builder: (context, state) {
+          final pending = state.extra is Map ? state.extra! as Map : null;
+          return RegisterScreen(
+            pendingUsername: pending?['username'] as String?,
+            pendingPassword: pending?['password'] as String?,
+          );
+        },
+      ),
+      GoRoute(
+        path: '/forgot-password',
+        builder: (context, state) => const ForgotPasswordScreen(),
+      ),
+      GoRoute(
+        path: '/reset-password',
+        builder: (context, state) => ResetPasswordScreen(
+          initialToken: state.extra as String?,
+        ),
+      ),
+      GoRoute(
+        path: '/verify-email',
+        builder: (context, state) => const EmailVerifyScreen(),
+      ),
+      GoRoute(
+        path: '/onboarding',
+        builder: (context, state) => const OnboardingScreen(),
       ),
 
       // ── Main app shell with bottom nav ──
@@ -107,6 +178,36 @@ GoRouter createAppRouter(AuthSession authSession) {
       // Halaman-halaman ini tidak memiliki bottom nav
       // agar pengalaman navigasi lebih intuitif.
       GoRoute(
+        path: '/notifikasi/detail',
+        redirect: (context, state) {
+          if (state.extra is! AppNotification) return '/notifikasi';
+          return null;
+        },
+        builder: (context, state) => DetailNotifikasiScreen(
+          notification: state.extra! as AppNotification,
+        ),
+      ),
+      GoRoute(
+        path: '/profile/edit',
+        redirect: (context, state) {
+          if (state.extra is! User) return '/profile';
+          return null;
+        },
+        builder: (context, state) => EditProfileScreen(
+          initialUser: state.extra! as User,
+        ),
+      ),
+      GoRoute(
+        path: '/pengumuman/detail',
+        redirect: (context, state) {
+          if (state.extra is! Announcement) return '/home';
+          return null;
+        },
+        builder: (context, state) => PengumumanDetailScreen(
+          item: state.extra! as Announcement,
+        ),
+      ),
+      GoRoute(
         path: '/home/tarik-saldo',
         builder: (context, state) => const TarikSaldoScreen(),
       ),
@@ -123,6 +224,19 @@ GoRouter createAppRouter(AuthSession authSession) {
       GoRoute(
         path: '/home/info-sampah',
         builder: (context, state) => const InfoSampahScreen(),
+      ),
+      GoRoute(
+        path: '/home/edukasi',
+        builder: (context, state) => const EdukasiListScreen(),
+        routes: [
+          GoRoute(
+            path: ':id',
+            builder: (context, state) {
+              final id = int.tryParse(state.pathParameters['id'] ?? '') ?? 0;
+              return EdukasiDetailScreen(edukasiId: id);
+            },
+          ),
+        ],
       ),
       GoRoute(
         path: '/home/reward',
@@ -149,20 +263,14 @@ GoRouter createAppRouter(AuthSession authSession) {
         builder: (context, state) => const QRCodeScreen(),
       ),
 
-      // ── Settings Routes (standalone, no bottom nav) ──
+      // Kebijakan / Tentang — top-level (register consent + profil)
       GoRoute(
-        path: '/settings',
-        builder: (context, state) => const SettingsScreen(),
-        routes: [
-          GoRoute(
-            path: 'kebijakan-data',
-            builder: (context, state) => const KebijakanDataScreen(),
-          ),
-          GoRoute(
-            path: 'tentang',
-            builder: (context, state) => const TentangScreen(),
-          ),
-        ],
+        path: '/settings/kebijakan-data',
+        builder: (context, state) => const KebijakanDataScreen(),
+      ),
+      GoRoute(
+        path: '/settings/tentang',
+        builder: (context, state) => const TentangScreen(),
       ),
     ],
   );

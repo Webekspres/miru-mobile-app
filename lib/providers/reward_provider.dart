@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
 import '../models/api_exception.dart';
+import '../models/poin_info.dart';
 import '../models/reward.dart';
 import '../models/reward_redemption.dart';
 import '../services/api_client.dart';
@@ -11,6 +12,7 @@ import '../services/api_client.dart';
 /// Handles:
 /// - Fetching reward catalog from `/api/rewards/`
 /// - Creating reward redemptions via `POST /api/reward-redemptions/`
+/// - Masa berlaku poin via `GET /api/auth/poin-info/`
 class RewardProvider extends ChangeNotifier {
   RewardProvider({required this._apiClient});
 
@@ -31,6 +33,8 @@ class RewardProvider extends ChangeNotifier {
   bool _isSubmitting = false;
   String? _submitError;
 
+  PoinInfo? _poinInfo;
+
   // ──────────────────────────────────────────────
   // Getters
   // ──────────────────────────────────────────────
@@ -42,15 +46,22 @@ class RewardProvider extends ChangeNotifier {
   bool get isSubmitting => _isSubmitting;
   String? get submitError => _submitError;
   bool get hasSubmitError => _submitError != null;
+  PoinInfo? get poinInfo => _poinInfo;
 
   // ──────────────────────────────────────────────
   // Load Rewards
   // ──────────────────────────────────────────────
 
   Future<void> loadRewards() async {
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
+    final showLoading = _rewards.isEmpty;
+    if (showLoading) {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+    } else if (_error != null) {
+      _error = null;
+      notifyListeners();
+    }
 
     try {
       final data = await _apiClient.get<List<dynamic>>(
@@ -59,19 +70,38 @@ class RewardProvider extends ChangeNotifier {
       );
 
       _rewards = Reward.listFromJson(data);
+      _error = null;
     } on DioException catch (e) {
-      _error = parseDioError(e);
+      if (_rewards.isEmpty) {
+        _error = parseDioError(e);
+      }
     } catch (_) {
-      _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      if (_rewards.isEmpty) {
+        _error = kGenericErrorMessage;
+      }
     } finally {
-      _isLoading = false;
+      if (_isLoading) _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  /// Info masa berlaku poin. Gagal = diam (info tambahan, bukan blocker).
+  Future<void> loadPoinInfo() async {
+    try {
+      final data = await _apiClient.get<Map<String, dynamic>>(
+        '/auth/poin-info/',
+        fromJson: (json) => Map<String, dynamic>.from(json as Map),
+      );
+      _poinInfo = PoinInfo.fromJson(data);
+      notifyListeners();
+    } catch (_) {
+      // Biarkan info lama (atau kosong) tetap tampil.
     }
   }
 
   /// Pull-to-refresh.
   Future<void> refresh() async {
-    await loadRewards();
+    await Future.wait([loadRewards(), loadPoinInfo()]);
   }
 
   // ──────────────────────────────────────────────
@@ -81,9 +111,8 @@ class RewardProvider extends ChangeNotifier {
   /// Creates a new reward redemption.
   ///
   /// Returns the created [RewardRedemption] on success, `null` on error.
-  Future<RewardRedemption?> createRedemption({
-    required int rewardId,
-  }) async {
+  Future<RewardRedemption?> createRedemption({required int rewardId}) async {
+    if (_isSubmitting) return null;
     _isSubmitting = true;
     _submitError = null;
     notifyListeners();
@@ -118,7 +147,7 @@ class RewardProvider extends ChangeNotifier {
       notifyListeners();
       return null;
     } catch (_) {
-      _submitError = 'Terjadi kesalahan. Silakan coba lagi.';
+      _submitError = kGenericErrorMessage;
       _isSubmitting = false;
       notifyListeners();
       return null;
@@ -149,6 +178,7 @@ class RewardProvider extends ChangeNotifier {
 
   void clearCache() {
     _rewards = [];
+    _poinInfo = null;
     _error = null;
     _submitError = null;
     _isLoading = false;

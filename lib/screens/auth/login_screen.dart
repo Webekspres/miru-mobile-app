@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import '../../config/theme.dart';
 import '../../models/api_exception.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/launch_experience.dart';
+import '../../widgets/miru_logo.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -20,18 +22,40 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _obscurePassword = true;
   bool _isSubmitting = false;
+  bool _canSubmit = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _usernameController.addListener(_syncCanSubmit);
+    _passwordController.addListener(_syncCanSubmit);
+  }
+
+  void _syncCanSubmit() {
+    final can = _usernameController.text.trim().isNotEmpty &&
+        _passwordController.text.isNotEmpty;
+    if (can != _canSubmit) {
+      setState(() => _canSubmit = can);
+    }
+  }
 
   @override
   void dispose() {
+    _usernameController.removeListener(_syncCanSubmit);
+    _passwordController.removeListener(_syncCanSubmit);
     _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
   Future<void> _handleLogin() async {
+    FocusScope.of(context).unfocus();
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isSubmitting = true);
+
+    final launch = context.read<LaunchExperience>();
+    launch.markLoggedIn();
 
     try {
       await context.read<AuthProvider>().login(
@@ -40,13 +64,29 @@ class _LoginScreenState extends State<LoginScreen> {
           );
 
       if (!mounted) return;
-      context.go('/home');
+      final auth = context.read<AuthProvider>();
+      if (auth.needsEmailVerification) {
+        context.go('/verify-email');
+      } else {
+        context.go('/home');
+      }
     } on ApiException catch (e) {
+      launch.consumeWelcomeBack();
       if (!mounted) return;
+      if (e.code == 'EMAIL_VERIFICATION_PENDING') {
+        // Daftar tapi belum verifikasi email → lanjutkan langkah 2 registrasi.
+        _showError(e.message);
+        context.push('/register', extra: {
+          'username': _usernameController.text.trim(),
+          'password': _passwordController.text,
+        });
+        return;
+      }
       _showError(e.message);
     } catch (e) {
+      launch.consumeWelcomeBack();
       if (!mounted) return;
-      _showError('Terjadi kesalahan. Silakan coba lagi.');
+      _showError(kGenericErrorMessage);
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -68,136 +108,146 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 60),
-              // Logo
-              Center(
-                child: Container(
-                  width: 64,
-                  height: 64,
-                  decoration: BoxDecoration(
-                    color: AppTheme.primaryColor,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: const Icon(
-                    Icons.recycling_rounded,
-                    color: Colors.white,
-                    size: 36,
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 16),
+                const Center(
+                  child: MiruLogo(
+                    variant: MiruLogoVariant.textBottom,
+                    height: 126,
                   ),
                 ),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                'Masuk',
-                style: theme.textTheme.headlineMedium,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Masuk ke akun MIRU Anda',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
+                const SizedBox(height: 14),
+                Text(
+                  'Masuk',
+                  style: theme.textTheme.headlineMedium,
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 40),
-              // Form
-              Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    TextFormField(
-                      controller: _usernameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Username',
-                        prefixIcon: Icon(Icons.person_outline_rounded),
+                const SizedBox(height: 20),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      TextFormField(
+                        controller: _usernameController,
+                        decoration: const InputDecoration(
+                          labelText: 'Username',
+                          prefixIcon: Icon(Icons.person_outline_rounded),
+                        ),
+                        textInputAction: TextInputAction.next,
+                        keyboardType: TextInputType.text,
+                        autocorrect: false,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Username tidak boleh kosong';
+                          }
+                          return null;
+                        },
                       ),
-                      textInputAction: TextInputAction.next,
-                      keyboardType: TextInputType.text,
-                      autocorrect: false,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Username tidak boleh kosong';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _passwordController,
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        prefixIcon: const Icon(Icons.lock_outline_rounded),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscurePassword
-                                ? Icons.visibility_outlined
-                                : Icons.visibility_off_outlined,
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _passwordController,
+                        decoration: InputDecoration(
+                          labelText: 'Password',
+                          prefixIcon: const Icon(Icons.lock_outline_rounded),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscurePassword
+                                  ? Icons.visibility_outlined
+                                  : Icons.visibility_off_outlined,
+                            ),
+                            onPressed: () => setState(
+                              () => _obscurePassword = !_obscurePassword,
+                            ),
                           ),
-                          onPressed: () => setState(
-                            () => _obscurePassword = !_obscurePassword,
+                        ),
+                        obscureText: _obscurePassword,
+                        textInputAction: TextInputAction.done,
+                        onFieldSubmitted: (_) => _handleLogin(),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Password tidak boleh kosong';
+                          }
+                          if (value.length < 6) {
+                            return 'Password minimal 6 karakter';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 24),
+                      SizedBox(
+                        height: 48,
+                        child: ElevatedButton(
+                          onPressed: (_isSubmitting || !_canSubmit)
+                              ? null
+                              : _handleLogin,
+                          child: _isSubmitting
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Text('Masuk'),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      // Lupa password link
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: () => context.push('/forgot-password'),
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: Text(
+                            'Lupa Password?',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: AppTheme.primaryColor,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
                       ),
-                      obscureText: _obscurePassword,
-                      textInputAction: TextInputAction.done,
-                      onFieldSubmitted: (_) => _handleLogin(),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Password tidak boleh kosong';
-                        }
-                        return null;
-                      },
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Belum punya akun? ',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
                     ),
-                    const SizedBox(height: 24),
-                    SizedBox(
-                      height: 48,
-                      child: ElevatedButton(
-                        onPressed: _isSubmitting ? null : _handleLogin,
-                        child: _isSubmitting
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : const Text('Masuk'),
+                    GestureDetector(
+                      onTap: () => context.go('/register'),
+                      child: Text(
+                        'Daftar',
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: AppTheme.primaryColor,
+                        ),
                       ),
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 24),
-              // Register link
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Belum punya akun? ',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => context.go('/register'),
-                    child: Text(
-                      'Daftar',
-                      style: theme.textTheme.labelLarge?.copyWith(
-                        color: AppTheme.primaryColor,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 32),
-            ],
+                const SizedBox(height: 32),
+              ],
+            ),
           ),
         ),
       ),

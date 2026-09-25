@@ -14,10 +14,10 @@
 ### 3. TIDAK ADA Scan KTP/Face Recognition
 - **Jangan** minta KTP atau face recognition saat registrasi.
 - Registrasi cukup dengan data dasar (nama, username, password, no HP, alamat).
-- NIK opsional.
+- **Jangan** minta NIK.
 
 ### 4. TIDAK ADA Integrasi Dukcapil
-- NIK hanya text field biasa — tidak divalidasi ke database kependudukan.
+- NIK tidak dikumpulkan — jangan tambah text field NIK.
 
 ### 5. Hanya Nasabah yang Login
 - Aplikasi mobile **hanya untuk nasabah**.
@@ -46,4 +46,6 @@
 | Dokumen | Isi |
 |---------|-----|
 | `10-integration-and-roles.md` | Role mobile & alur integrasi |
+| `11-security-and-privacy.md` | Keamanan & privasi mobile (lengkap) |
 | **miru-backend-api** — `.ai-steering/06-system-constraints.md` | Batasan sistem lengkap |
+| **miru-backend-api** — `.ai-steering/11-security-and-privacy.md` | Kanonik keamanan ekosistem |

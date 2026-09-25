@@ -70,6 +70,8 @@ class Pickup {
     this.nasabahNama = '',
     this.petugas,
     this.petugasNama,
+    this.latitude,
+    this.longitude,
   });
 
   final int id;
@@ -81,6 +83,8 @@ class Pickup {
   final String alamatJemput;
   final DateTime jadwal;
   final PickupStatus status;
+  final double? latitude;
+  final double? longitude;
 
   double get estimasiBeratAsDouble => parseDecimal(estimasiBerat);
 
@@ -95,6 +99,8 @@ class Pickup {
       alamatJemput: json['alamat_jemput'] as String? ?? '',
       jadwal: parseDateTime(json['jadwal']),
       status: PickupStatus.fromApiValue(json['status'] as String? ?? 'menunggu'),
+      latitude: parseOptionalDecimal(json['latitude']),
+      longitude: parseOptionalDecimal(json['longitude']),
     );
   }
 
@@ -108,12 +114,8 @@ class Pickup {
         'alamat_jemput': alamatJemput,
         'jadwal': jadwal.toIso8601String(),
         'status': status.apiValue,
-      };
-
-  Map<String, dynamic> toCreateJson() => {
-        'estimasi_berat': estimasiBeratAsDouble,
-        'alamat_jemput': alamatJemput,
-        'jadwal': jadwal.toIso8601String(),
+        if (latitude != null) 'latitude': latitude!.toStringAsFixed(6),
+        if (longitude != null) 'longitude': longitude!.toStringAsFixed(6),
       };
 
   static List<Pickup> listFromJson(dynamic json) {

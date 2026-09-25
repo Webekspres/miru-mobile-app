@@ -195,12 +195,13 @@ Data yang di-encode (JSON):
 | Login/Register | `/api/auth/*`, `/api/users/` | ✅ |
 | Profil & saldo | `/api/auth/me/` | ✅ |
 | Harga sampah | `/api/waste-categories/` | ✅ |
-| Penjemputan | `/api/pickups/` | ✅ CRUD dasar |
+| Penjemputan | `/api/pickups/` | ✅ CRUD + status machine + assign petugas |
 | Penarikan | `/api/withdrawals/` | ✅ CRUD dasar |
 | Reward | `/api/rewards/`, `/api/reward-redemptions/` | ✅ CRUD dasar |
 | Pengaduan | `/api/complaints/` | ✅ CRUD dasar |
-| Push notification | — | 🔲 Post-MVP |
-| Pengumuman in-app | `/api/settings/` | 🔲 Planned |
+| Notifikasi in-app | `/api/notifications/` | ✅ list / mark-read / mark-all (Modul 9) |
+| Push FCM (OS) | `/api/device-tokens/` + FCM backend | 🔲 Fase 8 — client Flutter belum |
+| Pengumuman / edukasi | `/api/pengumuman/`, edukasi API | ✅ (banner beranda; artikel lanjutan) |
 
 Progress backend: **miru-backend-api** — `.ai-steering/08-task-list.md`
 

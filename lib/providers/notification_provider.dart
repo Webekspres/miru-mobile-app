@@ -23,6 +23,8 @@ class NotificationProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
   Timer? _pollTimer;
+  bool _isFetching = false;
+  bool _hasLoaded = false;
 
   // ──────────────────────────────────────────────
   // Getters
@@ -32,14 +34,15 @@ class NotificationProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
   bool get hasError => _error != null;
+  bool get isPolling => _pollTimer != null;
 
   /// Count of unread notifications.
   int get unreadCount =>
       _notifications.where((n) => !n.isRead).length;
 
-  /// Latest 5 notifications for the popup preview.
+  /// Latest 5 unread notifications for the popup preview.
   List<AppNotification> get latestNotifications {
-    final sorted = List<AppNotification>.from(_notifications)
+    final sorted = _notifications.where((n) => !n.isRead).toList()
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return sorted.take(5).toList();
   }
@@ -48,45 +51,71 @@ class NotificationProvider extends ChangeNotifier {
   // Load Notifications
   // ──────────────────────────────────────────────
 
-  Future<void> loadNotifications() async {
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      final data = await _apiClient.get<List<dynamic>>(
-        '/notifications/',
-        fromJson: (json) => json as List<dynamic>,
-      );
-      _notifications = AppNotification.listFromJson(data);
-    } on DioException catch (e) {
-      // Only set error if we have no data to show
-      if (_notifications.isEmpty) {
-        _error = parseDioError(e);
-      }
-    } catch (e) {
-      if (_notifications.isEmpty) {
-        _error = 'Terjadi kesalahan. Silakan coba lagi.';
-      }
-    }
-
-    _isLoading = false;
-    notifyListeners();
+  /// Fetch once per session. Polling / pull-to-refresh still use [loadNotifications].
+  Future<void> ensureLoaded() {
+    if (_hasLoaded || _isFetching) return Future.value();
+    return loadNotifications();
   }
 
-  /// Refresh without loading indicator.
-  Future<void> refresh() async {
-    _error = null;
+  /// [silent] = true: update list tanpa skeleton/loading (untuk polling).
+  Future<void> loadNotifications({bool silent = false}) async {
+    if (_isFetching) return;
+    _isFetching = true;
+
+    if (!silent && _notifications.isEmpty) {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+    }
+
     try {
       final data = await _apiClient.get<List<dynamic>>(
         '/notifications/',
         fromJson: (json) => json as List<dynamic>,
       );
-      _notifications = AppNotification.listFromJson(data);
+      final next = AppNotification.listFromJson(data);
+      _hasLoaded = true;
+      if (!_sameNotifications(_notifications, next)) {
+        _notifications = next;
+        notifyListeners();
+      } else if (!silent) {
+        notifyListeners();
+      }
+    } on DioException catch (e) {
+      if (_notifications.isEmpty) {
+        _error = parseDioError(e);
+        if (!silent) notifyListeners();
+      }
     } catch (_) {
-      // Silent refresh — keep existing data on error
+      if (_notifications.isEmpty) {
+        _error = kGenericErrorMessage;
+        if (!silent) notifyListeners();
+      }
+    } finally {
+      _isFetching = false;
+      if (!silent && _isLoading) {
+        _isLoading = false;
+        notifyListeners();
+      }
     }
-    notifyListeners();
+  }
+
+  /// Pull-to-refresh — keep previous list visible when cached data exists.
+  Future<void> refresh() =>
+      loadNotifications(silent: _notifications.isNotEmpty);
+
+  /// Silent refresh untuk polling / resume app.
+  Future<void> refreshSilent() => loadNotifications(silent: true);
+
+  static bool _sameNotifications(
+    List<AppNotification> a,
+    List<AppNotification> b,
+  ) {
+    if (a.length != b.length) return false;
+    for (var i = 0; i < a.length; i++) {
+      if (a[i].id != b[i].id || a[i].isRead != b[i].isRead) return false;
+    }
+    return true;
   }
 
   // ──────────────────────────────────────────────
@@ -141,10 +170,10 @@ class NotificationProvider extends ChangeNotifier {
   // Polling
   // ──────────────────────────────────────────────
 
-  /// Start polling every [interval] seconds for new notifications.
-  void startPolling({Duration interval = const Duration(seconds: 30)}) {
-    stopPolling();
-    _pollTimer = Timer.periodic(interval, (_) => refresh());
+  /// Start silent polling for new notifications.
+  void startPolling({Duration interval = const Duration(seconds: 8)}) {
+    if (_pollTimer != null) return;
+    _pollTimer = Timer.periodic(interval, (_) => refreshSilent());
   }
 
   void stopPolling() {
@@ -161,6 +190,8 @@ class NotificationProvider extends ChangeNotifier {
     _notifications = [];
     _error = null;
     _isLoading = false;
+    _isFetching = false;
+    _hasLoaded = false;
     notifyListeners();
   }
 }

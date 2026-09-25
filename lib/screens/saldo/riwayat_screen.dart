@@ -4,11 +4,15 @@ import 'package:provider/provider.dart';
 
 import '../../config/theme.dart';
 import '../../models/activity_item.dart';
+import '../../providers/auth_provider.dart';
 import '../../providers/auth_session.dart';
 import '../../providers/home_provider.dart';
+import '../../providers/profile_provider.dart';
 import '../../providers/saldo_provider.dart';
 import '../../widgets/error_view.dart';
+import '../../widgets/load_when_visible.dart';
 import '../../widgets/login_prompt.dart';
+import '../../widgets/bottom_nav_scaffold.dart';
 import '../../widgets/shimmer_loading.dart';
 
 class RiwayatScreen extends StatefulWidget {
@@ -18,10 +22,7 @@ class RiwayatScreen extends StatefulWidget {
   State<RiwayatScreen> createState() => _RiwayatScreenState();
 }
 
-class _RiwayatScreenState extends State<RiwayatScreen>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-
+class _RiwayatScreenState extends State<RiwayatScreen> {
   static const _tabs = [
     _FilterTab(label: 'Semua', filter: null),
     _FilterTab(label: 'Setoran', filter: 'setoran'),
@@ -29,35 +30,12 @@ class _RiwayatScreenState extends State<RiwayatScreen>
     _FilterTab(label: 'Poin', filter: 'poin'),
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: _tabs.length, vsync: this);
-    _tabController.addListener(_onTabChanged);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _loadData());
-  }
-
-  @override
-  void dispose() {
-    _tabController.removeListener(_onTabChanged);
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  void _onTabChanged() {
-    if (!_tabController.indexIsChanging) {
-      final filter = _tabs[_tabController.index].filter;
-      context.read<SaldoProvider>().setFilter(filter);
-    }
-  }
-
   void _loadData() {
-    final saldo = context.read<SaldoProvider>();
-    final home = context.read<HomeProvider>();
-    final userId = home.user?.id;
-    if (userId != null && !saldo.isLoading) {
-      saldo.loadActivity(userId: userId);
-    }
+    final userId = context.read<AuthProvider>().user?.id ??
+        context.read<HomeProvider>().user?.id ??
+        context.read<ProfileProvider>().user?.id;
+    if (userId == null) return;
+    context.read<SaldoProvider>().ensureLoaded(userId: userId);
   }
 
   @override
@@ -74,96 +52,88 @@ class _RiwayatScreenState extends State<RiwayatScreen>
       );
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Riwayat'),
-        bottom: TabBar(
-          controller: _tabController,
-          isScrollable: true,
-          tabs: _tabs.map((t) => Tab(text: t.label)).toList(),
-          labelColor: AppTheme.primaryColor,
-          unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
-          indicatorColor: AppTheme.primaryColor,
+    return LoadWhenVisible(
+      onVisible: _loadData,
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Riwayat')),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildFilterBar(context),
+            Expanded(
+              child: Consumer<SaldoProvider>(
+                builder: (context, saldo, _) {
+                  if (saldo.isLoading && saldo.items.isEmpty) {
+                    return ListSkeleton(
+                      itemCount: 6,
+                      padding: EdgeInsets.fromLTRB(
+                        0,
+                        4,
+                        0,
+                        BottomNavScaffold.scrollBottomPadding(context),
+                      ),
+                    );
+                  }
+
+                  if (saldo.hasError && saldo.items.isEmpty) {
+                    return ErrorView(
+                      title: 'Gagal memuat riwayat',
+                      message: saldo.error!,
+                      onRetry: () => _loadData(),
+                    );
+                  }
+
+                  if (saldo.filteredItems.isEmpty) {
+                    return _RiwayatEmpty(
+                      filter: saldo.activeFilter,
+                    );
+                  }
+
+                  return RefreshIndicator(
+                    onRefresh: saldo.refresh,
+                    color: AppTheme.primaryColor,
+                    child: ListView.builder(
+                      padding: EdgeInsets.fromLTRB(
+                        16,
+                        8,
+                        16,
+                        BottomNavScaffold.scrollBottomPadding(context),
+                      ),
+                      itemCount: saldo.filteredItems.length,
+                      itemBuilder: (context, index) {
+                        final item = saldo.filteredItems[index];
+                        return _ActivityCard(
+                          item: item,
+                          onTap: () => _showDetailSheet(context, item),
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
-      body: Consumer<SaldoProvider>(
-        builder: (context, saldo, _) {
-          if (saldo.isLoading && saldo.items.isEmpty) {
-            return const SingleChildScrollView(
-              physics: NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.fromLTRB(0, 60, 0, 24),
-              child: ListSkeleton(itemCount: 6),
-            );
-          }
+    );
+  }
 
-          if (saldo.hasError && saldo.items.isEmpty) {
-            return ErrorView(
-              title: 'Gagal memuat riwayat',
-              message: saldo.error!,
-              onRetry: () => _loadData(),
-            );
-          }
-
-          if (saldo.items.isEmpty) {
-            final emptyTheme = Theme.of(context);
-            return Center(
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 72,
-                        height: 72,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF3F4F6),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.receipt_long_outlined,
-                          size: 36,
-                          color: Color(0xFF9CA3AF),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        'Belum ada transaksi',
-                        style: emptyTheme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Setoran, penarikan, dan penukaran poin akan muncul di sini.',
-                        style: emptyTheme.textTheme.bodyMedium?.copyWith(
-                          color: emptyTheme.colorScheme.onSurfaceVariant,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          }
-
-          return RefreshIndicator(
-            onRefresh: saldo.refresh,
-            color: AppTheme.primaryColor,
-            child: ListView.builder(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-              itemCount: saldo.filteredItems.length,
-              itemBuilder: (context, index) {
-                final item = saldo.filteredItems[index];
-                return _ActivityCard(
-                  item: item,
-                  onTap: () => _showDetailSheet(context, item),
-                );
-              },
-            ),
+  Widget _buildFilterBar(BuildContext context) {
+    final active = context.watch<SaldoProvider>().activeFilter;
+    return SizedBox(
+      height: 56,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.fromLTRB(16, 6, 16, 6),
+        itemCount: _tabs.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 8),
+        itemBuilder: (context, index) {
+          final tab = _tabs[index];
+          final selected = active == tab.filter;
+          return _RiwayatFilterChip(
+            label: tab.label,
+            selected: selected,
+            onTap: () => context.read<SaldoProvider>().setFilter(tab.filter),
           );
         },
       ),
@@ -200,12 +170,19 @@ class _RiwayatScreenState extends State<RiwayatScreen>
 
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
         return Padding(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.fromLTRB(
+            24,
+            24,
+            24,
+            24 + MediaQuery.paddingOf(ctx).bottom,
+          ),
+          child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -326,6 +303,9 @@ class _RiwayatScreenState extends State<RiwayatScreen>
                 const SizedBox(height: 16),
               ],
 
+              if (item.type == ActivityType.setoran)
+                ..._setoranDetailRows(theme, item, dateFormat, timeFormat),
+
               // Status
               Row(
                 children: [
@@ -355,9 +335,86 @@ class _RiwayatScreenState extends State<RiwayatScreen>
               ),
             ],
           ),
+          ),
         );
       },
     );
+  }
+
+  List<Widget> _setoranDetailRows(
+    ThemeData theme,
+    ActivityItem item,
+    DateFormat dateFormat,
+    DateFormat timeFormat,
+  ) {
+    final labelStyle = theme.textTheme.labelSmall?.copyWith(
+      color: theme.colorScheme.onSurfaceVariant,
+    );
+    final valueStyle = theme.textTheme.bodyMedium;
+
+    Widget row(String label, String value) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label, style: labelStyle),
+            const SizedBox(height: 4),
+            Text(value, style: valueStyle),
+          ],
+        ),
+      );
+    }
+
+    final rows = <Widget>[];
+
+    if (item.details.isNotEmpty) {
+      rows.add(Text('Jenis sampah', style: labelStyle));
+      rows.add(const SizedBox(height: 4));
+      for (final detail in item.details) {
+        final nama = detail.kategoriNama.isNotEmpty
+            ? detail.kategoriNama
+            : 'Sampah';
+        rows.add(
+          Padding(
+            padding: const EdgeInsets.only(bottom: 2),
+            child: Text(
+              '$nama, ${detail.beratKg} kg',
+              style: valueStyle,
+            ),
+          ),
+        );
+      }
+      rows.add(const SizedBox(height: 12));
+
+      final totalBerat = item.details.fold<double>(
+        0,
+        (sum, d) => sum + d.beratKgAsDouble,
+      );
+      rows.add(row(
+        'Berat',
+        '${totalBerat.toStringAsFixed(2)} kg',
+      ));
+    }
+
+    final petugas = item.petugasNama?.trim();
+    if (petugas != null && petugas.isNotEmpty) {
+      rows.add(row('Petugas', petugas));
+    }
+
+    if (item.tanggalJemput != null) {
+      rows.add(row(
+        'Tanggal jemput',
+        '${dateFormat.format(item.tanggalJemput!)} ${timeFormat.format(item.tanggalJemput!)}',
+      ));
+    }
+
+    rows.add(row(
+      'Tanggal/jam proses',
+      '${dateFormat.format(item.tanggal)} ${timeFormat.format(item.tanggal)}',
+    ));
+
+    return rows;
   }
 
   String _statusLabel(String status) {
@@ -370,10 +427,6 @@ class _RiwayatScreenState extends State<RiwayatScreen>
   }
 }
 
-// ─────────────────────────────────────────────
-// Filter Tab Data
-// ─────────────────────────────────────────────
-
 class _FilterTab {
   const _FilterTab({required this.label, required this.filter});
 
@@ -381,9 +434,127 @@ class _FilterTab {
   final String? filter;
 }
 
-// ─────────────────────────────────────────────
-// Activity Card
-// ─────────────────────────────────────────────
+class _RiwayatFilterChip extends StatelessWidget {
+  const _RiwayatFilterChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final radius = BorderRadius.circular(10);
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: 'Filter $label',
+      child: Material(
+        color: selected ? AppTheme.primaryColor : Colors.white,
+        borderRadius: radius,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: radius,
+          child: Container(
+            alignment: Alignment.center,
+            constraints: const BoxConstraints(minHeight: 44, minWidth: 44),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              borderRadius: radius,
+              border: Border.all(
+                color: selected
+                    ? AppTheme.primaryColor
+                    : theme.colorScheme.outlineVariant,
+              ),
+            ),
+            child: Text(
+              label,
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: selected ? Colors.white : theme.colorScheme.onSurface,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RiwayatEmpty extends StatelessWidget {
+  const _RiwayatEmpty({required this.filter});
+
+  final String? filter;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final (title, detail) = switch (filter) {
+      'setoran' => (
+        'Belum ada setoran',
+        'Setoran sampah akan muncul di sini.',
+      ),
+      'penarikan' => (
+        'Belum ada penarikan',
+        'Pengajuan tarik saldo akan muncul di sini.',
+      ),
+      'poin' => (
+        'Belum ada penukaran poin',
+        'Penukaran poin akan muncul di sini.',
+      ),
+      _ => (
+        'Belum ada transaksi',
+        'Setoran, penarikan, dan penukaran poin akan muncul di sini.',
+      ),
+    };
+
+    return Center(
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 72,
+                height: 72,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFF3F4F6),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.receipt_long_outlined,
+                  size: 36,
+                  color: Color(0xFF9CA3AF),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                title,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                detail,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class _ActivityCard extends StatelessWidget {
   const _ActivityCard({required this.item, required this.onTap});

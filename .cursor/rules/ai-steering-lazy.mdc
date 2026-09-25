@@ -20,6 +20,8 @@ Do **NOT** read all `.ai-steering/*.md` files upfront. Use this index and load o
 | `08-task-list.md` | Roadmap / urutan pengerjaan |
 | `09-data-dictionary.md` | Harga sampah, reward, SLA |
 | `10-integration-and-roles.md` | Alur nasabah, integrasi web admin |
+| `11-security-and-privacy.md` | Keamanan release, privacy, store checklist |
+| `12-play-internal-testing.md` | Play Internal testing / UAT stakeholder + CI rencana |
 
 **Prefer graphify first:** `graphify query "<topik>"` often covers steering + code in one subgraph — cheaper than reading 9 markdown files.
 

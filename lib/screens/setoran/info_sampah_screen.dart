@@ -7,6 +7,7 @@ import '../../models/waste_category.dart';
 import '../../providers/home_provider.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/error_view.dart';
+import '../../widgets/harga_berlaku_banner.dart';
 import '../../widgets/shimmer_loading.dart';
 
 /// Static descriptions for common waste types based on category name.
@@ -133,27 +134,6 @@ class _InfoSampahScreenState extends State<InfoSampahScreen> {
       ),
       body: Consumer<HomeProvider>(
         builder: (context, home, _) {
-          if (home.isLoading && home.categories.isEmpty) {
-            return SingleChildScrollView(
-              physics: const NeverScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(16),
-              child: const Column(
-                children: [
-                  SkeletonCard(height: 80),
-                  SizedBox(height: 24),
-                  _InfoSkeletonItem(),
-                  _InfoSkeletonItem(),
-                  _InfoSkeletonItem(),
-                  _InfoSkeletonItem(),
-                  _InfoSkeletonItem(),
-                  _InfoSkeletonItem(),
-                  _InfoSkeletonItem(),
-                  _InfoSkeletonItem(),
-                ],
-              ),
-            );
-          }
-
           if (home.hasError && home.categories.isEmpty) {
             return ErrorView(
               title: 'Gagal memuat data',
@@ -163,14 +143,7 @@ class _InfoSampahScreenState extends State<InfoSampahScreen> {
           }
 
           final categories = home.categories;
-
-          if (categories.isEmpty) {
-            return const EmptyState(
-              icon: Icons.recycling_outlined,
-              title: 'Belum ada data sampah',
-              description: 'Data kategori sampah belum tersedia. Silakan coba lagi nanti.',
-            );
-          }
+          final loadingList = home.isLoading && categories.isEmpty;
 
           return RefreshIndicator(
             onRefresh: () => home.loadCategoriesOnly(),
@@ -179,34 +152,57 @@ class _InfoSampahScreenState extends State<InfoSampahScreen> {
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
                 SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
-                      // ── Header Info ──
+                      const HargaBerlakuBanner(),
                       _buildInfoHeader(context),
-                      const SizedBox(height: 20),
                     ]),
                   ),
                 ),
-
-                // ── Daftar Kategori (builder for performance) ──
-                SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  sliver: SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        final cat = categories[index];
-                        return _CategoryCard(
-                          category: cat,
-                          onTap: () => _showDetailSheet(context, cat),
-                        );
-                      },
-                      childCount: categories.length,
+                if (loadingList)
+                  const SliverPadding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    sliver: SliverToBoxAdapter(
+                      child: Column(
+                        children: [
+                          _InfoSkeletonItem(),
+                          _InfoSkeletonItem(),
+                          _InfoSkeletonItem(),
+                          _InfoSkeletonItem(),
+                          _InfoSkeletonItem(),
+                          _InfoSkeletonItem(),
+                        ],
+                      ),
+                    ),
+                  )
+                else if (categories.isEmpty)
+                  const SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: EmptyState(
+                      icon: Icons.recycling_outlined,
+                      title: 'Belum ada data sampah',
+                      description:
+                          'Data kategori sampah belum tersedia. Silakan coba lagi nanti.',
+                      expand: false,
+                    ),
+                  )
+                else
+                  SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          final cat = categories[index];
+                          return _CategoryCard(
+                            category: cat,
+                            onTap: () => _showDetailSheet(context, cat),
+                          );
+                        },
+                        childCount: categories.length,
+                      ),
                     ),
                   ),
-                ),
-
-                // ── Catatan ──
                 SliverPadding(
                   padding: const EdgeInsets.fromLTRB(16, 24, 16, 32),
                   sliver: SliverToBoxAdapter(

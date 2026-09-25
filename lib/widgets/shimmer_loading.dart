@@ -170,130 +170,23 @@ class SkeletonCard extends StatelessWidget {
   }
 }
 
-/// Skeleton for the saldo card (prominent card at top of home).
-class SkeletonSaldoCard extends StatelessWidget {
-  const SkeletonSaldoCard({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ShimmerWidget(
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFF16A34A), Color(0xFF15803D)],
-          ),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SkeletonBlock(height: 12, width: 80),
-            SizedBox(height: 12),
-            SkeletonBlock(height: 28, width: 180),
-            SizedBox(height: 16),
-            Row(
-              children: [
-                SkeletonBlock(height: 12, width: 60),
-                Spacer(),
-                SkeletonBlock(height: 12, width: 60),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Skeleton for a grid quick-action item.
-class SkeletonGridItem extends StatelessWidget {
-  const SkeletonGridItem({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ShimmerWidget(
-      child: Container(
-        decoration: BoxDecoration(
-          color: const Color(0xFFF9FAFB),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFE5E7EB)),
-        ),
-        child: const Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SkeletonCircle(size: 44),
-            SizedBox(height: 8),
-            SkeletonBlock(height: 12, width: 50),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Full skeleton for the HomeScreen dashboard.
-class HomeSkeleton extends StatelessWidget {
-  const HomeSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const SingleChildScrollView(
-      physics: NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.fromLTRB(16, 16, 16, 24),
-      child: Column(
-        children: [
-          SkeletonSaldoCard(),
-          SizedBox(height: 20),
-          SkeletonBlock(height: 44), // banner
-          SizedBox(height: 24),
-          Row(
-            children: [
-              Expanded(child: SkeletonGridItem()),
-              SizedBox(width: 10),
-              Expanded(child: SkeletonGridItem()),
-              SizedBox(width: 10),
-              Expanded(child: SkeletonGridItem()),
-              SizedBox(width: 10),
-              Expanded(child: SkeletonGridItem()),
-            ],
-          ),
-          SizedBox(height: 28),
-          SkeletonBlock(height: 14, width: 120),
-          SizedBox(height: 12),
-          SkeletonCard(height: 56),
-          SizedBox(height: 8),
-          SkeletonCard(height: 56),
-          SizedBox(height: 28),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              SkeletonBlock(height: 14, width: 120),
-              SkeletonBlock(height: 14, width: 80),
-            ],
-          ),
-          SizedBox(height: 12),
-          SkeletonCard(height: 56),
-          SizedBox(height: 8),
-          SkeletonCard(height: 56),
-          SizedBox(height: 8),
-          SkeletonCard(height: 56),
-        ],
-      ),
-    );
-  }
-}
-
 /// Skeleton for list screens (Riwayat, Penjemputan, Pengaduan).
+/// Header/app bar stays visible; this only fills the dynamic list area.
 class ListSkeleton extends StatelessWidget {
-  const ListSkeleton({super.key, this.itemCount = 6});
+  const ListSkeleton({
+    super.key,
+    this.itemCount = 6,
+    this.padding,
+  });
 
   final int itemCount;
+  final EdgeInsetsGeometry? padding;
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       physics: const NeverScrollableScrollPhysics(),
+      padding: padding,
       child: Column(
         children: List.generate(
           itemCount,

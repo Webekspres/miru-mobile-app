@@ -1,3 +1,4 @@
+import 'deposit_detail.dart';
 import 'json_parsing.dart';
 
 enum ActivityType {
@@ -41,6 +42,9 @@ class ActivityItem {
     required this.tanggal,
     this.nominal,
     this.poin,
+    this.petugasNama,
+    this.tanggalJemput,
+    this.details = const [],
   });
 
   final int id;
@@ -50,6 +54,10 @@ class ActivityItem {
   final DateTime tanggal;
   final String? nominal;
   final int? poin;
+  final String? petugasNama;
+  /// Pickup date if the API includes it (`tanggal_jemput` / `jadwal_jemput`).
+  final DateTime? tanggalJemput;
+  final List<DepositDetail> details;
 
   double? get nominalAsDouble =>
       nominal != null ? parseDecimal(nominal) : null;
@@ -67,6 +75,11 @@ class ActivityItem {
       tanggal: parseDateTime(json['tanggal']),
       nominal: json['nominal']?.toString(),
       poin: json['poin'] as int?,
+      petugasNama: json['petugas_nama'] as String?,
+      tanggalJemput: parseOptionalDateTime(
+        json['tanggal_jemput'] ?? json['jadwal_jemput'],
+      ),
+      details: DepositDetail.listFromJson(json['details']),
     );
   }
 
@@ -78,6 +91,11 @@ class ActivityItem {
         'tanggal': tanggal.toIso8601String(),
         if (nominal != null) 'nominal': nominal,
         if (poin != null) 'poin': poin,
+        if (petugasNama != null) 'petugas_nama': petugasNama,
+        if (tanggalJemput != null)
+          'tanggal_jemput': tanggalJemput!.toIso8601String(),
+        if (details.isNotEmpty)
+          'details': details.map((d) => d.toJson()).toList(),
       };
 
   static List<ActivityItem> listFromJson(dynamic json) {

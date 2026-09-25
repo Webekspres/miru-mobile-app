@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../config/theme.dart';
@@ -102,7 +103,7 @@ class DetailNotifikasiScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    notification.kategori!,
+                    _kategoriLabel(notification.kategori!),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -138,9 +139,31 @@ class DetailNotifikasiScreen extends StatelessWidget {
                 ),
               ),
             ),
+            if (notification.kategori == 'jadwal_jemput') ...[
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () => context.push('/home/penjemputan/ajukan'),
+                  icon: const Icon(Icons.local_shipping_outlined),
+                  label: const Text('Ajukan Penjemputan'),
+                ),
+              ),
+            ],
           ],
         ),
       ),
     );
   }
 }
+
+String _kategoriLabel(String kategori) => switch (kategori) {
+      'jadwal_jemput' => 'Jadwal Penjemputan',
+      'penjemputan' => 'Penjemputan',
+      'penarikan' => 'Penarikan Saldo',
+      'penukaran' => 'Penukaran Poin',
+      'harga' => 'Perubahan Harga',
+      _ => kategori.isEmpty
+          ? kategori
+          : '${kategori[0].toUpperCase()}${kategori.substring(1)}',
+    };

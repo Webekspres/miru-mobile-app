@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -33,7 +34,7 @@ class _PengumumanScreenState extends State<PengumumanScreen> {
       ),
       body: Consumer<PengumumanProvider>(
         builder: (context, provider, _) {
-          if (provider.isLoading) {
+          if (provider.isLoading && provider.announcements.isEmpty) {
             return SingleChildScrollView(
               physics: const NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
@@ -144,11 +145,7 @@ class _PengumumanScreenState extends State<PengumumanScreen> {
   }
 
   void _showDetail(BuildContext context, Announcement item) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => _PengumumanDetailScreen(item: item),
-      ),
-    );
+    context.push('/pengumuman/detail', extra: item);
   }
 }
 
@@ -242,8 +239,9 @@ class _AnnouncementCard extends StatelessWidget {
   }
 }
 
-class _PengumumanDetailScreen extends StatelessWidget {
-  const _PengumumanDetailScreen({required this.item});
+/// Detail pengumuman (standalone route — tanpa bottom nav).
+class PengumumanDetailScreen extends StatelessWidget {
+  const PengumumanDetailScreen({super.key, required this.item});
 
   final Announcement item;
 

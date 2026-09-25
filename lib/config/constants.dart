@@ -1,5 +1,5 @@
 class AppConstants {
-  static const String appName = 'MIRU';
+  static const String appName = 'Miru G';
 
   /// Base URL API (termasuk prefix `/api`).
   ///

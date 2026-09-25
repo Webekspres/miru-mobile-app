@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
@@ -24,6 +26,9 @@ class SaldoProvider extends ChangeNotifier {
   String? _error;
   String? _activeFilter; // null = Semua, 'setoran', 'penarikan', 'poin'
   int _currentUserId = 0;
+  bool _hasLoaded = false;
+  int _generation = 0;
+  Future<void>? _inFlight;
 
   // ──────────────────────────────────────────────
   // Getters
@@ -55,23 +60,49 @@ class SaldoProvider extends ChangeNotifier {
   // Load Activity
   // ──────────────────────────────────────────────
 
-  Future<void> loadActivity({required int userId}) async {
+  Future<void> ensureLoaded({required int userId}) {
+    if (_hasLoaded && _currentUserId == userId) return Future.value();
+    return loadActivity(userId: userId);
+  }
+
+  Future<void> loadActivity({required int userId}) {
     _currentUserId = userId;
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
+    return _inFlight ??= _fetchActivity();
+  }
+
+  Future<void> _fetchActivity() async {
+    final gen = _generation;
+    final showLoading = _items.isEmpty;
+    if (showLoading) {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+    } else if (_error != null) {
+      _error = null;
+      notifyListeners();
+    }
 
     try {
-      // Try unified activity endpoint first
       await _fetchFromActivity();
+      if (gen != _generation) return;
+      _error = null;
+      _hasLoaded = true;
     } on DioException {
-      // Fallback: fetch from individual endpoints
+      if (gen != _generation) return;
       await _fetchFromIndividualEndpoints();
+      if (gen != _generation) return;
+      _hasLoaded = true;
     } catch (_) {
-      _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      if (gen != _generation) return;
+      if (_items.isEmpty) {
+        _error = kGenericErrorMessage;
+      }
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      if (gen == _generation) {
+        if (_isLoading) _isLoading = false;
+        _inFlight = null;
+        notifyListeners();
+      }
     }
   }
 
@@ -89,7 +120,8 @@ class SaldoProvider extends ChangeNotifier {
   }
 
   Future<void> _fetchFromIndividualEndpoints() async {
-    _items = [];
+    // Build into a temp list so soft-refresh does not blank the UI mid-fetch.
+    final next = <ActivityItem>[];
 
     try {
       // Fetch deposits
@@ -103,15 +135,12 @@ class SaldoProvider extends ChangeNotifier {
         fromJson: (json) => json as List<dynamic>,
       );
       for (final d in depositData) {
-        _items.add(ActivityItem(
-          id: d['id'] as int,
-          type: ActivityType.setoran,
-          status: d['status'] as String? ?? 'selesai',
-          keterangan: 'Setoran sampah',
-          tanggal: DateTime.parse(d['tanggal'] as String),
-          nominal: d['total_nilai']?.toString(),
-          poin: d['poin_didapat'] as int?,
-        ));
+        final map = Map<String, dynamic>.from(d as Map);
+        map['type'] = 'setoran';
+        map['keterangan'] ??= 'Setoran sampah';
+        map['nominal'] ??= map['total_nilai']?.toString();
+        map['poin'] ??= map['poin_didapat'];
+        next.add(ActivityItem.fromJson(map));
       }
     } catch (_) {
       // Non-critical
@@ -129,7 +158,7 @@ class SaldoProvider extends ChangeNotifier {
         fromJson: (json) => json as List<dynamic>,
       );
       for (final w in wdData) {
-        _items.add(ActivityItem(
+        next.add(ActivityItem(
           id: w['id'] as int,
           type: ActivityType.penarikan,
           status: w['status'] as String? ?? 'menunggu',
@@ -154,7 +183,7 @@ class SaldoProvider extends ChangeNotifier {
         fromJson: (json) => json as List<dynamic>,
       );
       for (final r in rrData) {
-        _items.add(ActivityItem(
+        next.add(ActivityItem(
           id: r['id'] as int,
           type: ActivityType.penukaranPoin,
           status: r['status'] as String? ?? 'menunggu',
@@ -167,8 +196,11 @@ class SaldoProvider extends ChangeNotifier {
       // Non-critical
     }
 
-    // Sort by date descending
-    _items.sort((a, b) => b.tanggal.compareTo(a.tanggal));
+    // Sort by date descending; only replace if we got something, else keep cache.
+    next.sort((a, b) => b.tanggal.compareTo(a.tanggal));
+    if (next.isNotEmpty || _items.isEmpty) {
+      _items = next;
+    }
   }
 
   /// Pull-to-refresh.
@@ -184,10 +216,12 @@ class SaldoProvider extends ChangeNotifier {
   /// Status and error for withdrawal submission.
   bool _isSubmitting = false;
   String? _submitError;
+  Map<String, dynamic>? _submitFieldErrors;
 
   bool get isSubmitting => _isSubmitting;
   String? get submitError => _submitError;
   bool get hasSubmitError => _submitError != null;
+  Map<String, dynamic>? get submitFieldErrors => _submitFieldErrors;
 
   /// Creates a new withdrawal request.
   ///
@@ -195,22 +229,41 @@ class SaldoProvider extends ChangeNotifier {
   Future<Withdrawal?> createWithdrawal({
     required double nominal,
     required String metode,
+    File? lampiranKtp,
   }) async {
+    if (_isSubmitting) return null;
     _isSubmitting = true;
     _submitError = null;
+    _submitFieldErrors = null;
     notifyListeners();
 
     try {
-      final data = await _apiClient.post<Map<String, dynamic>>(
-        '/withdrawals/',
-        data: {
-          'nominal': nominal,
-          'metode': metode,
-        },
-        fromJson: (json) => Map<String, dynamic>.from(json as Map),
-      );
+      final Map<String, dynamic> posted;
+      if (lampiranKtp != null) {
+        posted = await _apiClient.upload<Map<String, dynamic>>(
+          '/withdrawals/',
+          data: FormData.fromMap({
+            'nominal': nominal,
+            'metode': metode,
+            'lampiran_ktp': await MultipartFile.fromFile(
+              lampiranKtp.path,
+              filename: 'lampiran_ktp.jpg',
+            ),
+          }),
+          fromJson: (json) => Map<String, dynamic>.from(json as Map),
+        );
+      } else {
+        posted = await _apiClient.post<Map<String, dynamic>>(
+          '/withdrawals/',
+          data: {
+            'nominal': nominal,
+            'metode': metode,
+          },
+          fromJson: (json) => Map<String, dynamic>.from(json as Map),
+        );
+      }
 
-      final withdrawal = Withdrawal.fromJson(data);
+      final withdrawal = Withdrawal.fromJson(posted);
 
       // Add to local items list so it shows in riwayat immediately
       _items.insert(
@@ -229,12 +282,16 @@ class SaldoProvider extends ChangeNotifier {
       notifyListeners();
       return withdrawal;
     } on DioException catch (e) {
-      _submitError = parseDioError(e);
+      final apiError =
+          e.error is ApiException ? e.error as ApiException : apiExceptionFromDio(e);
+      _submitError = apiError.message;
+      _submitFieldErrors = apiError.fieldErrors;
       _isSubmitting = false;
       notifyListeners();
       return null;
     } catch (_) {
-      _submitError = 'Terjadi kesalahan. Silakan coba lagi.';
+      _submitError = kGenericErrorMessage;
+      _submitFieldErrors = null;
       _isSubmitting = false;
       notifyListeners();
       return null;
@@ -253,8 +310,9 @@ class SaldoProvider extends ChangeNotifier {
   }
 
   void clearSubmitError() {
-    if (_submitError != null) {
+    if (_submitError != null || _submitFieldErrors != null) {
       _submitError = null;
+      _submitFieldErrors = null;
       notifyListeners();
     }
   }
@@ -264,9 +322,13 @@ class SaldoProvider extends ChangeNotifier {
   // ──────────────────────────────────────────────
 
   void clearCache() {
+    _generation++;
+    _inFlight = null;
+    _hasLoaded = false;
     _items = [];
     _error = null;
     _submitError = null;
+    _submitFieldErrors = null;
     _activeFilter = null;
     _currentUserId = 0;
     _isLoading = false;
