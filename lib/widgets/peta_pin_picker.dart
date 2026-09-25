@@ -230,7 +230,7 @@ class _PetaPinPickerState extends State<PetaPinPicker> {
         Text(
           pin == null
               ? 'Geser peta sampai pin merah tepat di rumah Anda, atau pakai "Lokasi saya".'
-              : 'Titik sudah ditandai. Geser peta untuk memindahkannya.',
+              : 'Lokasi ditandai. Geser peta untuk memindahkannya.',
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),
@@ -238,7 +238,7 @@ class _PetaPinPickerState extends State<PetaPinPicker> {
         if (diLuarArea) ...[
           const SizedBox(height: 6),
           Text(
-            'Titik ini berada di luar area Distrik Mimika Baru. Pastikan titik sudah benar.',
+            'Anda berada di luar area Distrik Mimika Baru. Pastikan titik sudah benar.',
             style: theme.textTheme.bodySmall?.copyWith(
               color: AppTheme.errorColor,
               fontWeight: FontWeight.w600,
