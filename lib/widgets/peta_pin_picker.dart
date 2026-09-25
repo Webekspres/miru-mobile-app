@@ -206,8 +206,7 @@ class _PetaPinPickerState extends State<PetaPinPicker> {
         Text(
           pin == null
               ? 'Ketuk peta atau pakai "Lokasi saya" untuk menandai titik rumah Anda.'
-              : 'Titik: ${pin.latitude.toStringAsFixed(6)}, '
-                  '${pin.longitude.toStringAsFixed(6)} — ketuk peta untuk memindahkan.',
+              : 'Titik sudah ditandai. Ketuk peta untuk memindahkannya.',
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),
