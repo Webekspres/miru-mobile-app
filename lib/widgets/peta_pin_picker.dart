@@ -8,9 +8,10 @@ import '../models/wilayah_cakupan.dart';
 
 /// Peta OpenStreetMap untuk menandai titik rumah / penjemputan.
 ///
-/// Ketuk peta untuk memindahkan pin, atau "Lokasi saya" untuk memakai GPS.
-/// Geser peta dibatasi sekitar Timika; titik di luar area hanya diberi
-/// peringatan (batas yang mengikat adalah pilihan kelurahan).
+/// Pin selalu di tengah kotak; pengguna cukup menggeser peta sampai pin tepat
+/// di rumahnya (titik dilaporkan saat peta berhenti bergeser), atau memakai
+/// "Lokasi saya". Geser peta dibatasi sekitar Timika; titik di luar area hanya
+/// diberi peringatan (batas yang mengikat adalah pilihan kelurahan).
 class PetaPinPicker extends StatefulWidget {
   const PetaPinPicker({
     super.key,
@@ -35,6 +36,10 @@ class _PetaPinPickerState extends State<PetaPinPicker> {
   final _mapController = MapController();
   bool _locating = false;
 
+  /// Titik terakhir yang dilaporkan dari peta ini — pembaruan prop yang sama
+  /// tidak perlu menggerakkan peta lagi.
+  LatLng? _reported;
+
   LatLng? get _pin => widget.latitude != null && widget.longitude != null
       ? LatLng(widget.latitude!, widget.longitude!)
       : null;
@@ -44,7 +49,8 @@ class _PetaPinPickerState extends State<PetaPinPicker> {
     super.didUpdateWidget(oldWidget);
     final pin = _pin;
     final hadPin = oldWidget.latitude != null && oldWidget.longitude != null;
-    if (pin != null && !hadPin) _moveTo(pin);
+    // Isi awal dari profil: pusatkan peta ke titik itu.
+    if (pin != null && !hadPin && pin != _reported) _moveTo(pin);
   }
 
   @override
@@ -105,13 +111,30 @@ class _PetaPinPickerState extends State<PetaPinPicker> {
         ),
       );
       if (!mounted) return;
-      widget.onChanged(pos.latitude, pos.longitude);
-      _moveTo(LatLng(pos.latitude, pos.longitude));
+      final titik = LatLng(pos.latitude, pos.longitude);
+      _report(titik);
+      _moveTo(titik);
     } catch (_) {
       if (mounted) _showMessage('Tidak dapat mengambil lokasi. Coba lagi.');
     } finally {
       if (mounted) setState(() => _locating = false);
     }
+  }
+
+  void _report(LatLng titik) {
+    if (titik == _reported) return;
+    _reported = titik;
+    widget.onChanged(titik.latitude, titik.longitude);
+  }
+
+  /// Laporkan titik tengah peta setelah gerakan pengguna selesai.
+  void _onMapEvent(MapEvent event) {
+    if (event.source == MapEventSource.mapController) return;
+    final selesai = event is MapEventMoveEnd ||
+        event is MapEventFlingAnimationEnd ||
+        event is MapEventFlingAnimationNotStarted ||
+        event is MapEventDoubleTapZoomEnd;
+    if (selesai) _report(event.camera.center);
   }
 
   @override
@@ -151,8 +174,7 @@ class _PetaPinPickerState extends State<PetaPinPicker> {
                         InteractiveFlag.pinchZoom |
                         InteractiveFlag.doubleTapZoom,
                   ),
-                  onTap: (_, point) =>
-                      widget.onChanged(point.latitude, point.longitude),
+                  onMapEvent: _onMapEvent,
                 ),
                 children: [
                   TileLayer(
@@ -160,22 +182,6 @@ class _PetaPinPickerState extends State<PetaPinPicker> {
                         'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                     userAgentPackageName: 'com.mirubanksampah.app',
                   ),
-                  if (pin != null)
-                    MarkerLayer(
-                      markers: [
-                        Marker(
-                          point: pin,
-                          width: 40,
-                          height: 40,
-                          alignment: Alignment.topCenter,
-                          child: const Icon(
-                            Icons.location_on,
-                            size: 40,
-                            color: AppTheme.errorColor,
-                          ),
-                        ),
-                      ],
-                    ),
                   const RichAttributionWidget(
                     showFlutterMapAttribution: false,
                     attributions: [
@@ -183,6 +189,24 @@ class _PetaPinPickerState extends State<PetaPinPicker> {
                     ],
                   ),
                 ],
+              ),
+              // Pin tetap di tengah; ujung bawah ikon = titik yang dipilih.
+              IgnorePointer(
+                child: Center(
+                  child: Transform.translate(
+                    offset: const Offset(0, -20),
+                    child: Icon(
+                      Icons.location_on,
+                      size: 40,
+                      color: pin == null
+                          ? AppTheme.errorColor.withValues(alpha: 0.55)
+                          : AppTheme.errorColor,
+                      shadows: const [
+                        Shadow(blurRadius: 4, color: Colors.black26, offset: Offset(0, 2)),
+                      ],
+                    ),
+                  ),
+                ),
               ),
               Positioned(
                 top: 8,
@@ -205,8 +229,8 @@ class _PetaPinPickerState extends State<PetaPinPicker> {
         const SizedBox(height: 8),
         Text(
           pin == null
-              ? 'Ketuk peta atau pakai "Lokasi saya" untuk menandai titik rumah Anda.'
-              : 'Titik sudah ditandai. Ketuk peta untuk memindahkannya.',
+              ? 'Geser peta sampai pin merah tepat di rumah Anda, atau pakai "Lokasi saya".'
+              : 'Titik sudah ditandai. Geser peta untuk memindahkannya.',
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),
