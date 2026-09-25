@@ -105,6 +105,7 @@ void main() {
   testWidgets('"Simpan" saves then leaves', (tester) async {
     await openEditor(tester);
     await tester.enterText(find.byType(TextFormField).first, 'Budi Baru');
+    await tester.enterText(find.byType(TextFormField).at(1), '081234567890');
     await pressBack(tester);
 
     await tester.tap(find.widgetWithText(FilledButton, 'Simpan'));
