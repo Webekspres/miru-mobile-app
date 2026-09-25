@@ -93,4 +93,77 @@ void main() {
     expect(auth.isLoggedIn, isFalse);
     expect(auth.user, isNull);
   });
+
+  group('email OTP', () {
+    Map<String, dynamic> loginBody({required bool emailRequired}) => {
+          'access': 'access-token',
+          'refresh': 'refresh-token',
+          'user': {
+            ...userJson(),
+            'email': '',
+            'email_verified': !emailRequired,
+            'email_required': emailRequired,
+          },
+        };
+
+    test('login without verified email opens the email gate', () async {
+      final auth = _build(
+        ScriptedAdapter((_) => jsonBody(loginBody(emailRequired: true))),
+      );
+      await auth.login(username: 'nasabah001', password: 'nasabah123');
+
+      expect(auth.needsEmailVerification, isTrue);
+      expect(auth.authSession.needsEmailVerification, isTrue);
+    });
+
+    test('verifying OTP while logged in clears the gate', () async {
+      final sent = <String, dynamic>{};
+      final auth = _build(
+        ScriptedAdapter((options) {
+          if (options.path.endsWith('/auth/login/')) {
+            return jsonBody(loginBody(emailRequired: true));
+          }
+          sent.addAll(Map<String, dynamic>.from(options.data as Map));
+          return jsonBody({
+            'email_verified': true,
+            'user': {
+              ...userJson(),
+              'email': 'budi@gmail.com',
+              'email_verified': true,
+              'email_required': false,
+            },
+          });
+        }),
+      );
+      await auth.login(username: 'nasabah001', password: 'nasabah123');
+      await auth.verifyEmailOtp(otp: '123456');
+
+      expect(sent, {'otp': '123456'});
+      expect(auth.needsEmailVerification, isFalse);
+      expect(auth.authSession.needsEmailVerification, isFalse);
+      expect(auth.user?.email, 'budi@gmail.com');
+    });
+
+    test('registration request sends username and password', () async {
+      Map<String, dynamic>? sent;
+      final auth = _build(
+        ScriptedAdapter((options) {
+          sent = Map<String, dynamic>.from(options.data as Map);
+          return jsonBody({'masked_email': 'bu***@gmail.com'});
+        }),
+      );
+      final data = await auth.requestEmailOtp(
+        email: ' budi@gmail.com ',
+        username: 'budi',
+        password: 'rahasia1',
+      );
+
+      expect(data['masked_email'], 'bu***@gmail.com');
+      expect(sent, {
+        'email': 'budi@gmail.com',
+        'username': 'budi',
+        'password': 'rahasia1',
+      });
+    });
+  });
 }

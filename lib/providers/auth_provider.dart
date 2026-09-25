@@ -37,9 +37,8 @@ class AuthProvider extends ChangeNotifier {
   String? get error => _error;
   bool get hasError => _error != null;
 
-  /// Akun belum verifikasi nomor HP (OTP WhatsApp).
-  bool get needsPhoneVerification =>
-      _user != null && !_user!.phoneVerified;
+  /// Akun wajib verifikasi email (OTP email) sebelum memakai aplikasi.
+  bool get needsEmailVerification => _user?.emailRequired ?? false;
 
   double get saldo => _user?.saldoAsDouble ?? 0.0;
   int get poin => _user?.poin ?? 0;
@@ -81,7 +80,7 @@ class AuthProvider extends ChangeNotifier {
 
       _user = user;
       authSession.setLoggedIn(true);
-      authSession.setNeedsPhoneVerification(!user.phoneVerified);
+      authSession.setNeedsEmailVerification(user.emailRequired);
     } on ApiException catch (e) {
       _error = e.message;
       rethrow;
@@ -102,8 +101,8 @@ class AuthProvider extends ChangeNotifier {
   // Register
   // ──────────────────────────────────────────────
 
-  /// Daftar nasabah singkat. Akun belum aktif sampai OTP WhatsApp (langkah 2).
-  /// Jangan auto-login — user inactive sampai verifikasi nomor.
+  /// Daftar nasabah singkat. Akun belum aktif sampai OTP email (langkah 2).
+  /// Jangan auto-login — user inactive sampai verifikasi email.
   Future<void> register({
     required String username,
     required String password,
@@ -165,7 +164,7 @@ class AuthProvider extends ChangeNotifier {
 
       _user = user;
       authSession.setLoggedIn(true);
-      authSession.setNeedsPhoneVerification(!user.phoneVerified);
+      authSession.setNeedsEmailVerification(user.emailRequired);
       return true;
     } on DioException catch (e) {
       if (isTransientNetworkError(e) &&
@@ -185,86 +184,63 @@ class AuthProvider extends ChangeNotifier {
   }
 
   // ──────────────────────────────────────────────
-  // Phone OTP verification
+  // Email OTP verification
   // ──────────────────────────────────────────────
 
-  /// Request OTP WhatsApp untuk verifikasi nomor HP.
-  /// Login (gate `/verify-phone`): username dari sesi.
-  /// Registrasi langkah 2: kirim [username] + [noHp] tanpa login.
-  Future<Map<String, dynamic>> requestPhoneOtp({
-    String? noHp,
+  /// Kirim OTP ke [email].
+  /// Login (gate `/verify-email`): cukup email, sesi dipakai.
+  /// Registrasi langkah 2 (akun belum aktif): wajib [username] + [password].
+  Future<Map<String, dynamic>> requestEmailOtp({
+    required String email,
     String? username,
+    String? password,
   }) async {
-    final resolvedUsername = (username ?? _user?.username ?? '').trim();
-    final phone = (noHp ?? _user?.noHp ?? '').trim();
-    if (resolvedUsername.isEmpty) {
-      throw const ApiException('Username wajib diisi.');
+    if (email.trim().isEmpty) {
+      throw const ApiException('Email wajib diisi.');
     }
-    if (phone.isEmpty) {
-      throw const ApiException('Nomor HP belum diisi.');
-    }
-
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      final data = await authService.requestPhoneOtp(
-        noHp: phone,
-        username: resolvedUsername,
+    return _run(() async {
+      final data = await authService.requestEmailOtp(
+        email: email.trim(),
+        username: _user == null ? username?.trim() : null,
+        password: _user == null ? password : null,
       );
-
-      // Staging/testing: backend SKIP_PHONE_VERIFICATION auto-verifies on request.
-      if (data['phone_verified'] == true && _user != null) {
-        final userData = await authService.getMe();
-        _user = User.fromJson(userData);
-        authSession.setNeedsPhoneVerification(!_user!.phoneVerified);
+      // Staging/testing: backend SKIP_OTP_VERIFICATION langsung memverifikasi.
+      if (data['email_verified'] == true && _user != null) {
+        _setUser(User.fromJson(await authService.getMe()));
       }
-
       return data;
-    } on ApiException catch (e) {
-      _error = e.message;
-      rethrow;
-    } on DioException catch (e) {
-      final apiError = apiExceptionFromDio(e);
-      _error = apiError.message;
-      throw apiError;
-    } catch (e) {
-      _error = kGenericErrorMessage;
-      throw ApiException(_error!);
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
+    });
   }
 
-  /// Verifikasi OTP HP. Setelah login: refresh profil. Saat daftar: tanpa sesi.
-  Future<void> verifyPhoneOtp({
+  /// Verifikasi OTP email. Setelah login: perbarui user. Saat daftar: tanpa sesi.
+  Future<void> verifyEmailOtp({
     required String otp,
-    String? noHp,
     String? username,
   }) async {
-    final resolvedUsername = (username ?? _user?.username ?? '').trim();
-    if (resolvedUsername.isEmpty) {
-      throw const ApiException('Username wajib diisi.');
-    }
+    await _run(() async {
+      final data = await authService.verifyEmailOtp(
+        otp: otp.trim(),
+        username: _user == null ? username?.trim() : null,
+      );
+      final userData = data['user'];
+      if (_user != null && userData is Map) {
+        _setUser(User.fromJson(Map<String, dynamic>.from(userData)));
+      }
+    });
+  }
 
+  void _setUser(User user) {
+    _user = user;
+    authSession.setNeedsEmailVerification(user.emailRequired);
+  }
+
+  /// Loading/error wrapper yang sama dengan alur auth lainnya.
+  Future<T> _run<T>(Future<T> Function() action) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
-
     try {
-      await authService.verifyPhoneOtp(
-        otp: otp.trim(),
-        username: resolvedUsername,
-        noHp: noHp,
-      );
-
-      if (_user != null) {
-        final userData = await authService.getMe();
-        _user = User.fromJson(userData);
-        authSession.setNeedsPhoneVerification(!_user!.phoneVerified);
-      }
+      return await action();
     } on ApiException catch (e) {
       _error = e.message;
       rethrow;
@@ -285,7 +261,7 @@ class AuthProvider extends ChangeNotifier {
   // Forgot Password
   // ──────────────────────────────────────────────
 
-  /// Langkah 1: username → data.masked_phone.
+  /// Langkah 1: username → data.masked_email.
   Future<Map<String, dynamic>> forgotPassword({
     required String username,
   }) async {
@@ -311,10 +287,10 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  /// Langkah 2: no_hp harus cocok → kirim kode ke WhatsApp.
+  /// Langkah 2: email harus cocok → kirim kode ke email.
   Future<Map<String, dynamic>> requestResetPasswordOtp({
     required String username,
-    required String noHp,
+    required String email,
   }) async {
     _isLoading = true;
     _error = null;
@@ -323,7 +299,7 @@ class AuthProvider extends ChangeNotifier {
     try {
       return await authService.requestResetPasswordOtp(
         username: username,
-        noHp: noHp,
+        email: email,
       );
     } on ApiException catch (e) {
       _error = e.message;

@@ -7,7 +7,7 @@ import '../models/notification.dart';
 import '../models/user.dart';
 import '../screens/auth/forgot_password_screen.dart';
 import '../screens/auth/login_screen.dart';
-import '../screens/auth/phone_verify_screen.dart';
+import '../screens/auth/email_verify_screen.dart';
 import '../screens/auth/register_screen.dart';
 import '../screens/auth/reset_password_screen.dart';
 import '../screens/home/home_screen.dart';
@@ -42,20 +42,20 @@ GoRouter createAppRouter(AuthSession authSession, LaunchExperience launch) {
     redirect: (context, state) {
       final location = state.matchedLocation;
       final isLoggedIn = authSession.isLoggedIn;
-      final needsPhone = authSession.needsPhoneVerification;
+      final needsEmail = authSession.needsEmailVerification;
 
-      // Gate OTP: login / session restore dengan phone_verified=false
+      // Gate OTP email: login / session restore dengan email_required=true
       // (kecuali splash — biarkan selesai bootstrap dulu)
       if (isLoggedIn &&
-          needsPhone &&
+          needsEmail &&
           location != '/splash' &&
           location != '/splash-preview') {
-        if (location != '/verify-phone') return '/verify-phone';
+        if (location != '/verify-email') return '/verify-email';
         return null;
       }
 
       // Sudah verifikasi → jangan tinggal di layar OTP
-      if (isLoggedIn && location == '/verify-phone') {
+      if (isLoggedIn && location == '/verify-email') {
         if (launch.pendingOnboarding) return '/onboarding';
         return '/home';
       }
@@ -96,7 +96,13 @@ GoRouter createAppRouter(AuthSession authSession, LaunchExperience launch) {
       ),
       GoRoute(
         path: '/register',
-        builder: (context, state) => const RegisterScreen(),
+        builder: (context, state) {
+          final pending = state.extra is Map ? state.extra! as Map : null;
+          return RegisterScreen(
+            pendingUsername: pending?['username'] as String?,
+            pendingPassword: pending?['password'] as String?,
+          );
+        },
       ),
       GoRoute(
         path: '/forgot-password',
@@ -109,8 +115,8 @@ GoRouter createAppRouter(AuthSession authSession, LaunchExperience launch) {
         ),
       ),
       GoRoute(
-        path: '/verify-phone',
-        builder: (context, state) => const PhoneVerifyScreen(),
+        path: '/verify-email',
+        builder: (context, state) => const EmailVerifyScreen(),
       ),
       GoRoute(
         path: '/onboarding',

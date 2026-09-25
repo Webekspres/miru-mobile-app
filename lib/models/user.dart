@@ -10,6 +10,9 @@ class User {
     required this.poin,
     required this.isActive,
     this.phoneVerified = true,
+    this.email = '',
+    this.emailVerified = true,
+    this.emailRequired = false,
     this.noHp = '',
     this.alamat = '',
     this.rt = '',
@@ -49,6 +52,12 @@ class User {
 
   /// False untuk akun admin-created / nomor belum diverifikasi OTP.
   final bool phoneVerified;
+
+  final String email;
+  final bool emailVerified;
+
+  /// True → wajib isi & verifikasi email (OTP) sebelum memakai aplikasi.
+  final bool emailRequired;
   final DateTime? dateJoined;
   final UserQr? qr;
   final String? avatarUrl;
@@ -97,6 +106,9 @@ class User {
       poin: parseInt(json['poin']),
       isActive: json['is_active'] as bool? ?? true,
       phoneVerified: json['phone_verified'] as bool? ?? true,
+      email: json['email'] as String? ?? '',
+      emailVerified: json['email_verified'] as bool? ?? true,
+      emailRequired: json['email_required'] as bool? ?? false,
       dateJoined: parseOptionalDateTime(json['date_joined']),
       qr: json['qr'] != null
           ? UserQr.fromJson(Map<String, dynamic>.from(json['qr'] as Map))
@@ -121,6 +133,9 @@ class User {
         'poin': poin,
         'is_active': isActive,
         'phone_verified': phoneVerified,
+        'email': email,
+        'email_verified': emailVerified,
+        'email_required': emailRequired,
         if (dateJoined != null) 'date_joined': dateJoined!.toIso8601String(),
         if (qr != null) 'qr': qr!.toJson(),
         if (avatarUrl != null) 'avatar_url': avatarUrl,
@@ -148,6 +163,9 @@ class User {
       poin: poin,
       isActive: isActive,
       phoneVerified: phoneVerified ?? this.phoneVerified,
+      email: email,
+      emailVerified: emailVerified,
+      emailRequired: emailRequired,
       dateJoined: dateJoined,
       qr: qr,
       avatarUrl: avatarUrl ?? this.avatarUrl,

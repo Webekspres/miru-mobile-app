@@ -44,8 +44,8 @@ class _SplashScreenState extends State<SplashScreen> {
     if (!mounted) return;
 
     final auth = context.read<AuthProvider>();
-    if (auth.isLoggedIn && auth.needsPhoneVerification) {
-      context.go('/verify-phone');
+    if (auth.isLoggedIn && auth.needsEmailVerification) {
+      context.go('/verify-email');
     } else {
       // Always go to /home — let HomeScreen handle login prompt
       context.go('/home');

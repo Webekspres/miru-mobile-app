@@ -12,7 +12,12 @@ import '../../providers/auth_provider.dart';
 import '../../providers/launch_experience.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+  const RegisterScreen({super.key, this.pendingUsername, this.pendingPassword});
+
+  /// Dari login: akun sudah dibuat tapi email belum diverifikasi →
+  /// langsung buka langkah 2 (verifikasi email).
+  final String? pendingUsername;
+  final String? pendingPassword;
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -23,7 +28,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _namaController = TextEditingController();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _noHpController = TextEditingController();
+  final _emailController = TextEditingController();
   final _otpController = TextEditingController();
 
   bool _obscurePassword = true;
@@ -31,7 +36,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isSubmitting = false;
   int _step = 1;
   bool _otpSent = false;
-  String? _maskedPhone;
+  String? _maskedEmail;
   int _resendSeconds = 0;
   Timer? _resendTimer;
 
@@ -39,8 +44,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String? _fieldErrorNama;
   String? _fieldErrorPassword;
   String? _fieldErrorConsent;
-  String? _fieldErrorNoHp;
+  String? _fieldErrorEmail;
   String? _fieldErrorOtp;
+
+  @override
+  void initState() {
+    super.initState();
+    final username = widget.pendingUsername;
+    final password = widget.pendingPassword;
+    if (username != null && password != null) {
+      _usernameController.text = username;
+      _passwordController.text = password;
+      _step = 2;
+    }
+  }
 
   @override
   void dispose() {
@@ -48,7 +65,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _namaController.dispose();
     _usernameController.dispose();
     _passwordController.dispose();
-    _noHpController.dispose();
+    _emailController.dispose();
     _otpController.dispose();
     super.dispose();
   }
@@ -59,7 +76,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _fieldErrorNama = null;
       _fieldErrorPassword = null;
       _fieldErrorConsent = null;
-      _fieldErrorNoHp = null;
+      _fieldErrorEmail = null;
       _fieldErrorOtp = null;
     });
   }
@@ -78,7 +95,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _fieldErrorNama = _extractError(errors['nama_lengkap']);
       _fieldErrorPassword = _extractError(errors['password']);
       _fieldErrorConsent = _extractError(errors['setuju_kebijakan_data']);
-      _fieldErrorNoHp = _extractError(errors['no_hp']);
+      _fieldErrorEmail = _extractError(errors['email']);
       _fieldErrorOtp = _extractError(errors['otp']);
     });
   }
@@ -144,18 +161,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() => _isSubmitting = true);
 
     try {
-      final data = await context.read<AuthProvider>().requestPhoneOtp(
+      final data = await context.read<AuthProvider>().requestEmailOtp(
+            email: _emailController.text,
             username: _usernameController.text.trim(),
-            noHp: _noHpController.text.trim(),
+            password: _passwordController.text,
           );
       if (!mounted) return;
+      if (data['email_verified'] == true) {
+        // Staging/testing: verifikasi dilewati backend → langsung masuk.
+        setState(() => _isSubmitting = false);
+        await _loginAfterVerified();
+        return;
+      }
       setState(() {
         _otpSent = true;
-        _maskedPhone = data['masked_phone'] as String?;
+        _maskedEmail = data['masked_email'] as String?;
       });
       _startResendCooldown(60);
+      final devOtp = data['dev_otp'] as String?;
       _showInfo(
-        'Cek notifikasi WhatsApp untuk kode verifikasi.',
+        data['dev_otp_mode'] == true && devOtp != null
+            ? 'Mode development: gunakan OTP $devOtp'
+            : 'Kode dikirim. Cek kotak masuk atau folder spam email Anda.',
       );
     } on ApiException catch (e) {
       if (!mounted) return;
@@ -172,6 +199,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
+  /// Email sudah terverifikasi (mode testing backend) → login langsung.
+  Future<void> _loginAfterVerified() async {
+    final auth = context.read<AuthProvider>();
+    final launch = context.read<LaunchExperience>();
+    launch.markRegistered();
+    try {
+      await auth.login(
+        username: _usernameController.text.trim(),
+        password: _passwordController.text,
+      );
+      if (!mounted) return;
+      context.go(auth.needsEmailVerification ? '/verify-email' : '/onboarding');
+    } on ApiException catch (e) {
+      launch.consumeOnboarding();
+      if (!mounted) return;
+      _showError(e.message);
+    }
+  }
+
   Future<void> _verifyOtpAndLogin() async {
     FocusScope.of(context).unfocus();
     if (!_formKey.currentState!.validate()) return;
@@ -184,16 +230,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final password = _passwordController.text;
 
     try {
-      await auth.verifyPhoneOtp(
+      await auth.verifyEmailOtp(
         otp: _otpController.text.trim(),
         username: username,
-        noHp: _noHpController.text.trim(),
       );
       launch.markRegistered();
       await auth.login(username: username, password: password);
       if (!mounted) return;
-      if (auth.needsPhoneVerification) {
-        context.go('/verify-phone');
+      if (auth.needsEmailVerification) {
+        context.go('/verify-email');
       } else {
         context.go('/onboarding');
       }
@@ -247,7 +292,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               children: [
                 const SizedBox(height: 24),
                 Text(
-                  _step == 1 ? 'Daftar Akun Baru' : 'Verifikasi Nomor HP',
+                  _step == 1 ? 'Daftar Akun Baru' : 'Verifikasi Email',
                   style: theme.textTheme.headlineMedium,
                   textAlign: TextAlign.center,
                 ),
@@ -255,7 +300,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Text(
                   _step == 1
                       ? 'Ayo bergabung bersama kami! Membangun lingkungan hijau bersama.'
-                      : 'Masukkan nomor HP, lalu isi kode yang dikirim ke WhatsApp ${_maskedPhone ?? 'Anda'}.',
+                      : 'Masukkan email, lalu isi kode yang dikirim ke ${_maskedEmail ?? 'email Anda'}.',
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -437,7 +482,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'Akun sudah dibuat. Jangan tutup halaman ini sampai nomor HP terverifikasi.',
+          'Akun sudah dibuat. Verifikasi email untuk mengaktifkan akun.',
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),
@@ -445,21 +490,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
         const SizedBox(height: 16),
         TextFormField(
-          controller: _noHpController,
+          controller: _emailController,
           enabled: !_otpSent,
           decoration: InputDecoration(
-            labelText: 'Nomor HP',
-            prefixIcon: const Icon(Icons.phone_outlined),
-            errorText: _fieldErrorNoHp,
+            labelText: 'Email',
+            prefixIcon: const Icon(Icons.email_outlined),
+            hintText: 'nama@contoh.com',
+            errorText: _fieldErrorEmail,
           ),
           textInputAction: TextInputAction.done,
-          keyboardType: TextInputType.phone,
+          keyboardType: TextInputType.emailAddress,
+          autofillHints: const [AutofillHints.email],
           validator: (value) {
-            if (value == null || value.trim().isEmpty) {
-              return 'Nomor HP tidak boleh kosong';
-            }
-            if (value.trim().length < 10) {
-              return 'Nomor HP minimal 10 digit';
+            final v = value?.trim() ?? '';
+            if (v.isEmpty) return 'Email tidak boleh kosong';
+            if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(v)) {
+              return 'Format email tidak valid';
             }
             return null;
           },
@@ -469,7 +515,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           TextFormField(
             controller: _otpController,
             decoration: InputDecoration(
-              labelText: 'Kode dari WhatsApp',
+              labelText: 'Kode dari email',
               prefixIcon: const Icon(Icons.pin_outlined),
               hintText: '6 digit',
               errorText: _fieldErrorOtp,
@@ -509,7 +555,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       color: Colors.white,
                     ),
                   )
-                : Text(_otpSent ? 'Verifikasi & masuk' : 'Kirim kode ke WhatsApp'),
+                : Text(_otpSent ? 'Verifikasi & masuk' : 'Kirim kode ke email'),
           ),
         ),
         if (_otpSent) ...[

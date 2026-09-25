@@ -65,14 +65,23 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (!mounted) return;
       final auth = context.read<AuthProvider>();
-      if (auth.needsPhoneVerification) {
-        context.go('/verify-phone');
+      if (auth.needsEmailVerification) {
+        context.go('/verify-email');
       } else {
         context.go('/home');
       }
     } on ApiException catch (e) {
       launch.consumeWelcomeBack();
       if (!mounted) return;
+      if (e.code == 'EMAIL_VERIFICATION_PENDING') {
+        // Daftar tapi belum verifikasi email → lanjutkan langkah 2 registrasi.
+        _showError(e.message);
+        context.push('/register', extra: {
+          'username': _usernameController.text.trim(),
+          'password': _passwordController.text,
+        });
+        return;
+      }
       _showError(e.message);
     } catch (e) {
       launch.consumeWelcomeBack();

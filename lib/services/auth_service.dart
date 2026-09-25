@@ -86,17 +86,17 @@ class AuthService {
     );
   }
 
-  /// Langkah 2 lupa password: konfirmasi no_hp → kirim OTP WA.
+  /// Langkah 2 lupa password: konfirmasi email → kirim OTP ke email.
   /// POST /auth/reset-password/request-otp/
   Future<JsonMap> requestResetPasswordOtp({
     required String username,
-    required String noHp,
+    required String email,
   }) {
     return apiClient.post<JsonMap>(
       '/auth/reset-password/request-otp/',
       data: {
         'username': username,
-        'no_hp': noHp,
+        'email': email,
       },
       fromJson: _asJsonMap,
     );
@@ -136,40 +136,37 @@ class AuthService {
     );
   }
 
-  /// Request OTP WhatsApp for phone verification.
-  /// POST /auth/phone/request-otp/
-  Future<JsonMap> requestPhoneOtp({
-    required String noHp,
+  /// Kirim OTP verifikasi ke email.
+  /// Login: cukup [email]. Registrasi (akun belum aktif): + [username] & [password].
+  /// POST /auth/email/request-otp/
+  Future<JsonMap> requestEmailOtp({
+    required String email,
     String? username,
-  }) async {
-    final data = <String, dynamic>{'no_hp': noHp};
-    if (username != null && username.isNotEmpty) {
-      data['username'] = username;
-    }
+    String? password,
+  }) {
     return apiClient.post<JsonMap>(
-      '/auth/phone/request-otp/',
-      data: data,
+      '/auth/email/request-otp/',
+      data: {
+        'email': email,
+        if (username != null && username.isNotEmpty) 'username': username,
+        if (password != null && password.isNotEmpty) 'password': password,
+      },
       fromJson: _asJsonMap,
     );
   }
 
-  /// Verify phone OTP.
-  /// POST /auth/phone/verify-otp/
-  Future<JsonMap> verifyPhoneOtp({
+  /// Verifikasi OTP email. Login: `data.user` berisi payload user terbaru.
+  /// POST /auth/email/verify-otp/
+  Future<JsonMap> verifyEmailOtp({
     required String otp,
     String? username,
-    String? noHp,
-  }) async {
-    final data = <String, dynamic>{'otp': otp};
-    if (username != null && username.isNotEmpty) {
-      data['username'] = username;
-    }
-    if (noHp != null && noHp.isNotEmpty) {
-      data['no_hp'] = noHp;
-    }
+  }) {
     return apiClient.post<JsonMap>(
-      '/auth/phone/verify-otp/',
-      data: data,
+      '/auth/email/verify-otp/',
+      data: {
+        'otp': otp,
+        if (username != null && username.isNotEmpty) 'username': username,
+      },
       fromJson: _asJsonMap,
     );
   }
