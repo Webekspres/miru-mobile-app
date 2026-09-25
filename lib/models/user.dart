@@ -68,7 +68,10 @@ class User {
 
   /// Alamat profil wajib untuk transaksi (jemput / tarik / tukar).
   /// Maps patokan belum ada di model API — hanya [alamat].
-  bool get hasCompleteAddress => alamat.trim().isNotEmpty;
+  /// Alamat dianggap lengkap bila teks alamat dan kelurahan/kampung
+  /// (wilayah layanan Distrik Mimika Baru) sudah diisi.
+  bool get hasCompleteAddress =>
+      alamat.trim().isNotEmpty && kelurahanId != null;
 
   /// Teks alamat untuk prefill form penjemputan (boleh diubah user).
   String get formattedPickupAddress {

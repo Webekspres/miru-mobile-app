@@ -144,6 +144,9 @@ class ProfileProvider extends ChangeNotifier {
     required String alamat,
     String rt = '',
     String rw = '',
+    int? kelurahanId,
+    double? latitude,
+    double? longitude,
   }) async {
     if (_user == null) return false;
 
@@ -159,6 +162,10 @@ class ProfileProvider extends ChangeNotifier {
       };
       if (rt.isNotEmpty) body['rt'] = rt;
       if (rw.isNotEmpty) body['rw'] = rw;
+      if (kelurahanId != null) body['kelurahan'] = kelurahanId;
+      // Kolom koordinat backend: maks 6 desimal.
+      if (latitude != null) body['latitude'] = latitude.toStringAsFixed(6);
+      if (longitude != null) body['longitude'] = longitude.toStringAsFixed(6);
 
       final updatedData = await _apiClient.patch<Map<String, dynamic>>(
         '/users/${_user!.id}/',

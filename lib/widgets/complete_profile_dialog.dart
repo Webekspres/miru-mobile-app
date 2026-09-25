@@ -47,8 +47,9 @@ Future<bool> showCompleteProfileDialog(BuildContext context) async {
           ],
         ),
         content: Text(
-          'Anda perlu mengisi alamat di profil sebelum dapat mengajukan '
-          'penjemputan, menarik saldo, atau menukar poin.',
+          'Anda perlu mengisi alamat dan kelurahan/kampung di profil sebelum '
+          'dapat mengajukan penjemputan, menarik saldo, atau menukar poin. '
+          'MIRU hanya melayani warga Distrik Mimika Baru.',
           style: theme.textTheme.bodyMedium?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
             height: 1.5,

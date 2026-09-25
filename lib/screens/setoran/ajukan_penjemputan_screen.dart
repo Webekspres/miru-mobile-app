@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -11,8 +10,10 @@ import '../../providers/auth_session.dart';
 import '../../providers/home_provider.dart';
 import '../../providers/penjemputan_provider.dart';
 import '../../providers/profile_provider.dart';
+import '../../providers/wilayah_provider.dart';
 import '../../widgets/complete_profile_dialog.dart';
 import '../../widgets/login_prompt.dart';
+import '../../widgets/peta_pin_picker.dart';
 import '../../widgets/shimmer_loading.dart';
 
 class AjukanPenjemputanScreen extends StatefulWidget {
@@ -30,7 +31,6 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
 
   int? _selectedJadwalId;
   bool _isLoadingCategories = true;
-  bool _isFetchingLocation = false;
   WasteCategory? _selectedCategory;
   double? _latitude;
   double? _longitude;
@@ -45,6 +45,7 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
       if (!context.read<AuthSession>().isLoggedIn) return;
       final allowed = await guardTransactionRequiresAddress(context);
       if (!mounted || !allowed) return;
+      context.read<WilayahProvider>().load();
       await _prefillAlamat();
       if (!mounted) return;
       await context.read<PenjemputanProvider>().loadJadwal();
@@ -165,60 +166,6 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
 
     if (picked != null) {
       setState(() => _selectedCategory = picked);
-    }
-  }
-
-  Future<void> _ambilLokasi() async {
-    setState(() => _isFetchingLocation = true);
-
-    try {
-      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        if (!mounted) return;
-        _showMessage(
-          'Layanan lokasi perangkat belum aktif. Aktifkan dulu, lalu coba lagi.',
-        );
-        return;
-      }
-
-      var permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-      }
-
-      if (permission == LocationPermission.denied) {
-        if (!mounted) return;
-        _showMessage(
-          'Izin lokasi diperlukan untuk menandai titik penjemputan.',
-        );
-        return;
-      }
-
-      if (permission == LocationPermission.deniedForever) {
-        if (!mounted) return;
-        _showMessage(
-          'Izin lokasi ditutup. Buka pengaturan aplikasi untuk mengizinkan lokasi.',
-        );
-        return;
-      }
-
-      final pos = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.medium,
-          timeLimit: Duration(seconds: 15),
-        ),
-      );
-
-      if (!mounted) return;
-      setState(() {
-        _latitude = pos.latitude;
-        _longitude = pos.longitude;
-      });
-    } catch (_) {
-      if (!mounted) return;
-      _showMessage('Tidak dapat mengambil lokasi. Coba lagi.');
-    } finally {
-      if (mounted) setState(() => _isFetchingLocation = false);
     }
   }
 
@@ -527,11 +474,14 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  _LokasiPinCard(
+                  PetaPinPicker(
+                    cakupan: context.watch<WilayahProvider>().cakupan,
                     latitude: _latitude,
                     longitude: _longitude,
-                    isLoading: _isFetchingLocation,
-                    onAmbilLokasi: _isFetchingLocation ? null : _ambilLokasi,
+                    onChanged: (lat, lng) => setState(() {
+                      _latitude = lat;
+                      _longitude = lng;
+                    }),
                   ),
                   const SizedBox(height: 20),
 
@@ -734,151 +684,6 @@ class _EstimasiNilaiCard extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _LokasiPinCard extends StatelessWidget {
-  const _LokasiPinCard({
-    required this.latitude,
-    required this.longitude,
-    required this.isLoading,
-    required this.onAmbilLokasi,
-  });
-
-  final double? latitude;
-  final double? longitude;
-  final bool isLoading;
-  final VoidCallback? onAmbilLokasi;
-
-  bool get _hasPin => latitude != null && longitude != null;
-
-  // Thumbnail pratinjau ini dikirim ke pihak ketiga (staticmap.openstreetmap.de)
-  // yang tidak terikat perjanjian pemrosesan data dengan Miru. Presisi
-  // dipangkas ke 3 desimal (~100 m) agar area terlihat untuk konfirmasi
-  // visual tanpa membocorkan koordinat rumah nasabah secara presisi. Data
-  // lat/lng asli (presisi penuh) yang dikirim ke backend Miru tidak terpengaruh.
-  String get _osmUrl {
-    final lat = latitude!.toStringAsFixed(3);
-    final lng = longitude!.toStringAsFixed(3);
-    return 'https://staticmap.openstreetmap.de/staticmap.php'
-        '?center=$lat,$lng&zoom=15&size=600x240&markers=$lat,$lng,ol-marker';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: theme.colorScheme.outlineVariant),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (_hasPin)
-            SizedBox(
-              height: 140,
-              child: Image.network(
-                _osmUrl,
-                fit: BoxFit.cover,
-                errorBuilder: (_, _, _) =>
-                    _PinFallback(latitude: latitude!, longitude: longitude!),
-              ),
-            )
-          else
-            const SizedBox(height: 88, child: _PinFallback.empty()),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (_hasPin)
-                  Text(
-                    '${latitude!.toStringAsFixed(6)}, ${longitude!.toStringAsFixed(6)}',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  )
-                else
-                  Text(
-                    'Belum ada titik. Ambil lokasi perangkat atau pakai titik dari profil.',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton.icon(
-                    onPressed: onAmbilLokasi,
-                    icon: isLoading
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.my_location_rounded, size: 18),
-                    label: Text(
-                      isLoading ? 'Mengambil lokasi…' : 'Ambil lokasi saya',
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Titik ini hanya penanda lokasi, bukan pelacakan perjalanan.',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _PinFallback extends StatelessWidget {
-  const _PinFallback({required this.latitude, required this.longitude})
-    : empty = false;
-
-  const _PinFallback.empty() : latitude = 0, longitude = 0, empty = true;
-
-  final double latitude;
-  final double longitude;
-  final bool empty;
-
-  @override
-  Widget build(BuildContext context) {
-    return ColoredBox(
-      color: const Color(0xFFECFDF5),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              empty ? Icons.add_location_alt_outlined : Icons.location_on,
-              size: 32,
-              color: AppTheme.primaryColor,
-            ),
-            if (!empty) ...[
-              const SizedBox(height: 6),
-              Text(
-                '${latitude.toStringAsFixed(5)}, ${longitude.toStringAsFixed(5)}',
-                style: Theme.of(
-                  context,
-                ).textTheme.labelSmall?.copyWith(color: AppTheme.primaryDark),
-              ),
-            ],
-          ],
-        ),
       ),
     );
   }

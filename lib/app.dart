@@ -18,6 +18,7 @@ import 'providers/profile_provider.dart';
 import 'providers/reward_provider.dart';
 import 'providers/saldo_provider.dart';
 import 'providers/settings_provider.dart';
+import 'providers/wilayah_provider.dart';
 import 'services/api_client.dart';
 import 'services/auth_service.dart';
 import 'services/storage_service.dart';
@@ -41,6 +42,7 @@ class _MiruAppState extends State<MiruApp> with WidgetsBindingObserver {
   late final PengumumanProvider _pengumumanProvider;
   late final PenjemputanProvider _penjemputanProvider;
   late final ProfileProvider _profileProvider;
+  late final WilayahProvider _wilayahProvider;
   late final RewardProvider _rewardProvider;
   late final SaldoProvider _saldoProvider;
   late final SettingsProvider _settingsProvider;
@@ -77,6 +79,7 @@ class _MiruAppState extends State<MiruApp> with WidgetsBindingObserver {
     _pengumumanProvider = PengumumanProvider(apiClient: _apiClient);
     _penjemputanProvider = PenjemputanProvider(apiClient: _apiClient);
     _profileProvider = ProfileProvider(apiClient: _apiClient);
+    _wilayahProvider = WilayahProvider(apiClient: _apiClient);
     _rewardProvider = RewardProvider(apiClient: _apiClient);
     _saldoProvider = SaldoProvider(apiClient: _apiClient);
     _settingsProvider = SettingsProvider(apiClient: _apiClient);
@@ -155,6 +158,7 @@ class _MiruAppState extends State<MiruApp> with WidgetsBindingObserver {
         ChangeNotifierProvider.value(value: _pengumumanProvider),
         ChangeNotifierProvider.value(value: _penjemputanProvider),
         ChangeNotifierProvider.value(value: _profileProvider),
+        ChangeNotifierProvider.value(value: _wilayahProvider),
         ChangeNotifierProvider.value(value: _rewardProvider),
         ChangeNotifierProvider.value(value: _saldoProvider),
         ChangeNotifierProvider.value(value: _settingsProvider),

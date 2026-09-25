@@ -70,6 +70,7 @@ Map<String, dynamic> userJson({
   Object saldo = '125000.00',
   Object poin = 10,
   String alamat = 'Jl. Papua 1',
+  int? kelurahan = 2,
 }) {
   return {
     'id': id,
@@ -79,6 +80,8 @@ Map<String, dynamic> userJson({
     'saldo': saldo,
     'poin': poin,
     'alamat': alamat,
+    'kelurahan': kelurahan,
+    'kelurahan_nama': kelurahan == null ? null : 'Kwamki',
     'is_active': true,
     'phone_verified': true,
   };

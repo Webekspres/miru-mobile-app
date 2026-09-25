@@ -4,7 +4,10 @@ import 'package:provider/provider.dart';
 import '../../config/theme.dart';
 import '../../models/user.dart';
 import '../../providers/profile_provider.dart';
+import '../../providers/wilayah_provider.dart';
 import '../../services/avatar_picker.dart';
+import '../../widgets/alamat_bertingkat.dart';
+import '../../widgets/peta_pin_picker.dart';
 import '../../widgets/user_avatar.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -23,10 +26,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _alamatController;
   late TextEditingController _rtController;
   late TextEditingController _rwController;
+  int? _kelurahanId;
+  double? _latitude;
+  double? _longitude;
 
   @override
   void initState() {
     super.initState();
+    _kelurahanId = widget.initialUser.kelurahanId;
+    _latitude = widget.initialUser.latitude;
+    _longitude = widget.initialUser.longitude;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) context.read<WilayahProvider>().load();
+    });
     _namaController = TextEditingController(text: widget.initialUser.namaLengkap);
     _noHpController = TextEditingController(text: widget.initialUser.noHp);
     _alamatController = TextEditingController(text: widget.initialUser.alamat);
@@ -46,6 +58,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<void> _saveProfile() async {
     if (!_formKey.currentState!.validate()) return;
+    final cakupan = context.read<WilayahProvider>().cakupan;
+    if (cakupan.kelurahanById(_kelurahanId) == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Pilih kelurahan/kampung di Distrik Mimika Baru.'),
+          backgroundColor: AppTheme.errorColor,
+        ),
+      );
+      return;
+    }
 
     final profile = context.read<ProfileProvider>();
     final success = await profile.updateProfile(
@@ -54,6 +76,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       alamat: _alamatController.text.trim(),
       rt: _rtController.text.trim(),
       rw: _rwController.text.trim(),
+      kelurahanId: _kelurahanId,
+      latitude: _latitude,
+      longitude: _longitude,
     );
 
     if (!mounted) return;
@@ -80,6 +105,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final profile = context.watch<ProfileProvider>();
+    final wilayah = context.watch<WilayahProvider>();
 
     return Scaffold(
       appBar: AppBar(
@@ -180,13 +206,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
               const SizedBox(height: 20),
 
-              _buildLabel(theme, 'Alamat'),
+              _buildLabel(theme, 'Wilayah'),
+              const SizedBox(height: 8),
+              AlamatBertingkat(
+                cakupan: wilayah.cakupan,
+                kelurahanId: _kelurahanId,
+                isLoading: wilayah.isLoading,
+                error: wilayah.error,
+                onRetry: () => wilayah.load(force: true),
+                onKelurahanChanged: (id) => setState(() => _kelurahanId = id),
+              ),
+              const SizedBox(height: 20),
+
+              _buildLabel(theme, 'Alamat Lengkap'),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _alamatController,
                 maxLines: 3,
                 decoration: InputDecoration(
-                  hintText: 'Masukkan alamat lengkap',
+                  hintText: 'Nama jalan, nomor rumah, patokan',
                   prefixIcon: const Padding(
                     padding: EdgeInsets.only(bottom: 48),
                     child: Icon(Icons.location_on_outlined, size: 20),
@@ -228,6 +266,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
+              ),
+              const SizedBox(height: 20),
+
+              _buildLabel(theme, 'Titik Lokasi Rumah (opsional)'),
+              const SizedBox(height: 8),
+              PetaPinPicker(
+                cakupan: wilayah.cakupan,
+                latitude: _latitude,
+                longitude: _longitude,
+                onChanged: (lat, lng) => setState(() {
+                  _latitude = lat;
+                  _longitude = lng;
+                }),
               ),
               const SizedBox(height: 20),
 
