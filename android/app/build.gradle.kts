@@ -23,7 +23,8 @@ fun Properties.requireSigningProperty(name: String): String {
 
 android {
     namespace = "com.mirubanksampah.app"
-    compileSdk = flutter.compileSdkVersion
+    // flutter_secure_storage 11 dikompilasi dengan SDK 37.
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
