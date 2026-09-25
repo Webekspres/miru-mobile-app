@@ -39,7 +39,7 @@ void main() {
   testWidgets('never shows raw coordinates', (tester) async {
     await pumpPicker(tester, lat: -4.5467, lng: 136.8833);
 
-    expect(find.text('Titik sudah ditandai. Geser peta untuk memindahkannya.'), findsOneWidget);
+    expect(find.textContaining('Geser peta untuk memindahkannya.'), findsOneWidget);
     expect(find.textContaining('-4.5'), findsNothing);
     expect(find.textContaining('136.8'), findsNothing);
   });

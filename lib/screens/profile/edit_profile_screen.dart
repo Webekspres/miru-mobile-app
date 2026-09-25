@@ -56,6 +56,53 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     super.dispose();
   }
 
+  bool get _isDirty {
+    final u = widget.initialUser;
+    return _namaController.text.trim() != u.namaLengkap.trim() ||
+        _noHpController.text.trim() != u.noHp.trim() ||
+        _alamatController.text.trim() != u.alamat.trim() ||
+        _rtController.text.trim() != u.rt.trim() ||
+        _rwController.text.trim() != u.rw.trim() ||
+        _kelurahanId != u.kelurahanId ||
+        _latitude != u.latitude ||
+        _longitude != u.longitude;
+  }
+
+  /// Back (AppBar / tombol sistem) saat ada perubahan: tanya dulu.
+  Future<void> _onBack() async {
+    if (context.read<ProfileProvider>().isSaving) return;
+    if (!_isDirty) {
+      Navigator.of(context).pop();
+      return;
+    }
+    final pilihan = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Perubahan belum disimpan'),
+        content: const Text(
+          'Anda memiliki perubahan yang belum disimpan. '
+          'Simpan perubahan sebelum keluar?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Tidak'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Simpan'),
+          ),
+        ],
+      ),
+    );
+    if (!mounted || pilihan == null) return; // ditutup: tetap di halaman
+    if (pilihan) {
+      await _saveProfile(); // menutup layar bila berhasil
+    } else {
+      Navigator.of(context).pop();
+    }
+  }
+
   Future<void> _saveProfile() async {
     if (!_formKey.currentState!.validate()) return;
     final cakupan = context.read<WilayahProvider>().cakupan;
@@ -107,7 +154,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final profile = context.watch<ProfileProvider>();
     final wilayah = context.watch<WilayahProvider>();
 
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _onBack();
+      },
+      child: Scaffold(
       appBar: AppBar(
         title: const Text('Edit Profil'),
         actions: [
@@ -353,6 +405,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ),
         ),
       ),
+    ),
     );
   }
 
