@@ -180,6 +180,8 @@ class _EmailVerifyScreenState extends State<EmailVerifyScreen> {
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Form(
+              // Error hilang begitu isian diperbaiki (bukan menunggu tombol ditekan).
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -212,6 +214,10 @@ class _EmailVerifyScreenState extends State<EmailVerifyScreen> {
                   TextFormField(
                     controller: _emailController,
                     enabled: !_otpSent && !busy,
+                    // Diketik ulang → hapus error dari server untuk kolom ini.
+                    onChanged: (_) {
+                      if (_emailError != null) setState(() => _emailError = null);
+                    },
                     decoration: InputDecoration(
                       labelText: 'Email',
                       prefixIcon: const Icon(Icons.email_outlined),
@@ -235,6 +241,10 @@ class _EmailVerifyScreenState extends State<EmailVerifyScreen> {
                     const SizedBox(height: 14),
                     TextFormField(
                       controller: _otpController,
+                      // Diketik ulang → hapus error dari server untuk kolom ini.
+                      onChanged: (_) {
+                        if (_otpError != null) setState(() => _otpError = null);
+                      },
                       decoration: InputDecoration(
                         labelText: 'Kode OTP',
                         prefixIcon: const Icon(Icons.pin_outlined),

@@ -8,8 +8,9 @@ import '../../providers/profile_provider.dart';
 import '../../providers/wilayah_provider.dart';
 import '../../services/avatar_picker.dart';
 import '../../widgets/alamat_bertingkat.dart';
-import '../../widgets/peta_pin_picker.dart';
+import '../../widgets/peta_lokasi_preview.dart';
 import '../../widgets/user_avatar.dart';
+import 'pilih_lokasi_screen.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key, required this.initialUser});
@@ -104,8 +105,37 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
+  Future<void> _editLokasi() async {
+    final titik = await pilihLokasi(
+      context,
+      cakupan: context.read<WilayahProvider>().cakupan,
+      latitude: _latitude,
+      longitude: _longitude,
+    );
+    if (titik == null || !mounted) return;
+    setState(() {
+      _latitude = titik.latitude;
+      _longitude = titik.longitude;
+    });
+  }
+
   Future<void> _saveProfile() async {
-    if (!_formKey.currentState!.validate()) return;
+    final invalid = _formKey.currentState!.validateGranularly();
+    if (invalid.isNotEmpty) {
+      // Kolom yang salah bisa jauh di atas tombol: gulir ke sana + beri tahu.
+      Scrollable.ensureVisible(
+        invalid.first.context,
+        duration: const Duration(milliseconds: 300),
+        alignment: 0.2,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Periksa kembali isian yang ditandai merah.'),
+          backgroundColor: AppTheme.errorColor,
+        ),
+      );
+      return;
+    }
     final cakupan = context.read<WilayahProvider>().cakupan;
     if (cakupan.kelurahanById(_kelurahanId) == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -182,6 +212,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
+          // Error hilang begitu isian diperbaiki (bukan menunggu tombol ditekan).
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -330,14 +362,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
               _buildLabel(theme, 'Titik Lokasi Rumah (opsional)'),
               const SizedBox(height: 8),
-              PetaPinPicker(
+              PetaLokasiPreview(
                 cakupan: wilayah.cakupan,
                 latitude: _latitude,
                 longitude: _longitude,
-                onChanged: (lat, lng) => setState(() {
-                  _latitude = lat;
-                  _longitude = lng;
-                }),
+                onEdit: _editLokasi,
               ),
               const SizedBox(height: 20),
 

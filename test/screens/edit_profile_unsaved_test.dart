@@ -4,6 +4,7 @@ import 'package:mirumobileapp/models/user.dart';
 import 'package:mirumobileapp/providers/profile_provider.dart';
 import 'package:mirumobileapp/providers/wilayah_provider.dart';
 import 'package:mirumobileapp/screens/profile/edit_profile_screen.dart';
+import 'package:mirumobileapp/screens/profile/pilih_lokasi_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../helpers/test_http.dart';
@@ -143,5 +144,48 @@ void main() {
 
     expect(find.text('Tambah email'), findsOneWidget);
     expect(find.text('Belum ada email'), findsOneWidget);
+  });
+
+  testWidgets('invalid save scrolls to the problem and says so, without saving', (tester) async {
+    await openEditor(tester, userExtra: {'kelurahan': null});
+    await tester.enterText(find.byType(TextFormField).at(1), '081234567890');
+
+    await tester.tap(find.text('Simpan Perubahan'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Periksa kembali isian yang ditandai merah.'), findsOneWidget);
+    expect(find.text('Pilih kelurahan/kampung Anda'), findsOneWidget);
+    expect(patches, isEmpty);
+  });
+
+  testWidgets('map is a read-only preview; Tandai opens the full-screen picker', (tester) async {
+    await openEditor(tester);
+    expect(find.text('Titik rumah belum ditandai'), findsOneWidget);
+
+    await tester.tap(find.text('Tandai'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(PilihLokasiScreen), findsOneWidget);
+    final gunakan = tester.widget<FilledButton>(
+      find.widgetWithText(FilledButton, 'Gunakan titik ini'),
+    );
+    expect(gunakan.onPressed, isNull); // belum ada titik
+
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(find.text('Edit Profil'), findsOneWidget);
+    expect(find.text('Titik rumah belum ditandai'), findsOneWidget);
+  });
+
+  testWidgets('a red field returns to normal once it is typed again', (tester) async {
+    await openEditor(tester);
+    await tester.enterText(find.byType(TextFormField).first, '');
+    await tester.tap(find.text('Simpan Perubahan'));
+    await tester.pumpAndSettle();
+    expect(find.text('Nama tidak boleh kosong'), findsOneWidget);
+
+    await tester.enterText(find.byType(TextFormField).first, 'Budi');
+    await tester.pump();
+    expect(find.text('Nama tidak boleh kosong'), findsNothing);
   });
 }

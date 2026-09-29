@@ -17,11 +17,13 @@ class AuthInterceptor extends QueuedInterceptor {
 
   Future<bool>? _refreshFuture;
 
-  static const _skipRefreshPaths = [
+  /// Endpoint tanpa token. Dicocokkan persis: `/users/` (daftar akun) publik,
+  /// tetapi `/users/7/` (edit profil) wajib membawa token.
+  static const _publicPaths = {
     '/auth/login/',
     '/auth/refresh/',
     '/users/',
-  ];
+  };
 
   @override
   Future<void> onRequest(
@@ -75,9 +77,13 @@ class AuthInterceptor extends QueuedInterceptor {
     }
   }
 
-  bool _isPublicPath(String path) {
-    return _skipRefreshPaths.any((publicPath) => path.contains(publicPath));
+  static bool isPublicPath(String path) {
+    var p = Uri.parse(path).path;
+    if (p.startsWith('/api/')) p = p.substring(4);
+    return _publicPaths.contains(p);
   }
+
+  bool _isPublicPath(String path) => isPublicPath(path);
 
   Future<bool> _refreshAccessToken() async {
     _refreshFuture ??= _doRefresh();

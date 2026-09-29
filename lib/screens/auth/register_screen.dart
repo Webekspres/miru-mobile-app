@@ -317,6 +317,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 24),
                 Form(
+                  // Error hilang begitu isian diperbaiki (bukan menunggu tombol ditekan).
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   key: _formKey,
                   child: _step == 1 ? _buildStep1(theme) : _buildStep2(theme),
                 ),
@@ -356,6 +358,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       children: [
         TextFormField(
           controller: _namaController,
+          // Diketik ulang → hapus error dari server untuk kolom ini.
+          onChanged: (_) {
+            if (_fieldErrorNama != null) setState(() => _fieldErrorNama = null);
+          },
           decoration: InputDecoration(
             labelText: 'Nama lengkap',
             prefixIcon: const Icon(Icons.badge_outlined),
@@ -373,6 +379,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         const SizedBox(height: 14),
         TextFormField(
           controller: _usernameController,
+          // Diketik ulang → hapus error dari server untuk kolom ini.
+          onChanged: (_) {
+            if (_fieldErrorUsername != null) setState(() => _fieldErrorUsername = null);
+          },
           decoration: InputDecoration(
             labelText: 'Username',
             prefixIcon: const Icon(Icons.person_outline_rounded),
@@ -393,6 +403,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         const SizedBox(height: 14),
         TextFormField(
           controller: _passwordController,
+          // Diketik ulang → hapus error dari server untuk kolom ini.
+          onChanged: (_) {
+            if (_fieldErrorPassword != null) setState(() => _fieldErrorPassword = null);
+          },
           decoration: InputDecoration(
             labelText: 'Password',
             prefixIcon: const Icon(Icons.lock_outline_rounded),
@@ -423,8 +437,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         const SizedBox(height: 20),
         CheckboxListTile(
           value: _setujuKebijakan,
-          onChanged: (value) =>
-              setState(() => _setujuKebijakan = value ?? false),
+          onChanged: (value) => setState(() {
+            _setujuKebijakan = value ?? false;
+            _fieldErrorConsent = null;
+          }),
           title: Text.rich(
             TextSpan(
               style: theme.textTheme.bodySmall,
@@ -492,6 +508,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         TextFormField(
           controller: _emailController,
           enabled: !_otpSent,
+          // Diketik ulang → hapus error dari server untuk kolom ini.
+          onChanged: (_) {
+            if (_fieldErrorEmail != null) setState(() => _fieldErrorEmail = null);
+          },
           decoration: InputDecoration(
             labelText: 'Email',
             prefixIcon: const Icon(Icons.email_outlined),
@@ -514,6 +534,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         if (_otpSent)
           TextFormField(
             controller: _otpController,
+            // Diketik ulang → hapus error dari server untuk kolom ini.
+            onChanged: (_) {
+              if (_fieldErrorOtp != null) setState(() => _fieldErrorOtp = null);
+            },
             decoration: InputDecoration(
               labelText: 'Kode dari email',
               prefixIcon: const Icon(Icons.pin_outlined),

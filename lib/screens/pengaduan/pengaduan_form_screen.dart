@@ -89,6 +89,8 @@ class _PengaduanFormScreenState extends State<PengaduanFormScreen> {
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Form(
+              // Error hilang begitu isian diperbaiki (bukan menunggu tombol ditekan).
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

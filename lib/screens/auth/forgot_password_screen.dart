@@ -234,6 +234,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Form(
+            // Error hilang begitu isian diperbaiki (bukan menunggu tombol ditekan).
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -262,6 +264,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 if (_step == _ForgotStep.username)
                   TextFormField(
                     controller: _usernameController,
+                    // Diketik ulang → hapus error dari server untuk kolom ini.
+                    onChanged: (_) {
+                      if (_fieldErrorUsername != null) setState(() => _fieldErrorUsername = null);
+                    },
                     decoration: InputDecoration(
                       labelText: 'Username',
                       prefixIcon: const Icon(Icons.person_outline_rounded),
@@ -281,6 +287,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 if (_step == _ForgotStep.email)
                   TextFormField(
                     controller: _emailController,
+                    // Diketik ulang → hapus error dari server untuk kolom ini.
+                    onChanged: (_) {
+                      if (_fieldErrorEmail != null) setState(() => _fieldErrorEmail = null);
+                    },
                     decoration: InputDecoration(
                       labelText: 'Email',
                       prefixIcon: const Icon(Icons.email_outlined),
@@ -301,6 +311,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 if (_step == _ForgotStep.otp)
                   TextFormField(
                     controller: _otpController,
+                    // Diketik ulang → hapus error dari server untuk kolom ini.
+                    onChanged: (_) {
+                      if (_fieldErrorOtp != null) setState(() => _fieldErrorOtp = null);
+                    },
                     decoration: InputDecoration(
                       labelText: 'Kode dari email',
                       prefixIcon: const Icon(Icons.pin_outlined),

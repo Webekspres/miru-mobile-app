@@ -164,6 +164,8 @@ class _ChangeEmailScreenState extends State<ChangeEmailScreen> {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
           child: Form(
+            // Error hilang begitu isian diperbaiki (bukan menunggu tombol ditekan).
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -188,7 +190,7 @@ class _ChangeEmailScreenState extends State<ChangeEmailScreen> {
                       prefixIcon: const Icon(Icons.email_outlined),
                       errorText: _emailError,
                     ),
-                    onChanged: (_) => setState(() {}),
+                    onChanged: (_) => setState(() => _emailError = null),
                     validator: (v) {
                       final value = (v ?? '').trim();
                       if (value.isEmpty) return 'Email wajib diisi';
@@ -204,6 +206,10 @@ class _ChangeEmailScreenState extends State<ChangeEmailScreen> {
                       controller: _passwordController,
                       enabled: !_busy,
                       obscureText: _obscure,
+                      // Diketik ulang → hapus error dari server untuk kolom ini.
+                      onChanged: (_) {
+                        if (_passwordError != null) setState(() => _passwordError = null);
+                      },
                       decoration: InputDecoration(
                         labelText: 'Kata sandi',
                         helperText: 'Demi keamanan, konfirmasi kata sandi untuk mengganti email.',
@@ -246,6 +252,10 @@ class _ChangeEmailScreenState extends State<ChangeEmailScreen> {
                       FilteringTextInputFormatter.digitsOnly,
                       LengthLimitingTextInputFormatter(6),
                     ],
+                    // Diketik ulang → hapus error dari server untuk kolom ini.
+                    onChanged: (_) {
+                      if (_otpError != null) setState(() => _otpError = null);
+                    },
                     decoration: InputDecoration(
                       labelText: 'Kode OTP',
                       prefixIcon: const Icon(Icons.pin_outlined),
