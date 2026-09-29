@@ -12,7 +12,10 @@ void main() {
   late ScriptedAdapter adapter;
   late List<String> patches;
 
-  Future<void> openEditor(WidgetTester tester) async {
+  Future<void> openEditor(
+    WidgetTester tester, {
+    Map<String, dynamic> userExtra = const {},
+  }) async {
     patches = [];
     adapter = ScriptedAdapter((options) {
       if (options.path.endsWith('/wilayah/cakupan/')) {
@@ -33,7 +36,7 @@ void main() {
       return jsonBody({});
     });
     final api = apiClientWith(adapter);
-    final user = User.fromJson(userJson());
+    final user = User.fromJson({...userJson(), ...userExtra});
     final profile = ProfileProvider(apiClient: api)..hydrateFrom(user);
 
     await tester.binding.setSurfaceSize(const Size(420, 2400));
@@ -113,5 +116,32 @@ void main() {
 
     expect(patches, ['/users/1/']);
     expect(find.text('Edit Profil'), findsNothing);
+  });
+
+  testWidgets('email is read-only; changing it goes through the verified flow', (tester) async {
+    await openEditor(
+      tester,
+      userExtra: {'email': 'admin@mirubanksampah.id', 'email_verified': true},
+    );
+
+    final field = tester.widget<TextField>(
+      find.descendant(
+        of: find.widgetWithText(TextFormField, 'admin@mirubanksampah.id'),
+        matching: find.byType(TextField),
+      ),
+    );
+    expect(field.readOnly, isTrue);
+    expect(find.widgetWithText(TextButton, 'Ubah'), findsOneWidget);
+    expect(
+      find.text('Mengganti email memerlukan kata sandi dan kode OTP ke email baru.'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('offers to add an email when there is none', (tester) async {
+    await openEditor(tester);
+
+    expect(find.widgetWithText(TextButton, 'Tambah'), findsOneWidget);
+    expect(find.text('Belum ada email'), findsOneWidget);
   });
 }

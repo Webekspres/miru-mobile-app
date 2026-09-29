@@ -204,16 +204,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           style: Theme.of(context).textTheme.titleLarge,
           textAlign: TextAlign.center,
         ),
-        if (user.email.trim().isNotEmpty) ...[
-          const SizedBox(height: 4),
-          Text(
-            user.email.trim(),
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-            textAlign: TextAlign.center,
-          ),
-        ],
       ],
     );
   }
@@ -407,13 +397,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  String _emailSubtitle(BuildContext context) {
-    final user = context.watch<ProfileProvider>().user;
-    final email = user?.email.trim() ?? '';
-    if (email.isEmpty) return 'Belum ada email — ketuk untuk menambahkan';
-    return user!.emailVerified ? email : '$email (belum terverifikasi)';
-  }
-
   Widget _buildInfoSection(BuildContext context) {
     final theme = Theme.of(context);
 
@@ -438,29 +421,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           child: Column(
             children: [
-              _InfoLinkTile(
-                icon: Icons.email_outlined,
-                iconBgColor: const Color(0xFFDBEAFE),
-                iconColor: const Color(0xFF2563EB),
-                label: 'Email',
-                subtitle: _emailSubtitle(context),
-                onTap: () => context.push('/profile/email'),
-              ),
               if (context.read<PushService>().isAvailable) ...[
+                const _PushToggleTile(),
                 Divider(
                   height: 1,
                   thickness: 1,
                   indent: 56,
                   color: theme.colorScheme.outlineVariant,
                 ),
-                const _PushToggleTile(),
               ],
-              Divider(
-                height: 1,
-                thickness: 1,
-                indent: 56,
-                color: theme.colorScheme.outlineVariant,
-              ),
               _InfoLinkTile(
                 icon: Icons.description_outlined,
                 iconBgColor: const Color(0xFFFEF3C7),
