@@ -136,6 +136,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           child: !_hasToken
               ? _missingToken(theme)
               : Form(
+                  // Error hilang begitu isian diperbaiki (bukan menunggu tombol ditekan).
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -176,4 +176,16 @@ void main() {
     expect(find.text('Edit Profil'), findsOneWidget);
     expect(find.text('Titik rumah belum ditandai'), findsOneWidget);
   });
+
+  testWidgets('a red field returns to normal once it is typed again', (tester) async {
+    await openEditor(tester);
+    await tester.enterText(find.byType(TextFormField).first, '');
+    await tester.tap(find.text('Simpan Perubahan'));
+    await tester.pumpAndSettle();
+    expect(find.text('Nama tidak boleh kosong'), findsOneWidget);
+
+    await tester.enterText(find.byType(TextFormField).first, 'Budi');
+    await tester.pump();
+    expect(find.text('Nama tidak boleh kosong'), findsNothing);
+  });
 }
