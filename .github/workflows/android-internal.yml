@@ -10,11 +10,11 @@ on:
       version_name:
         description: Version name shown in Play Console
         required: true
-        default: 0.0.5
+        default: 1.0.1
       version_code:
         description: Version code; must be higher than the latest Play release
         required: true
-        default: 5
+        default: 6
 
 permissions:
   contents: read
@@ -91,7 +91,7 @@ jobs:
           flutter build appbundle --release \
             --build-name="$VERSION_NAME" \
             --build-number="$VERSION_CODE" \
-            --dart-define=API_BASE_URL=https://api.dev.mirubanksampah.id/api
+            --dart-define=API_BASE_URL=https://api.mirubanksampah.id/api
 
       - name: Save app bundle
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
