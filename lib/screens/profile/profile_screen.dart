@@ -204,6 +204,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
           style: Theme.of(context).textTheme.titleLarge,
           textAlign: TextAlign.center,
         ),
+        if (user.email.trim().isNotEmpty) ...[
+          const SizedBox(height: 4),
+          Text(
+            user.email.trim(),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ],
     );
   }
