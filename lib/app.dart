@@ -140,6 +140,11 @@ class _MiruAppState extends State<MiruApp> with WidgetsBindingObserver {
       return;
     }
 
+    // Saldo & poin langsung dari respons login (bukan 0), lalu segarkan dari /me/.
+    final user = _authProvider.user;
+    if (user != null) _homeProvider.hydrateFrom(user);
+    _homeProvider.refresh();
+
     // Login / session restore → mulai poll notifikasi + daftarkan push
     _notificationProvider.loadNotifications();
     _notificationProvider.startPolling();

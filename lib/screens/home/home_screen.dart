@@ -369,7 +369,8 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
 
-    if (home == null || (home.isLoading && home.user == null)) {
+    // Belum ada data user → skeleton, jangan tampilkan saldo/poin 0.
+    if (home == null || (home.user == null && !home.hasError)) {
       return _buildSaldoHeaderSkeleton(theme);
     }
 
