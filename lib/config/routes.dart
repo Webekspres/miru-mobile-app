@@ -15,6 +15,7 @@ import '../screens/notifikasi/detail_notifikasi_screen.dart';
 import '../screens/notifikasi/notifikasi_screen.dart';
 import '../screens/pengaduan/pengaduan_form_screen.dart';
 import '../screens/pengaduan/pengaduan_screen.dart';
+import '../screens/profile/change_email_screen.dart';
 import '../screens/profile/edit_profile_screen.dart';
 import '../screens/profile/profile_screen.dart';
 import '../screens/profile/qrcode_screen.dart';
@@ -261,6 +262,10 @@ GoRouter createAppRouter(AuthSession authSession, LaunchExperience launch) {
       GoRoute(
         path: '/profile/qrcode',
         builder: (context, state) => const QRCodeScreen(),
+      ),
+      GoRoute(
+        path: '/profile/email',
+        builder: (context, state) => const ChangeEmailScreen(),
       ),
 
       // Kebijakan / Tentang — top-level (register consent + profil)

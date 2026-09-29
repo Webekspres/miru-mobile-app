@@ -202,7 +202,8 @@ class AuthProvider extends ChangeNotifier {
       final data = await authService.requestEmailOtp(
         email: email.trim(),
         username: _user == null ? username?.trim() : null,
-        password: _user == null ? password : null,
+        // Login: kata sandi hanya dikirim untuk mengganti email terverifikasi.
+        password: password,
       );
       // Staging/testing: backend SKIP_OTP_VERIFICATION langsung memverifikasi.
       if (data['email_verified'] == true && _user != null) {
