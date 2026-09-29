@@ -393,7 +393,15 @@ class AuthProvider extends ChangeNotifier {
   // Logout
   // ──────────────────────────────────────────────
 
+  /// Dipanggil sebelum token sesi dihapus (mis. melepas token push).
+  Future<void> Function()? beforeLogout;
+
   Future<void> logout() async {
+    try {
+      await beforeLogout?.call();
+    } catch (_) {
+      // Logout tetap berjalan meski langkah tambahan gagal.
+    }
     // Clears tokens + AuthSession → MiruApp clears all session-scoped provider caches.
     await authService.logout();
     _user = null;

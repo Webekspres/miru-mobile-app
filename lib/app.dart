@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +22,7 @@ import 'providers/settings_provider.dart';
 import 'providers/wilayah_provider.dart';
 import 'services/api_client.dart';
 import 'services/auth_service.dart';
+import 'services/push_service.dart';
 import 'services/storage_service.dart';
 
 class MiruApp extends StatefulWidget {
@@ -49,6 +51,7 @@ class _MiruAppState extends State<MiruApp> with WidgetsBindingObserver {
   late final ApiClient _apiClient;
   late final AuthService _authService;
   late final GoRouter _router;
+  late final PushService _pushService;
   final _messengerKey = GlobalKey<ScaffoldMessengerState>();
 
   @override
@@ -84,6 +87,14 @@ class _MiruAppState extends State<MiruApp> with WidgetsBindingObserver {
     _saldoProvider = SaldoProvider(apiClient: _apiClient);
     _settingsProvider = SettingsProvider(apiClient: _apiClient);
     _router = createAppRouter(_authSession, _launchExperience);
+    _pushService = PushService(apiClient: _apiClient, storage: _storageService)
+      ..onForegroundMessage = _onPushForeground
+      ..onMessageOpened = _onPushOpened;
+    // Lepas token perangkat sebelum sesi dihapus (request butuh sesi aktif).
+    _authProvider.beforeLogout = _pushService.unregister;
+    _pushService.init().then((_) {
+      if (_authSession.isLoggedIn) _pushService.register();
+    });
     _authSession.refresh();
 
     // Hapus semua cache provider saat logout / mulai poll saat login
@@ -95,6 +106,7 @@ class _MiruAppState extends State<MiruApp> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     _authSession.removeListener(_onAuthChanged);
     _notificationProvider.stopPolling();
+    _pushService.dispose();
     super.dispose();
   }
 
@@ -128,9 +140,32 @@ class _MiruAppState extends State<MiruApp> with WidgetsBindingObserver {
       return;
     }
 
-    // Login / session restore → mulai poll notifikasi
+    // Login / session restore → mulai poll notifikasi + daftarkan push
     _notificationProvider.loadNotifications();
     _notificationProvider.startPolling();
+    _pushService.register();
+  }
+
+  void _onPushForeground(RemoteMessage message) {
+    if (!_authSession.isLoggedIn) return;
+    _notificationProvider.refreshSilent();
+    final title = message.notification?.title ?? 'Notifikasi baru';
+    final route = pushTargetRoute(message.data);
+    _messengerKey.currentState?.showSnackBar(
+      SnackBar(
+        content: Text(title),
+        behavior: SnackBarBehavior.floating,
+        action: SnackBarAction(label: 'Lihat', onPressed: () => _router.push(route)),
+      ),
+    );
+  }
+
+  void _onPushOpened(RemoteMessage message) {
+    final route = pushTargetRoute(message.data);
+    // Saat aplikasi baru dibuka dari notifikasi, tunggu router siap.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_authSession.isLoggedIn) _router.push(route);
+    });
   }
 
   void _showSessionMessage() {
@@ -164,6 +199,7 @@ class _MiruAppState extends State<MiruApp> with WidgetsBindingObserver {
         ChangeNotifierProvider.value(value: _settingsProvider),
         Provider.value(value: _apiClient),
         Provider.value(value: _authService),
+        Provider.value(value: _pushService),
       ],
       child: MaterialApp.router(
         title: AppConstants.appName,
