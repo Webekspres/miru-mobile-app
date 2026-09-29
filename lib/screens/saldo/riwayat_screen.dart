@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../config/theme.dart';
 import '../../models/activity_item.dart';
@@ -325,6 +328,12 @@ class _RiwayatScreenState extends State<RiwayatScreen> {
               ),
               const SizedBox(height: 24),
 
+              if (item.type != ActivityType.penukaranPoin &&
+                  item.status == 'selesai') ...[
+                _ReceiptShareButton(item: item),
+                const SizedBox(height: 8),
+              ],
+
               // Tutup
               SizedBox(
                 width: double.infinity,
@@ -424,6 +433,74 @@ class _RiwayatScreenState extends State<RiwayatScreen> {
       'ditolak' => 'Ditolak',
       _ => status,
     };
+  }
+}
+
+/// Unduh PDF bukti dari server lalu buka lembar bagikan (simpan ke Files,
+/// buka di pembaca PDF, atau kirim lewat WhatsApp).
+class _ReceiptShareButton extends StatefulWidget {
+  const _ReceiptShareButton({required this.item});
+
+  final ActivityItem item;
+
+  @override
+  State<_ReceiptShareButton> createState() => _ReceiptShareButtonState();
+}
+
+class _ReceiptShareButtonState extends State<_ReceiptShareButton> {
+  bool _loading = false;
+
+  bool get _isSetoran => widget.item.type == ActivityType.setoran;
+
+  Future<void> _share() async {
+    setState(() => _loading = true);
+    try {
+      final bytes =
+          await context.read<SaldoProvider>().downloadReceipt(widget.item);
+      final name = _isSetoran
+          ? 'bukti_setoran_${widget.item.id}.pdf'
+          : 'tanda_terima_penarikan_${widget.item.id}.pdf';
+      final file = File('${Directory.systemTemp.path}/$name');
+      await file.writeAsBytes(bytes);
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(file.path, mimeType: 'application/pdf')],
+          text: _isSetoran
+              ? 'Bukti setoran MIRU Bank Sampah'
+              : 'Tanda terima penarikan MIRU Bank Sampah',
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Gagal mengunduh bukti PDF. Coba lagi.'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton.icon(
+        onPressed: _loading ? null : _share,
+        icon: _loading
+            ? const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : const Icon(Icons.picture_as_pdf_outlined),
+        label: Text(
+          _isSetoran ? 'Bagikan bukti setoran (PDF)' : 'Bagikan tanda terima (PDF)',
+        ),
+      ),
+    );
   }
 }
 
