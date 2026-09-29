@@ -76,6 +76,13 @@ jobs:
           } > android/key.properties
           chmod 600 android/key.properties
 
+      - name: Write Firebase config
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          test -n "$GOOGLE_SERVICES_JSON"
+          printf '%s' "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+
       - name: Build signed app bundle
         env:
           VERSION_NAME: ${{ inputs.version_name }}

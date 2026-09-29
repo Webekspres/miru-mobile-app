@@ -10,6 +10,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/auth_session.dart';
 import '../../providers/home_provider.dart';
 import '../../providers/profile_provider.dart';
+import '../../services/push_service.dart';
 import '../../widgets/exit_dialog.dart';
 import '../../widgets/error_view.dart';
 import '../../widgets/load_when_visible.dart';
@@ -420,6 +421,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           child: Column(
             children: [
+              if (context.read<PushService>().isAvailable) ...[
+                const _PushToggleTile(),
+                Divider(
+                  height: 1,
+                  thickness: 1,
+                  indent: 56,
+                  color: theme.colorScheme.outlineVariant,
+                ),
+              ],
               _InfoLinkTile(
                 icon: Icons.description_outlined,
                 iconBgColor: const Color(0xFFFEF3C7),
@@ -442,7 +452,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 subtitle: 'Informasi aplikasi dan institusi',
                 onTap: () => context.push('/settings/tentang'),
               ),
-              // Fase 8: preferensi notifikasi (FCM) — belum diimplementasi.
             ],
           ),
         ),
@@ -515,6 +524,72 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (confirmed && mounted) {
       await context.read<AuthProvider>().logout();
     }
+  }
+}
+
+/// Sakelar notifikasi push untuk perangkat ini (daftar / lepas token FCM).
+class _PushToggleTile extends StatefulWidget {
+  const _PushToggleTile();
+
+  @override
+  State<_PushToggleTile> createState() => _PushToggleTileState();
+}
+
+class _PushToggleTileState extends State<_PushToggleTile> {
+  bool? _enabled;
+  bool _busy = false;
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<PushService>().isEnabled().then((v) {
+      if (mounted) setState(() => _enabled = v);
+    });
+  }
+
+  Future<void> _toggle(bool value) async {
+    final push = context.read<PushService>();
+    final messenger = ScaffoldMessenger.of(context);
+    setState(() {
+      _busy = true;
+      _enabled = value;
+    });
+    final ok = await push.setEnabled(value);
+    if (!ok) {
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Notifikasi belum diizinkan. Aktifkan di Pengaturan HP → Aplikasi → MIRU → Notifikasi.',
+          ),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+    if (mounted) setState(() => _busy = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return SwitchListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+      secondary: Container(
+        width: 32,
+        height: 32,
+        decoration: BoxDecoration(
+          color: const Color(0xFFDCFCE7),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: const Icon(Icons.notifications_active_outlined, size: 18, color: Color(0xFF16A34A)),
+      ),
+      title: Text('Notifikasi push', style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
+      subtitle: Text(
+        'Setoran, penjemputan, saldo, dan pengumuman',
+        style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+      ),
+      value: _enabled ?? true,
+      onChanged: _enabled == null || _busy ? null : _toggle,
+    );
   }
 }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../config/theme.dart';
@@ -258,6 +259,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
               const SizedBox(height: 20),
 
+              // Email tidak diketik di sini: ganti lewat alur kata sandi + OTP.
+              _buildLabel(theme, 'Email'),
+              const SizedBox(height: 8),
+              _buildEmailField(profile.user ?? widget.initialUser),
+              const SizedBox(height: 20),
+
               _buildLabel(theme, 'Wilayah'),
               const SizedBox(height: 8),
               AlamatBertingkat(
@@ -406,6 +413,45 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
       ),
     ),
+    );
+  }
+
+  Widget _buildEmailField(User user) {
+    final email = user.email.trim();
+    final String helper;
+    if (email.isEmpty) {
+      helper = 'Tambahkan email untuk menerima kode OTP dan pemulihan akun.';
+    } else if (!user.emailVerified) {
+      helper = 'Belum terverifikasi. Ketuk Ubah untuk memverifikasi.';
+    } else {
+      helper = 'Mengganti email memerlukan kata sandi dan kode OTP ke email baru.';
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextFormField(
+          key: ValueKey('email-$email'),
+          initialValue: email,
+          enabled: false,
+          decoration: InputDecoration(
+            hintText: 'Belum ada email',
+            helperText: helper,
+            helperMaxLines: 2,
+            prefixIcon: const Icon(Icons.email_outlined, size: 20),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        ),
+        Align(
+          alignment: Alignment.centerRight,
+          child: TextButton.icon(
+            onPressed: () => context.push('/profile/email'),
+            icon: const Icon(Icons.lock_outline, size: 16),
+            label: Text(email.isEmpty ? 'Tambah email' : 'Ganti email'),
+          ),
+        ),
+      ],
     );
   }
 

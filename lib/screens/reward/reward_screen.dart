@@ -34,7 +34,13 @@ class _RewardScreenState extends State<RewardScreen> {
       reward.loadRewards();
     }
     reward.loadPoinInfo();
+    final home = context.read<HomeProvider>();
+    if (home.user == null && !home.isLoading) home.loadData();
   }
+
+  /// Poin dari profil; saat profil belum dimuat, pakai info poin (bukan 0).
+  int _poin(HomeProvider home, RewardProvider reward) =>
+      home.user?.poin ?? reward.poinInfo?.poinSaatIni ?? 0;
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +65,7 @@ class _RewardScreenState extends State<RewardScreen> {
           if (reward.hasError && reward.rewards.isEmpty) {
             return Column(
               children: [
-                _PoinHeaderCard(poin: home.poin, theme: theme),
+                _PoinHeaderCard(poin: _poin(home, reward), theme: theme),
                 Expanded(
                   child: ErrorView(
                     title: 'Gagal memuat data',
@@ -71,11 +77,11 @@ class _RewardScreenState extends State<RewardScreen> {
             );
           }
 
-          final userPoin = home.poin;
+          final userPoin = _poin(home, reward);
           final loadingList = reward.isLoading && reward.rewards.isEmpty;
 
           return RefreshIndicator(
-            onRefresh: reward.refresh,
+            onRefresh: () => Future.wait([reward.refresh(), home.refresh()]),
             color: AppTheme.primaryColor,
             child: CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(),

@@ -204,6 +204,20 @@ class SaldoProvider extends ChangeNotifier {
   }
 
   /// Pull-to-refresh.
+  /// PDF bukti setoran / tanda terima penarikan milik nasabah.
+  ///
+  /// `GET /deposits/{id}/receipt/` atau `/withdrawals/{id}/receipt/`.
+  Future<Uint8List> downloadReceipt(ActivityItem item) async {
+    final path = item.type == ActivityType.setoran
+        ? '/deposits/${item.id}/receipt/'
+        : '/withdrawals/${item.id}/receipt/';
+    final res = await _apiClient.dio.get<List<int>>(
+      path,
+      options: Options(responseType: ResponseType.bytes),
+    );
+    return Uint8List.fromList(res.data ?? const []);
+  }
+
   Future<void> refresh() async {
     if (_currentUserId == 0) return;
     await loadActivity(userId: _currentUserId);

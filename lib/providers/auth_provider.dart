@@ -202,7 +202,8 @@ class AuthProvider extends ChangeNotifier {
       final data = await authService.requestEmailOtp(
         email: email.trim(),
         username: _user == null ? username?.trim() : null,
-        password: _user == null ? password : null,
+        // Login: kata sandi hanya dikirim untuk mengganti email terverifikasi.
+        password: password,
       );
       // Staging/testing: backend SKIP_OTP_VERIFICATION langsung memverifikasi.
       if (data['email_verified'] == true && _user != null) {
@@ -392,7 +393,15 @@ class AuthProvider extends ChangeNotifier {
   // Logout
   // ──────────────────────────────────────────────
 
+  /// Dipanggil sebelum token sesi dihapus (mis. melepas token push).
+  Future<void> Function()? beforeLogout;
+
   Future<void> logout() async {
+    try {
+      await beforeLogout?.call();
+    } catch (_) {
+      // Logout tetap berjalan meski langkah tambahan gagal.
+    }
     // Clears tokens + AuthSession → MiruApp clears all session-scoped provider caches.
     await authService.logout();
     _user = null;
