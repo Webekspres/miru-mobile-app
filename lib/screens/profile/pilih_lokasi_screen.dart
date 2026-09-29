@@ -5,6 +5,26 @@ import '../../config/theme.dart';
 import '../../models/wilayah_cakupan.dart';
 import '../../widgets/peta_pin_picker.dart';
 
+/// Buka [PilihLokasiScreen]; `null` bila pengguna kembali tanpa memilih.
+Future<LatLng?> pilihLokasi(
+  BuildContext context, {
+  required WilayahCakupan cakupan,
+  double? latitude,
+  double? longitude,
+  String title = 'Titik Lokasi Rumah',
+}) {
+  return Navigator.of(context).push<LatLng>(
+    MaterialPageRoute(
+      builder: (_) => PilihLokasiScreen(
+        cakupan: cakupan,
+        latitude: latitude,
+        longitude: longitude,
+        title: title,
+      ),
+    ),
+  );
+}
+
 /// Layar peta penuh untuk memilih titik rumah. Mengembalikan [LatLng] saat
 /// pengguna menekan "Gunakan titik ini"; kembali tanpa menyimpan → `null`.
 class PilihLokasiScreen extends StatefulWidget {
@@ -13,11 +33,13 @@ class PilihLokasiScreen extends StatefulWidget {
     required this.cakupan,
     this.latitude,
     this.longitude,
+    this.title = 'Titik Lokasi Rumah',
   });
 
   final WilayahCakupan cakupan;
   final double? latitude;
   final double? longitude;
+  final String title;
 
   @override
   State<PilihLokasiScreen> createState() => _PilihLokasiScreenState();
@@ -36,7 +58,7 @@ class _PilihLokasiScreenState extends State<PilihLokasiScreen> {
         _adaTitik && !widget.cakupan.dalamArea(LatLng(_latitude!, _longitude!));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Titik Lokasi Rumah')),
+      appBar: AppBar(title: Text(widget.title)),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

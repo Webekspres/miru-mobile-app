@@ -15,6 +15,7 @@ class PetaLokasiPreview extends StatelessWidget {
     required this.longitude,
     required this.onEdit,
     this.height = 180,
+    this.keterangan,
   });
 
   final WilayahCakupan cakupan;
@@ -22,6 +23,9 @@ class PetaLokasiPreview extends StatelessWidget {
   final double? longitude;
   final VoidCallback onEdit;
   final double height;
+
+  /// Teks di bawah peta saat titik sudah ada (default: titik rumah).
+  final String? keterangan;
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +123,8 @@ class PetaLokasiPreview extends StatelessWidget {
         Text(
           pin == null
               ? 'Ketuk "Tandai" untuk memilih titik rumah di peta.'
-              : 'Titik rumah sudah ditandai. Ketuk "Edit" untuk memindahkannya.',
+              : keterangan ??
+                  'Titik rumah sudah ditandai. Ketuk "Edit" untuk memindahkannya.',
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),

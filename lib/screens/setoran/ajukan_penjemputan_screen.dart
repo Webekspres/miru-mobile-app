@@ -13,7 +13,8 @@ import '../../providers/profile_provider.dart';
 import '../../providers/wilayah_provider.dart';
 import '../../widgets/complete_profile_dialog.dart';
 import '../../widgets/login_prompt.dart';
-import '../../widgets/peta_pin_picker.dart';
+import '../../widgets/peta_lokasi_preview.dart';
+import '../profile/pilih_lokasi_screen.dart';
 import '../../widgets/shimmer_loading.dart';
 
 class AjukanPenjemputanScreen extends StatefulWidget {
@@ -92,6 +93,21 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
         _longitude = user.longitude;
       });
     }
+  }
+
+  Future<void> _editTitik() async {
+    final titik = await pilihLokasi(
+      context,
+      cakupan: context.read<WilayahProvider>().cakupan,
+      latitude: _latitude,
+      longitude: _longitude,
+      title: 'Titik Penjemputan',
+    );
+    if (titik == null || !mounted) return;
+    setState(() {
+      _latitude = titik.latitude;
+      _longitude = titik.longitude;
+    });
   }
 
   void _loadCategories() {
@@ -474,14 +490,15 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  PetaPinPicker(
+                  // Otomatis dari titik rumah di profil; ubah hanya untuk
+                  // penjemputan ini (profil tidak ikut berubah).
+                  PetaLokasiPreview(
                     cakupan: context.watch<WilayahProvider>().cakupan,
                     latitude: _latitude,
                     longitude: _longitude,
-                    onChanged: (lat, lng) => setState(() {
-                      _latitude = lat;
-                      _longitude = lng;
-                    }),
+                    keterangan: 'Diambil dari titik rumah di profil. '
+                        'Ketuk "Edit" bila penjemputan di tempat lain.',
+                    onEdit: _editTitik,
                   ),
                   const SizedBox(height: 20),
 

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 
 import '../../config/theme.dart';
@@ -107,14 +106,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _editLokasi() async {
-    final titik = await Navigator.of(context).push<LatLng>(
-      MaterialPageRoute(
-        builder: (_) => PilihLokasiScreen(
-          cakupan: context.read<WilayahProvider>().cakupan,
-          latitude: _latitude,
-          longitude: _longitude,
-        ),
-      ),
+    final titik = await pilihLokasi(
+      context,
+      cakupan: context.read<WilayahProvider>().cakupan,
+      latitude: _latitude,
+      longitude: _longitude,
     );
     if (titik == null || !mounted) return;
     setState(() {
