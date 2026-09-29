@@ -130,8 +130,8 @@ void main() {
         matching: find.byType(TextField),
       ),
     );
-    expect(field.readOnly, isTrue);
-    expect(find.widgetWithText(TextButton, 'Ubah'), findsOneWidget);
+    expect(field.enabled, isFalse);
+    expect(find.text('Ganti email'), findsOneWidget);
     expect(
       find.text('Mengganti email memerlukan kata sandi dan kode OTP ke email baru.'),
       findsOneWidget,
@@ -141,7 +141,7 @@ void main() {
   testWidgets('offers to add an email when there is none', (tester) async {
     await openEditor(tester);
 
-    expect(find.widgetWithText(TextButton, 'Tambah'), findsOneWidget);
+    expect(find.text('Tambah email'), findsOneWidget);
     expect(find.text('Belum ada email'), findsOneWidget);
   });
 }

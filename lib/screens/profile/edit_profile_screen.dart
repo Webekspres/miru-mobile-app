@@ -426,24 +426,32 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     } else {
       helper = 'Mengganti email memerlukan kata sandi dan kode OTP ke email baru.';
     }
-    return TextFormField(
-      key: ValueKey('email-$email'),
-      initialValue: email,
-      readOnly: true,
-      enableInteractiveSelection: false,
-      decoration: InputDecoration(
-        hintText: 'Belum ada email',
-        helperText: helper,
-        helperMaxLines: 2,
-        prefixIcon: const Icon(Icons.email_outlined, size: 20),
-        suffixIcon: TextButton(
-          onPressed: () => context.push('/profile/email'),
-          child: Text(email.isEmpty ? 'Tambah' : 'Ubah'),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextFormField(
+          key: ValueKey('email-$email'),
+          initialValue: email,
+          enabled: false,
+          decoration: InputDecoration(
+            hintText: 'Belum ada email',
+            helperText: helper,
+            helperMaxLines: 2,
+            prefixIcon: const Icon(Icons.email_outlined, size: 20),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
         ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+        Align(
+          alignment: Alignment.centerRight,
+          child: TextButton.icon(
+            onPressed: () => context.push('/profile/email'),
+            icon: const Icon(Icons.lock_outline, size: 16),
+            label: Text(email.isEmpty ? 'Tambah email' : 'Ganti email'),
+          ),
         ),
-      ),
+      ],
     );
   }
 
