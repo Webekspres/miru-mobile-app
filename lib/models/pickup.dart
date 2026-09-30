@@ -73,6 +73,7 @@ class Pickup {
     this.latitude,
     this.longitude,
     this.setoranTotal,
+    this.kategoriNama,
   });
 
   final int id;
@@ -90,6 +91,9 @@ class Pickup {
   /// Nilai hasil timbang yang masuk ke saldo saat penjemputan selesai.
   final double? setoranTotal;
 
+  /// Jenis sampah yang dipilih saat mengajukan (null untuk pengajuan lama).
+  final String? kategoriNama;
+
   double get estimasiBeratAsDouble => parseDecimal(estimasiBerat);
 
   factory Pickup.fromJson(Map<String, dynamic> json) {
@@ -106,6 +110,7 @@ class Pickup {
       latitude: parseOptionalDecimal(json['latitude']),
       longitude: parseOptionalDecimal(json['longitude']),
       setoranTotal: parseOptionalDecimal(json['setoran_total']),
+      kategoriNama: json['kategori_nama'] as String?,
     );
   }
 
@@ -122,6 +127,7 @@ class Pickup {
         if (latitude != null) 'latitude': latitude!.toStringAsFixed(6),
         if (longitude != null) 'longitude': longitude!.toStringAsFixed(6),
         if (setoranTotal != null) 'setoran_total': setoranTotal!.toStringAsFixed(2),
+        if (kategoriNama != null) 'kategori_nama': kategoriNama,
       };
 
   static List<Pickup> listFromJson(dynamic json) {

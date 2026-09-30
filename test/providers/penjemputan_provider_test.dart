@@ -92,12 +92,14 @@ void main() {
     final provider = PenjemputanProvider(apiClient: apiClientWith(adapter));
     final pickup = await provider.createPickup(
       estimasiBerat: 6,
+      kategoriId: 3,
       alamatJemput: 'Jl. Papua 1',
       jadwalWilayahId: 12,
     );
 
     expect(pickup, isNotNull);
     expect(sent?['jadwal_wilayah'], 12);
+    expect(sent?['kategori'], 3); // mengisi otomatis form timbang petugas
     expect(sent?.containsKey('jadwal'), isFalse);
   });
 
