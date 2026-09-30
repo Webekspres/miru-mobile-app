@@ -72,6 +72,7 @@ class Pickup {
     this.petugasNama,
     this.latitude,
     this.longitude,
+    this.setoranTotal,
   });
 
   final int id;
@@ -85,6 +86,9 @@ class Pickup {
   final PickupStatus status;
   final double? latitude;
   final double? longitude;
+
+  /// Nilai hasil timbang yang masuk ke saldo saat penjemputan selesai.
+  final double? setoranTotal;
 
   double get estimasiBeratAsDouble => parseDecimal(estimasiBerat);
 
@@ -101,6 +105,7 @@ class Pickup {
       status: PickupStatus.fromApiValue(json['status'] as String? ?? 'menunggu'),
       latitude: parseOptionalDecimal(json['latitude']),
       longitude: parseOptionalDecimal(json['longitude']),
+      setoranTotal: parseOptionalDecimal(json['setoran_total']),
     );
   }
 
@@ -116,6 +121,7 @@ class Pickup {
         'status': status.apiValue,
         if (latitude != null) 'latitude': latitude!.toStringAsFixed(6),
         if (longitude != null) 'longitude': longitude!.toStringAsFixed(6),
+        if (setoranTotal != null) 'setoran_total': setoranTotal!.toStringAsFixed(2),
       };
 
   static List<Pickup> listFromJson(dynamic json) {
