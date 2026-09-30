@@ -190,6 +190,7 @@ class _PickupCard extends StatelessWidget {
             children: [
               StatusBadge.pickup(status: pickup.status),
               Text(
+                '${pickup.kategoriNama != null ? '${pickup.kategoriNama} · ' : ''}'
                 '${weightFormat.format(pickup.estimasiBeratAsDouble)} kg',
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w700,
@@ -198,6 +199,46 @@ class _PickupCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
+
+          // ── Alasan penolakan dari admin ──
+          if (pickup.status == PickupStatus.ditolak && pickup.alasanPenolakan.isNotEmpty) ...[
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.errorContainer.withValues(alpha: 0.5),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                'Alasan: ${pickup.alasanPenolakan}',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onErrorContainer,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
+
+          // ── Hasil timbang (penjemputan selesai) ──
+          if (pickup.setoranTotal != null && pickup.setoranTotal! > 0) ...[
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: const Color(0xFF16A34A).withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                '🎉 ${NumberFormat.currency(locale: 'id_ID', symbol: 'Rp', decimalDigits: 0).format(pickup.setoranTotal)} '
+                'masuk ke saldo Anda',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: const Color(0xFF15803D),
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
 
           // ── Alamat ──
           Row(

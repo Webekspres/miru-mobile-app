@@ -1,9 +1,11 @@
 name: Android Release
 
 # - PR / push ke dev: analyze + test.
+# - Push ke staging: APK "MIRU Staging" (com.mirubanksampah.app.staging, API
+#   staging) → Firebase App Distribution, grup tester "tim-miru".
 # - Push ke main (PR di-merge): build .aab bertanda tangan → upload otomatis ke
-#   Google Play track "internal". Naik ke production lewat "Promote release"
-#   di Play Console (atau jalankan manual workflow ini dengan track lain).
+#   Google Play track "internal" (API production). Naik ke production lewat
+#   "Promote release" di Play Console (atau jalankan manual dengan track lain).
 #
 # Versi:
 # - versionName diambil dari `version:` di pubspec.yaml (naikkan saat rilis
@@ -13,9 +15,9 @@ name: Android Release
 
 on:
   pull_request:
-    branches: [dev, main]
+    branches: [dev, staging, main]
   push:
-    branches: [dev, main]
+    branches: [dev, staging, main]
   workflow_dispatch:
     inputs:
       track:
@@ -48,6 +50,70 @@ jobs:
       - run: flutter pub get
       - run: flutter analyze
       - run: flutter test
+
+  distribute-staging:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
+    needs: validate
+    runs-on: ubuntu-latest
+    environment: staging
+    env:
+      FIREBASE_APP_ID: '1:867729270608:android:d3a43c4b5f1d7f4c8bee55'
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version: 3.44.6
+          channel: stable
+          cache: true
+      - run: flutter pub get
+
+      - name: Prepare signing & Firebase config
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+          DISTRIBUTION_SA: ${{ secrets.FIREBASE_DISTRIBUTION_SA_JSON }}
+        run: |
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > android/upload-keystore.jks
+          {
+            printf 'storePassword=%s\n' "$STORE_PASSWORD"
+            printf 'keyPassword=%s\n' "$KEY_PASSWORD"
+            printf 'keyAlias=upload\n'
+            printf 'storeFile=../upload-keystore.jks\n'
+          } > android/key.properties
+          printf '%s' "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+          printf '%s' "$DISTRIBUTION_SA" > "$RUNNER_TEMP/distribution-sa.json"
+          chmod 600 android/upload-keystore.jks android/key.properties "$RUNNER_TEMP/distribution-sa.json"
+
+      - name: Build staging APK
+        env:
+          MIRU_ENV: staging
+        run: |
+          name="$(grep -E '^version:' pubspec.yaml | sed -E 's/version:[[:space:]]*([^+[:space:]]+).*/\1/')"
+          flutter build apk --release \
+            --build-name="$name-staging" \
+            --build-number="$((1000 + ${{ github.run_number }}))" \
+            --dart-define=API_BASE_URL=https://api.dev.mirubanksampah.id/api
+
+      - name: Distribute to testers (Firebase App Distribution)
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/distribution-sa.json
+        run: |
+          git log -1 --pretty='%h %s' > "$RUNNER_TEMP/notes.txt"
+          npx --yes firebase-tools@14 appdistribution:distribute \
+            build/app/outputs/flutter-apk/app-release.apk \
+            --app "$FIREBASE_APP_ID" \
+            --groups tim-miru \
+            --release-notes-file "$RUNNER_TEMP/notes.txt"
+
+      - name: Remove signing material
+        if: always()
+        run: rm -f android/upload-keystore.jks android/key.properties android/app/google-services.json "$RUNNER_TEMP/distribution-sa.json"
 
   release:
     if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')

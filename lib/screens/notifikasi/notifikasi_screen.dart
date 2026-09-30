@@ -12,6 +12,7 @@ import '../../widgets/load_when_visible.dart';
 import '../../widgets/login_prompt.dart';
 import '../../widgets/bottom_nav_scaffold.dart';
 import '../../widgets/shimmer_loading.dart';
+import '../../widgets/notif_style.dart';
 
 class NotifikasiScreen extends StatefulWidget {
   const NotifikasiScreen({super.key});
@@ -184,6 +185,7 @@ class _NotifCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final dateFormat = DateFormat('d MMM HH:mm', 'id_ID');
+    final style = notifStyleFor(item.kategori);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
@@ -208,21 +210,32 @@ class _NotifCard extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Unread dot
-                if (isUnread)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 6, right: 10),
-                    child: Container(
-                      width: 8,
-                      height: 8,
-                      decoration: const BoxDecoration(
-                        color: AppTheme.primaryColor,
-                        shape: BoxShape.circle,
-                      ),
+                // Ikon kategori; titik = belum dibaca.
+                Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    CircleAvatar(
+                      radius: 21,
+                      backgroundColor: style.background,
+                      child: Icon(style.icon, color: style.color, size: 22),
                     ),
-                  )
-                else
-                  const SizedBox(width: 18),
+                    if (isUnread)
+                      Positioned(
+                        top: -1,
+                        right: -1,
+                        child: Container(
+                          width: 11,
+                          height: 11,
+                          decoration: BoxDecoration(
+                            color: AppTheme.primaryColor,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 2),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -230,9 +243,9 @@ class _NotifCard extends StatelessWidget {
                       Text(
                         item.judul,
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: isUnread ? FontWeight.w600 : FontWeight.w500,
+                          fontWeight: isUnread ? FontWeight.w700 : FontWeight.w500,
                         ),
-                        maxLines: 1,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 4),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../config/constants.dart';
 import '../config/theme.dart';
 
 /// Shown on screens that require authentication when user is not logged in.
@@ -11,7 +12,7 @@ class LoginPrompt extends StatelessWidget {
     this.icon,
     this.title = 'Masuk untuk Melanjutkan',
     this.message =
-        'Silakan masuk atau daftar akun Miru G untuk mengakses fitur ini.',
+        'Silakan masuk atau daftar akun ${AppConstants.appName} untuk mengakses fitur ini.',
     this.showBackButton = false,
   });
 

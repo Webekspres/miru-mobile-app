@@ -229,6 +229,7 @@ class _AjukanPenjemputanScreenState extends State<AjukanPenjemputanScreen> {
 
     final result = await penjemputan.createPickup(
       estimasiBerat: berat,
+      kategoriId: _selectedCategory!.id,
       alamatJemput: _alamatController.text.trim(),
       jadwalWilayahId: jadwalId,
       latitude: _latitude,

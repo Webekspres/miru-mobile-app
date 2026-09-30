@@ -160,8 +160,9 @@ class ProfileProvider extends ChangeNotifier {
         'no_hp': noHp,
         'alamat': alamat,
       };
-      if (rt.isNotEmpty) body['rt'] = rt;
-      if (rw.isNotEmpty) body['rw'] = rw;
+      // Selalu dikirim — string kosong berarti RT/RW dihapus.
+      body['rt'] = rt;
+      body['rw'] = rw;
       if (kelurahanId != null) body['kelurahan'] = kelurahanId;
       // Kolom koordinat backend: maks 6 desimal.
       if (latitude != null) body['latitude'] = latitude.toStringAsFixed(6);

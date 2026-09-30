@@ -72,6 +72,9 @@ class Pickup {
     this.petugasNama,
     this.latitude,
     this.longitude,
+    this.setoranTotal,
+    this.kategoriNama,
+    this.alasanPenolakan = '',
   });
 
   final int id;
@@ -85,6 +88,15 @@ class Pickup {
   final PickupStatus status;
   final double? latitude;
   final double? longitude;
+
+  /// Nilai hasil timbang yang masuk ke saldo saat penjemputan selesai.
+  final double? setoranTotal;
+
+  /// Jenis sampah yang dipilih saat mengajukan (null untuk pengajuan lama).
+  final String? kategoriNama;
+
+  /// Alasan dari admin bila pengajuan ditolak.
+  final String alasanPenolakan;
 
   double get estimasiBeratAsDouble => parseDecimal(estimasiBerat);
 
@@ -101,6 +113,9 @@ class Pickup {
       status: PickupStatus.fromApiValue(json['status'] as String? ?? 'menunggu'),
       latitude: parseOptionalDecimal(json['latitude']),
       longitude: parseOptionalDecimal(json['longitude']),
+      setoranTotal: parseOptionalDecimal(json['setoran_total']),
+      kategoriNama: json['kategori_nama'] as String?,
+      alasanPenolakan: json['alasan_penolakan'] as String? ?? '',
     );
   }
 
@@ -116,6 +131,8 @@ class Pickup {
         'status': status.apiValue,
         if (latitude != null) 'latitude': latitude!.toStringAsFixed(6),
         if (longitude != null) 'longitude': longitude!.toStringAsFixed(6),
+        if (setoranTotal != null) 'setoran_total': setoranTotal!.toStringAsFixed(2),
+        if (kategoriNama != null) 'kategori_nama': kategoriNama,
       };
 
   static List<Pickup> listFromJson(dynamic json) {
