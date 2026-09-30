@@ -1,26 +1,38 @@
-name: Android Internal Testing
+name: Android Release
+
+# - PR / push ke dev: analyze + test.
+# - Push ke main (PR di-merge): build .aab bertanda tangan → upload otomatis ke
+#   Google Play track "internal". Naik ke production lewat "Promote release"
+#   di Play Console (atau jalankan manual workflow ini dengan track lain).
+#
+# Versi:
+# - versionName diambil dari `version:` di pubspec.yaml (naikkan saat rilis
+#   yang berarti, mis. 1.0.1 / 1.1.0).
+# - versionCode dihitung otomatis: 1000 + nomor run workflow ini — selalu naik,
+#   tidak perlu diubah manual (angka build di pubspec diabaikan di CI).
 
 on:
   pull_request:
-    branches: [dev]
+    branches: [dev, main]
   push:
-    branches: [dev]
+    branches: [dev, main]
   workflow_dispatch:
     inputs:
-      version_name:
-        description: Version name shown in Play Console
+      track:
+        description: Track Google Play tujuan
         required: true
-        default: 1.0.1
-      version_code:
-        description: Version code; must be higher than the latest Play release
-        required: true
-        default: 6
+        default: internal
+        type: choice
+        options:
+          - internal
+          - alpha
+          - production
 
 permissions:
   contents: read
 
 concurrency:
-  group: android-internal-testing
+  group: android-release-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -37,8 +49,8 @@ jobs:
       - run: flutter analyze
       - run: flutter test
 
-  deploy-internal:
-    if: github.event_name == 'workflow_dispatch'
+  release:
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
     needs: validate
     runs-on: ubuntu-latest
     environment: internal-testing
@@ -54,6 +66,15 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get
+
+      - name: Determine version
+        id: version
+        run: |
+          name="$(grep -E '^version:' pubspec.yaml | sed -E 's/version:[[:space:]]*([^+[:space:]]+).*/\1/')"
+          code=$((1000 + ${{ github.run_number }}))
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          echo "Versi rilis: $name ($code) → track ${{ inputs.track || 'internal' }}" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Prepare release signing
         env:
@@ -75,6 +96,10 @@ jobs:
             printf 'storeFile=../upload-keystore.jks\n'
           } > android/key.properties
           chmod 600 android/key.properties
+          # Sidik jari sertifikat upload (publik) — harus sama dengan
+          # "Upload key certificate" di Play Console → App integrity.
+          keytool -list -keystore android/upload-keystore.jks -storepass "$STORE_PASSWORD" -alias upload \
+            | grep -i 'SHA-256\|SHA256' | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: Write Firebase config
         env:
@@ -84,31 +109,29 @@ jobs:
           printf '%s' "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
 
       - name: Build signed app bundle
-        env:
-          VERSION_NAME: ${{ inputs.version_name }}
-          VERSION_CODE: ${{ inputs.version_code }}
         run: |
           flutter build appbundle --release \
-            --build-name="$VERSION_NAME" \
-            --build-number="$VERSION_CODE" \
+            --build-name="${{ steps.version.outputs.name }}" \
+            --build-number="${{ steps.version.outputs.code }}" \
             --dart-define=API_BASE_URL=https://api.mirubanksampah.id/api
 
       - name: Save app bundle
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
-          name: miru-${{ inputs.version_name }}-internal
+          name: miru-${{ steps.version.outputs.name }}-${{ steps.version.outputs.code }}
           path: build/app/outputs/bundle/release/app-release.aab
           if-no-files-found: error
 
-      - name: Upload to Google Play Internal Testing
+      - name: Upload to Google Play
         uses: r0adkll/upload-google-play@e738b9dd8f2476ea806d921b64aacd24f34515a5 # v1.1.5
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
           packageName: com.mirubanksampah.app
           releaseFiles: build/app/outputs/bundle/release/app-release.aab
-          tracks: internal
+          releaseName: ${{ steps.version.outputs.name }} (${{ steps.version.outputs.code }})
+          tracks: ${{ inputs.track || 'internal' }}
           status: completed
 
       - name: Remove signing material
         if: always()
-        run: rm -f android/upload-keystore.jks android/key.properties
+        run: rm -f android/upload-keystore.jks android/key.properties android/app/google-services.json
