@@ -38,9 +38,16 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
+    buildFeatures {
+        resValues = true // app_name per lingkungan (lihat defaultConfig)
+    }
+
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.mirubanksampah.app"
+        // MIRU_ENV=staging (CI branch `staging`) → aplikasi uji terpisah yang bisa
+        // terpasang berdampingan dengan versi Play: id .staging, nama "MIRU Staging".
+        val isStaging = System.getenv("MIRU_ENV") == "staging"
+        applicationId = if (isStaging) "com.mirubanksampah.app.staging" else "com.mirubanksampah.app"
+        resValue("string", "app_name", if (isStaging) "MIRU Staging" else "MIRU Bank Sampah")
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
