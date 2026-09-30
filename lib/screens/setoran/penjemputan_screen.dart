@@ -200,6 +200,25 @@ class _PickupCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
 
+          // ── Alasan penolakan dari admin ──
+          if (pickup.status == PickupStatus.ditolak && pickup.alasanPenolakan.isNotEmpty) ...[
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.errorContainer.withValues(alpha: 0.5),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                'Alasan: ${pickup.alasanPenolakan}',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onErrorContainer,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
+
           // ── Hasil timbang (penjemputan selesai) ──
           if (pickup.setoranTotal != null && pickup.setoranTotal! > 0) ...[
             Container(

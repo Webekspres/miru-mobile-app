@@ -74,6 +74,7 @@ class Pickup {
     this.longitude,
     this.setoranTotal,
     this.kategoriNama,
+    this.alasanPenolakan = '',
   });
 
   final int id;
@@ -94,6 +95,9 @@ class Pickup {
   /// Jenis sampah yang dipilih saat mengajukan (null untuk pengajuan lama).
   final String? kategoriNama;
 
+  /// Alasan dari admin bila pengajuan ditolak.
+  final String alasanPenolakan;
+
   double get estimasiBeratAsDouble => parseDecimal(estimasiBerat);
 
   factory Pickup.fromJson(Map<String, dynamic> json) {
@@ -111,6 +115,7 @@ class Pickup {
       longitude: parseOptionalDecimal(json['longitude']),
       setoranTotal: parseOptionalDecimal(json['setoran_total']),
       kategoriNama: json['kategori_nama'] as String?,
+      alasanPenolakan: json['alasan_penolakan'] as String? ?? '',
     );
   }
 
