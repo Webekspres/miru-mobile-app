@@ -190,6 +190,7 @@ class _PickupCard extends StatelessWidget {
             children: [
               StatusBadge.pickup(status: pickup.status),
               Text(
+                '${pickup.kategoriNama != null ? '${pickup.kategoriNama} · ' : ''}'
                 '${weightFormat.format(pickup.estimasiBeratAsDouble)} kg',
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w700,

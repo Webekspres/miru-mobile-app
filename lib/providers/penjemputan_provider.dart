@@ -142,6 +142,7 @@ class PenjemputanProvider extends ChangeNotifier {
   /// Returns the created [Pickup] on success, `null` on error.
   Future<Pickup?> createPickup({
     required double estimasiBerat,
+    int? kategoriId,
     required String alamatJemput,
     required int jadwalWilayahId,
     double? latitude,
@@ -156,6 +157,8 @@ class PenjemputanProvider extends ChangeNotifier {
     try {
       final payload = <String, dynamic>{
         'estimasi_berat': estimasiBerat.toStringAsFixed(2),
+        // Jenis sampah pilihan → form timbang petugas terisi otomatis.
+        'kategori': ?kategoriId,
         'alamat_jemput': alamatJemput,
         'jadwal_wilayah': jadwalWilayahId,
         if (latitude != null) 'latitude': latitude.toStringAsFixed(6),
