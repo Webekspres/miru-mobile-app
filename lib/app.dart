@@ -23,6 +23,8 @@ import 'providers/wilayah_provider.dart';
 import 'services/api_client.dart';
 import 'services/auth_service.dart';
 import 'services/push_service.dart';
+import 'widgets/notif_style.dart';
+import 'widgets/push_banner.dart';
 import 'services/storage_service.dart';
 
 class MiruApp extends StatefulWidget {
@@ -154,18 +156,29 @@ class _MiruAppState extends State<MiruApp> with WidgetsBindingObserver {
   void _onPushForeground(RemoteMessage message) {
     if (!_authSession.isLoggedIn) return;
     _notificationProvider.refreshSilent();
-    final title = message.notification?.title ?? 'Notifikasi baru';
+    _refreshForPush(message);
     final route = pushTargetRoute(message.data);
-    _messengerKey.currentState?.showSnackBar(
-      SnackBar(
-        content: Text(title),
-        behavior: SnackBarBehavior.floating,
-        action: SnackBarAction(label: 'Lihat', onPressed: () => _router.push(route)),
-      ),
+    final overlay = _router.routerDelegate.navigatorKey.currentState?.overlay;
+    if (overlay == null) return;
+    showPushBanner(
+      overlay,
+      title: message.notification?.title ?? 'Notifikasi baru',
+      body: message.notification?.body,
+      kategori: message.data['kategori'] as String?,
+      onTap: () => _router.push(route),
     );
   }
 
+  /// Saldo/poin/status penjemputan berubah → muat ulang tanpa perlu tarik-refresh.
+  void _refreshForPush(RemoteMessage message) {
+    final kategori = (message.data['kategori'] ?? message.data['event']) as String?;
+    if (!notifChangesHome(kategori)) return;
+    _homeProvider.refresh();
+    _penjemputanProvider.refresh();
+  }
+
   void _onPushOpened(RemoteMessage message) {
+    _refreshForPush(message);
     final route = pushTargetRoute(message.data);
     // Saat aplikasi baru dibuka dari notifikasi, tunggu router siap.
     WidgetsBinding.instance.addPostFrameCallback((_) {

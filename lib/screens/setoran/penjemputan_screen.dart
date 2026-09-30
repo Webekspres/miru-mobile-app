@@ -199,6 +199,27 @@ class _PickupCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
 
+          // ── Hasil timbang (penjemputan selesai) ──
+          if (pickup.setoranTotal != null && pickup.setoranTotal! > 0) ...[
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: const Color(0xFF16A34A).withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                '🎉 ${NumberFormat.currency(locale: 'id_ID', symbol: 'Rp', decimalDigits: 0).format(pickup.setoranTotal)} '
+                'masuk ke saldo Anda',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: const Color(0xFF15803D),
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
+
           // ── Alamat ──
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
